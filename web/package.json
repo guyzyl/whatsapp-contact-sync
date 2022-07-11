@@ -1,0 +1,26 @@
+{
+  "name": "whatsapp-contact-sync",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "vite preview",
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@mdi/font": "5.9.55",
+    "roboto-fontface": "*",
+    "vue": "^3.2.25",
+    "vue-router": "^4.0.13",
+    "vuetify": "^3.0.0-beta.0",
+    "webfontloader": "^1.6.28"
+  },
+  "devDependencies": {
+    "@types/webfontloader": "^1.6.34",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "vite": "^2.9.9",
+    "vite-plugin-vuetify": "^1.0.0-alpha.0",
+    "vue-cli-plugin-vuetify": "~2.5.1"
+  }
+}
