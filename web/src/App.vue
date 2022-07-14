@@ -1,21 +1,7 @@
-<script setup lang="ts">
-import Header from "./components/Header.vue";
-import Footer from "./components/Footer.vue";
-
-const components = {
-  Header,
-  Footer,
-};
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <v-app>
-    <v-main>
-      <Header />
-      <router-view></router-view>
-      <Footer />
-    </v-main>
-  </v-app>
+  <router-view></router-view>
 </template>
 
 <style scoped></style>
