@@ -1,6 +1,6 @@
-const fs = require("fs");
-const readline = require("readline");
-const { google } = require("googleapis");
+import fs from "fs";
+import readline from "readline";
+import { google } from "googleapis";
 
 const scopes = ["https://www.googleapis.com/auth/contacts"];
 const tokenPath = "token.json";
@@ -11,7 +11,7 @@ const pageSize = 20;
 
 fs.readFile(credentialsPath, (err, content) => {
   if (err) return console.log("Error loading client secret file:", err);
-  authorize(JSON.parse(content), listConnectionNames);
+  authorize(JSON.parse(content), listConnections);
 });
 
 function authorize(credentials, callback) {
@@ -55,13 +55,17 @@ function getNewToken(oAuth2Client, callback) {
   });
 }
 
-function listConnectionNames(auth) {
+function listConnections(auth) {
   const service = google.people({ version: "v1", auth });
+
+  var nextPageToken;
+
   service.people.connections.list(
     {
       resourceName: "people/me",
       pageSize: pageSize,
       personFields: "names,emailAddresses,phoneNumbers",
+      nextPageToken: nextPageToken
     },
     (err, res) => {
       if (err) return console.error("The API returned an error: " + err);
@@ -69,7 +73,7 @@ function listConnectionNames(auth) {
       if (connections) {
         for (const connection of connections) {
           console.log(connection.names);
-          console.log(connection.phoneNumbers)
+          console.log(connection.phoneNumbers);
         }
       } else {
         console.log("No connections found.");

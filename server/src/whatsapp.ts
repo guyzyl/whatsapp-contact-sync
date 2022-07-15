@@ -1,21 +1,37 @@
 const { Client, MessageMedia } = require("whatsapp-web.js");
+import { sendEvent, sendNotification } from "./ws";
+import {
+  EventType,
+  NotificationType,
+  WhatsAppContact,
+} from "../../interfaces/api";
 
-function initWhatsApp(): void {
-  const client = new Client();
+export function initWhatsApp(ws, session): void {
+  const client = new Client({});
 
   client.on("qr", (qr) => {
-    qrcode.generate(qr, { small: true });
-    // TODO: Set for session and return somehow
+    sendEvent(ws, EventType.WhatsAppQR, qr);
   });
 
   client.on("ready", () => {
-    loadContacts(client);
+    sendNotification(
+      ws,
+      NotificationType.Info,
+      "WhatsApp connected successfully"
+    );
+
+    const contacts = loadContacts(client);
+    session.whatsappContacts = contacts;
+
+    sendEvent(ws, EventType.Redirect, "/gauth");
   });
+
+  client.on("auth_failure", (msg) => {});
 
   client.initialize();
 }
 
-function loadContacts(client: Client): void {
+function loadContacts(client: typeof Client): Array<WhatsAppContact> {
   var contacts: Array<WhatsAppContact> = [];
 
   client.getContacts().then((contacts) => {
@@ -43,5 +59,5 @@ function loadContacts(client: Client): void {
     }
   });
 
-  // TODO: Do something with the contacts
+  return contacts;
 }

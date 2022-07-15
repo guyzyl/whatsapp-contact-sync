@@ -2,20 +2,26 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "main.ts",
+  "main": "src/index.ts",
   "scripts": {
-    "serve": "node main.ts",
+    "serve": "ts-node .",
+    "dev": "nodemon --exec 'ts-node' .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "guyzyl",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "express": "^4.18.1",
     "express-session": "^1.17.3",
+    "express-ws": "^5.0.2",
     "googleapis": "^105.0.0",
     "whatsapp-web.js": "^1.17.1"
   },
   "devDependencies": {
+    "@types/node": "^18.0.4",
+    "nodemon": "^2.0.19",
     "qrcode-terminal": "^0.12.0"
   }
 }
