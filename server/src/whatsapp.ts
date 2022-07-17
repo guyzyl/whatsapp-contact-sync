@@ -1,15 +1,16 @@
-const { Client, MessageMedia } = require("whatsapp-web.js");
-import { sendEvent, sendNotification } from "./ws";
-import {
-  EventType,
-  NotificationType,
-  WhatsAppContact,
-} from "../../interfaces/api";
+import { WebSocket } from "ws";
 
-export function initWhatsApp(ws, session): void {
+import { Client, Contact, MessageMedia } from "whatsapp-web.js";
+
+import { sendEvent, sendNotification } from "./ws";
+import { ServerSession } from "./types";
+import { WhatsAppContact } from "./interfaces";
+import { EventType, NotificationType } from "../../interfaces/api";
+
+export function initWhatsApp(ws: WebSocket, session: ServerSession): void {
   const client = new Client({});
 
-  client.on("qr", (qr) => {
+  client.on("qr", (qr: string) => {
     sendEvent(ws, EventType.WhatsAppQR, qr);
   });
 
@@ -31,10 +32,10 @@ export function initWhatsApp(ws, session): void {
   client.initialize();
 }
 
-function loadContacts(client: typeof Client): Array<WhatsAppContact> {
-  var contacts: Array<WhatsAppContact> = [];
+function loadContacts(client: Client): Array<WhatsAppContact> {
+  var simpleContacts: Array<WhatsAppContact> = [];
 
-  client.getContacts().then((contacts) => {
+  client.getContacts().then((contacts: Array<Contact>) => {
     for (const contact of contacts) {
       if (
         contact.isMe === true ||
@@ -56,8 +57,10 @@ function loadContacts(client: typeof Client): Array<WhatsAppContact> {
         name: contact.name,
         photoUrl: photoUrl,
       };
+
+      simpleContacts.push(simpleContact);
     }
   });
 
-  return contacts;
+  return simpleContacts;
 }

@@ -1,3 +1,5 @@
+import { WebSocket } from "ws";
+
 import {
   Event,
   EventType,
@@ -5,7 +7,7 @@ import {
   NotificationType,
 } from "../../interfaces/api";
 
-export function sendEvent(ws, eventType: EventType, data: any): void {
+export function sendEvent(ws: WebSocket, eventType: EventType, data: any): void {
   const event: Event = {
     type: eventType,
     data: data,
@@ -15,7 +17,7 @@ export function sendEvent(ws, eventType: EventType, data: any): void {
 }
 
 export function sendNotification(
-  ws,
+  ws: WebSocket,
   type: NotificationType,
   message: string
 ): void {

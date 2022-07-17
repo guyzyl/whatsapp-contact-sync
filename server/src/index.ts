@@ -1,9 +1,13 @@
 const cors = require("cors");
 const express = require("express");
+import { Response } from "express";
 const expressWs = require("express-ws");
+import { WebSocket } from "ws";
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const { initWhatsApp } = require("./whatsapp");
+
+import { SessionRequest } from "./types";
 
 var ews = expressWs(express());
 const app = ews.app;
@@ -35,8 +39,8 @@ app.use(
   })
 );
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Credentials", true);
+app.use(function (req: SessionRequest, res: Response, next: CallableFunction) {
+  res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
   res.header("Access-Control-Allow-Origin", process.env.ORIGIN);
   res.header(
@@ -51,29 +55,29 @@ app.use(function (req, res, next) {
   Storing to object since they get destoryed when trying to save to the session.
   TODO: Have some kind of cleanup for this.
 */
-var wss = {};
+var wss: { [id: string]: WebSocket } = {};
 
 /*
   Setup the routes.
 */
 
-app.ws("/ws", (ws, req) => {
+app.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
   const session = req.session;
   wss[req.sessionID] = ws;
 });
 
-app.get("/get_status", (req, res) => {
+app.get("/get_status", (req: SessionRequest, res: Response) => {
   res.send("{}");
 });
 
 // An "empty" route to make sure a session is created before opening the ws connection.
-app.get("/init_session", (req, res) => {
+app.get("/init_session", (req: SessionRequest, res: Response) => {
   const session = req.session;
   session.exists = true;
   res.send("{}");
 });
 
-app.get("/init_whatsapp", (req, res) => {
+app.get("/init_whatsapp", (req: SessionRequest, res: Response) => {
   var session = req.session;
   initWhatsApp(wss[req.sessionID], session);
   res.send("{}");

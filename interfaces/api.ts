@@ -17,11 +17,3 @@ export interface Notification {
   type: NotificationType;
   message: string;
 }
-
-// TODO: Move, doesn't belong here
-export interface WhatsAppContact {
-  whatsappId: object;
-  number: BigInt;
-  name: string;
-  photoUrl: string;
-}
