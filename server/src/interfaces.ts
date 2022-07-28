@@ -1,4 +1,4 @@
-import { ContactId } from 'whatsapp-web.js';
+import { ContactId } from "whatsapp-web.js";
 
 export interface WhatsAppContact {
   whatsappId: ContactId;

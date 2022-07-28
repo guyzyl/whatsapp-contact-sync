@@ -3,10 +3,12 @@ const express = require("express");
 import { Response } from "express";
 const expressWs = require("express-ws");
 import { WebSocket } from "ws";
+const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const { initWhatsApp } = require("./whatsapp");
 
+const { initWhatsApp } = require("./whatsapp");
+import { googleLogin } from "./gapi";
 import { SessionRequest } from "./types";
 
 var ews = expressWs(express());
@@ -25,6 +27,7 @@ app.use(
   })
 );
 
+app.use(bodyParser.json());
 app.use(cookieParser("helloworld"));
 app.use(
   session({
@@ -80,6 +83,13 @@ app.get("/init_session", (req: SessionRequest, res: Response) => {
 app.get("/init_whatsapp", (req: SessionRequest, res: Response) => {
   var session = req.session;
   initWhatsApp(wss[req.sessionID], session);
+  res.send("{}");
+});
+
+app.post("/gauth", (req: SessionRequest, res: Response) => {
+  const token = req.body.token;
+  // TODO: Add error checking;
+  googleLogin(token);
   res.send("{}");
 });
 

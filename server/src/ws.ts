@@ -1,3 +1,4 @@
+// TODO: Replace with WebHooks
 import { WebSocket } from "ws";
 
 import {
@@ -7,7 +8,11 @@ import {
   NotificationType,
 } from "../../interfaces/api";
 
-export function sendEvent(ws: WebSocket, eventType: EventType, data: any): void {
+export function sendEvent(
+  ws: WebSocket,
+  eventType: EventType,
+  data: any
+): void {
   const event: Event = {
     type: eventType,
     data: data,
