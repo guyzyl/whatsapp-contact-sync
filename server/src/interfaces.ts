@@ -1,8 +1,5 @@
-import { ContactId } from "whatsapp-web.js";
-
-export interface WhatsAppContact {
-  whatsappId: ContactId;
-  number: string;
+export interface SimpleContact {
+  id: string;
+  numbers: string[];
   name?: string;
-  photoUrl?: string;
 }

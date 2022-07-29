@@ -1,66 +1,72 @@
 import { WebSocket } from "ws";
 
-import { Client, Contact, MessageMedia } from "whatsapp-web.js";
+import { Client, MessageMedia } from "whatsapp-web.js";
 
 import { sendEvent, sendNotification } from "./ws";
-import { ServerSession } from "./types";
-import { WhatsAppContact } from "./interfaces";
+import { ServerSession, Base64 } from "./types";
+import { SimpleContact } from "./interfaces";
 import { EventType, NotificationType } from "../../interfaces/api";
 
-export function initWhatsApp(ws: WebSocket, session: ServerSession): void {
+export function initWhatsApp(ws: WebSocket, session: ServerSession): Client {
   const client = new Client({});
 
   client.on("qr", (qr: string) => {
     sendEvent(ws, EventType.WhatsAppQR, qr);
   });
 
-  client.on("ready", () => {
+  client.on("ready", async () => {
     sendNotification(
       ws,
       NotificationType.Info,
       "WhatsApp connected successfully"
     );
 
-    const contacts = loadContacts(client);
+    const contacts = await loadContacts(client);
     session.whatsappContacts = contacts;
 
+    // TODO: Signout here
     sendEvent(ws, EventType.Redirect, "/gauth");
   });
 
   client.on("auth_failure", (msg) => {});
 
   client.initialize();
+  return client;
 }
 
-function loadContacts(client: Client): Array<WhatsAppContact> {
-  var simpleContacts: Array<WhatsAppContact> = [];
+async function loadContacts(client: Client): Promise<Array<SimpleContact>> {
+  var simpleContacts: Array<SimpleContact> = [];
 
-  client.getContacts().then((contacts: Array<Contact>) => {
-    for (const contact of contacts) {
-      if (
-        contact.isMe === true ||
-        contact.isGroup === true ||
-        contact.isMyContact === false ||
-        contact.number === null
-      ) {
-        continue;
-      }
+  const contacts = await client.getContacts();
 
-      var photoUrl;
-      client.getProfilePicUrl(contact.id._serialized).then((url) => {
-        photoUrl = url;
-      });
-
-      const simpleContact: WhatsAppContact = {
-        whatsappId: contact.id,
-        number: contact.number,
-        name: contact.name,
-        photoUrl: photoUrl,
-      };
-
-      simpleContacts.push(simpleContact);
+  for (const contact of contacts) {
+    if (
+      // For some reason the isMyContact property wasn't working during testing, so removed it.
+      contact.isMe === true ||
+      contact.isGroup === true ||
+      contact.number === null
+    ) {
+      continue;
     }
-  });
+
+    const simpleContact: SimpleContact = {
+      id: contact.id._serialized,
+      numbers: [contact.number],
+      name: contact.name,
+      // whatsappPhotoUrl: photoUrl,
+    };
+
+    simpleContacts.push(simpleContact);
+  }
 
   return simpleContacts;
+}
+
+export async function downloadFile(
+  client: Client,
+  whatsappId: string
+): Promise<Base64> {
+  const photoUrl = await client.getProfilePicUrl(whatsappId);
+  const image = await MessageMedia.fromUrl(photoUrl);
+  return image.data;
 }

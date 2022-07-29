@@ -55,7 +55,7 @@ export default defineComponent({
         throw resp;
       }
       const token = gapi.client.getToken();
-      fetch("/api/gauth", {
+      fetch("/api/init_sync", {
         credentials: "include",
         method: "POST",
         body: JSON.stringify({ token: token }),

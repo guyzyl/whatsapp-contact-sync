@@ -1,51 +1,84 @@
-const { google } = require("googleapis");
+const { google, AuthClient, AccessTokenResponse } = require("googleapis");
+
+import { SimpleContact } from "./interfaces";
+import { Base64 } from "./types";
 
 const dotenv = require("dotenv");
 dotenv.config();
 
-// TODO: Increase
-const pageSize = 20;
+const pageSize = 250;
 
-// TODO: Create interface for idToken
-export async function googleLogin(token: object) {
+// TODO: Create / use interface for token
+export function googleLogin(
+  token: typeof AccessTokenResponse
+): typeof AuthClient {
   const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.YOUR_CLIENT_SECRET
   );
   oauth2Client.setCredentials(token);
-  // const response = await auth.refreshToken(credentials);
+  verifyAuth(oauth2Client);
 
-  // TODO: Redirect user at this stage;
-
-  const contacts = listConnections(oauth2Client);
+  return oauth2Client;
 }
 
-// TODO: Fix typing
-function listConnections(auth: any) {
+export function verifyAuth(auth: typeof AuthClient): void {
+  // TODO: Implement
+}
+
+export async function listContacts(
+  auth: typeof AuthClient
+): Promise<SimpleContact[]> {
   const service = google.people({ version: "v1", auth });
 
+  var simpleContacts: SimpleContact[] = [];
   var nextPageToken = "";
 
-  service.people.connections.list(
-    {
+  do {
+    const res = await service.people.connections.list({
       resourceName: "people/me",
       pageSize: pageSize,
       personFields: "names,emailAddresses,phoneNumbers",
       pageToken: nextPageToken,
-    },
-    // TODO: Fix typing
-    (err: string, res: { data: { connections: any } }): void => {
-      if (err) return console.error("The API returned an error: " + err);
-      const connections = res.data.connections;
-      if (connections) {
-        for (const connection of connections) {
-          console.log(connection);
-          console.log(connection.names);
-          console.log(connection.phoneNumbers);
+    });
+
+    nextPageToken = res.data.nextPageToken;
+    const connections = res.data.connections;
+
+    for (const connection of connections) {
+      var phoneNumbers: string[] = [];
+      if (connection.phoneNumbers) {
+        for (const phoneNumberObj of connection.phoneNumbers) {
+          if (!phoneNumberObj.canonicalForm) continue;
+          phoneNumbers.push(phoneNumberObj.canonicalForm.replace("+", ""));
         }
-      } else {
-        console.log("No connections found.");
       }
+
+      const simpleContact: SimpleContact = {
+        id: connection.resourceName,
+        numbers: phoneNumbers,
+        name: connection.names[0].displayName,
+      };
+
+      simpleContacts.push(simpleContact);
     }
-  );
+  } while (nextPageToken);
+
+  return simpleContacts;
+}
+
+export async function updateContactPicture(
+  auth: typeof AuthClient,
+  resourceName: string,
+  photo: Base64
+): Promise<void> {
+  const photoBytes = Buffer.from(photo, "base64");
+
+  const service = google.people({ version: "v1", auth });
+
+  // TODO: Test safely
+  // const res = await service.people.updateContactPhoto({
+  //   resourceName: resourceName,
+  //   photoBytes: photoBytes,
+  // });
 }

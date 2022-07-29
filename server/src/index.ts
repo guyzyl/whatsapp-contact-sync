@@ -1,3 +1,4 @@
+// TODO: Convert all to imports;
 const cors = require("cors");
 const express = require("express");
 import { Response } from "express";
@@ -7,8 +8,10 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 
+import { Client } from "whatsapp-web.js";
+
 const { initWhatsApp } = require("./whatsapp");
-import { googleLogin } from "./gapi";
+import { initSync } from "./sync";
 import { SessionRequest } from "./types";
 
 var ews = expressWs(express());
@@ -54,11 +57,11 @@ app.use(function (req: SessionRequest, res: Response, next: CallableFunction) {
 });
 
 /*
-  Setup WebSockets store.
-  Storing to object since they get destoryed when trying to save to the session.
+  Session id to objects mapping (since they cant be stored in session directly).
   TODO: Have some kind of cleanup for this.
 */
-var wss: { [id: string]: WebSocket } = {};
+var wsMap: { [id: string]: WebSocket } = {};
+var whatsappClientMap: { [id: string]: Client } = {};
 
 /*
   Setup the routes.
@@ -66,7 +69,7 @@ var wss: { [id: string]: WebSocket } = {};
 
 app.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
   const session = req.session;
-  wss[req.sessionID] = ws;
+  wsMap[req.sessionID] = ws;
 });
 
 app.get("/get_status", (req: SessionRequest, res: Response) => {
@@ -82,14 +85,21 @@ app.get("/init_session", (req: SessionRequest, res: Response) => {
 
 app.get("/init_whatsapp", (req: SessionRequest, res: Response) => {
   var session = req.session;
-  initWhatsApp(wss[req.sessionID], session);
+  const client = initWhatsApp(wsMap[req.sessionID], session);
+  whatsappClientMap[req.sessionID] = client;
   res.send("{}");
 });
 
-app.post("/gauth", (req: SessionRequest, res: Response) => {
+app.post("/init_sync", (req: SessionRequest, res: Response) => {
+  var session = req.session;
   const token = req.body.token;
   // TODO: Add error checking;
-  googleLogin(token);
+  initSync(
+    wsMap[req.sessionID],
+    whatsappClientMap[req.sessionID],
+    session,
+    token
+  );
   res.send("{}");
 });
 
