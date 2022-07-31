@@ -40,12 +40,15 @@ export default defineComponent({
           <br />
           It will take a few seconds to authorize after the code is scanned.
         </p>
-        <!-- TODO: Add loading until QR is shown -->
+        <button
+          class="btn btn-square btn-outline loading w-72 h-72"
+          v-if="!qrData"
+        ></button>
         <qrcode-vue
           class="inline-flex"
           v-if="qrData"
           :value="qrData"
-          size=300
+          size="288"
         ></qrcode-vue>
       </div>
     </div>
