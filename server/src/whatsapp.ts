@@ -2,10 +2,10 @@ import { WebSocket } from "ws";
 
 import { Client, MessageMedia } from "whatsapp-web.js";
 
-import { sendEvent, sendNotification } from "./ws";
+import { sendEvent } from "./ws";
 import { ServerSession, Base64 } from "./types";
 import { SimpleContact } from "./interfaces";
-import { EventType, NotificationType } from "../../interfaces/api";
+import { EventType } from "../../interfaces/api";
 
 export function initWhatsApp(ws: WebSocket, session: ServerSession): Client {
   const client = new Client({});
@@ -15,12 +15,6 @@ export function initWhatsApp(ws: WebSocket, session: ServerSession): Client {
   });
 
   client.on("ready", async () => {
-    sendNotification(
-      ws,
-      NotificationType.Info,
-      "WhatsApp connected successfully"
-    );
-
     const contacts = await loadContacts(client);
     session.whatsappContacts = contacts;
     session.save();
