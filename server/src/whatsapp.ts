@@ -23,8 +23,8 @@ export function initWhatsApp(ws: WebSocket, session: ServerSession): Client {
 
     const contacts = await loadContacts(client);
     session.whatsappContacts = contacts;
+    session.save();
 
-    // TODO: Signout here
     sendEvent(ws, EventType.Redirect, "/gauth");
   });
 
@@ -65,8 +65,13 @@ async function loadContacts(client: Client): Promise<Array<SimpleContact>> {
 export async function downloadFile(
   client: Client,
   whatsappId: string
-): Promise<Base64> {
+): Promise<Base64 | null> {
   const photoUrl = await client.getProfilePicUrl(whatsappId);
+  if (!photoUrl) {
+    console.debug("No photo found for", whatsappId);
+    return null;
+  }
+
   const image = await MessageMedia.fromUrl(photoUrl);
   return image.data;
 }

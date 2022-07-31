@@ -67,18 +67,15 @@ export async function listContacts(
   return simpleContacts;
 }
 
-export async function updateContactPicture(
+export async function updateContactPhoto(
   auth: typeof AuthClient,
   resourceName: string,
   photo: Base64
 ): Promise<void> {
-  const photoBytes = Buffer.from(photo, "base64");
-
   const service = google.people({ version: "v1", auth });
 
-  // TODO: Test safely
-  // const res = await service.people.updateContactPhoto({
-  //   resourceName: resourceName,
-  //   photoBytes: photoBytes,
-  // });
+  await service.people.updateContactPhoto({
+    resourceName: resourceName,
+    requestBody: { photoBytes: photo },
+  });
 }

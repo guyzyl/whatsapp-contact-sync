@@ -19,6 +19,7 @@
     "express-session": "^1.17.3",
     "express-ws": "^5.0.2",
     "googleapis": "^105.0.0",
+    "semaphore-async-await": "^1.5.1",
     "ts-node": "^10.9.1",
     "whatsapp-web.js": "^1.17.1"
   },
