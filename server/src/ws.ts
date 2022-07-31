@@ -13,5 +13,6 @@ export function sendEvent(
     data: data,
   };
 
+  if (!ws) return;
   ws.send(JSON.stringify(event));
 }

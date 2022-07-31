@@ -14,12 +14,14 @@ export function initWhatsApp(ws: WebSocket, session: ServerSession): Client {
     sendEvent(ws, EventType.WhatsAppQR, qr);
   });
 
+  client.on("authenticated", () => {
+    sendEvent(ws, EventType.Redirect, "/gauth");
+  });
+
   client.on("ready", async () => {
     const contacts = await loadContacts(client);
     session.whatsappContacts = contacts;
     session.save();
-
-    sendEvent(ws, EventType.Redirect, "/gauth");
   });
 
   client.on("auth_failure", (msg) => {});
@@ -62,7 +64,6 @@ export async function downloadFile(
 ): Promise<Base64 | null> {
   const photoUrl = await client.getProfilePicUrl(whatsappId);
   if (!photoUrl) {
-    console.debug("No photo found for", whatsappId);
     return null;
   }
 

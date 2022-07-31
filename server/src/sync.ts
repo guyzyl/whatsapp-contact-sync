@@ -1,5 +1,4 @@
 import { WebSocket } from "ws";
-import Semaphore from "semaphore-async-await";
 
 import { EventType } from "../../interfaces/api";
 import { ServerSession } from "./types";
@@ -12,7 +11,6 @@ export async function initSync(
   ws: WebSocket,
   whatsappClient: Client,
   session: ServerSession,
-  gapiSemaphore: Semaphore,
   token: object
 ) {
   const gAuth = googleLogin(token);
@@ -24,8 +22,10 @@ export async function initSync(
   const googleContacts = await listContacts(gAuth);
   const whatsappContacts = session.whatsappContacts;
 
-  var i = 0; // TODO: Remove
-  for (const googleContact of googleContacts) {
+  var syncCount = 0;
+  var photo: string | null = null;
+
+  for (const [index, googleContact] of googleContacts.entries()) {
     for (const phoneNumber of googleContact.numbers) {
       const whatsappContact = whatsappContacts.find((contact) =>
         contact.numbers.includes(phoneNumber)
@@ -34,22 +34,30 @@ export async function initSync(
         continue;
       }
 
-      console.log("Found a match!:", whatsappContact); // TODO: Remove
-      downloadFile(whatsappClient, whatsappContact.id).then(async (photo) => {
-        if (photo !== null) {
-          await gapiSemaphore.wait();
-          await updateContactPhoto(gAuth, googleContact.id, photo);
-          gapiSemaphore.signal();
-        }
-      });
-
-      // TODO: Remove
-      i++;
-      if (i > 5) {
-        return;
+      /*
+        This is done synchornously since Google API has a limit on 60 photo uploads
+        per minute per user, and that's the easies way to enfore it.
+      */
+      photo = await downloadFile(whatsappClient, whatsappContact.id);
+      if (photo === null) {
+        break;
       }
+      await updateContactPhoto(gAuth, googleContact.id, photo);
+      syncCount++;
 
       break;
     }
+
+    sendEvent(ws, EventType.SyncProgress, {
+      progress: (index / googleContacts.length) * 100,
+      syncCount: syncCount,
+      image: photo,
+    });
+    photo = null;
   }
+
+  sendEvent(ws, EventType.SyncProgress, {
+    progress: 100,
+    syncCount: syncCount,
+  });
 }

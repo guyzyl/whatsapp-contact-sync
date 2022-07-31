@@ -7,7 +7,6 @@ import { WebSocket } from "ws";
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-import Semaphore from "semaphore-async-await";
 
 import { Client } from "whatsapp-web.js";
 
@@ -21,10 +20,6 @@ dotenv.config();
 var ews = expressWs(express());
 const app = ews.app;
 const port = process.env.PORT || 8080;
-
-// A request "rate limiter" to avoid 429 - Too Many Requests error from gapi.
-// TODO: Check if this can be increased.
-const gapiSemaphore = new Semaphore(3);
 
 /*
   Setup the session and cookie parser.
@@ -66,7 +61,6 @@ app.use(function (req: SessionRequest, res: Response, next: CallableFunction) {
 
 /*
   Session id to objects mapping (since they cant be stored in session directly).
-  TODO: Have some kind of cleanup for this.
 */
 var wsMap: { [id: string]: WebSocket } = {};
 var whatsappClientMap: { [id: string]: Client } = {};
@@ -76,36 +70,30 @@ var whatsappClientMap: { [id: string]: Client } = {};
 */
 
 app.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
-  console.log(req.sessionID); // TODO: Remove this
   const session = req.session;
   wsMap[req.sessionID] = ws;
 });
 
 // An "empty" route to make sure a session is created before opening the ws connection.
 app.get("/init_session", (req: SessionRequest, res: Response) => {
-  console.log(req.sessionID); // TODO: Remove this
   const session = req.session;
   session.exists = true;
   res.send("{}");
 });
 
 app.get("/init_whatsapp", (req: SessionRequest, res: Response) => {
-  console.log(req.sessionID); // TODO: Remove this
   const client = initWhatsApp(wsMap[req.sessionID], req.session);
   whatsappClientMap[req.sessionID] = client;
   res.send("{}");
 });
 
 app.post("/init_sync", (req: SessionRequest, res: Response) => {
-  console.log(req.sessionID); // TODO: Remove this
   var session = req.session;
   const token = req.body.token;
-  // TODO: Add error checking;
   initSync(
     wsMap[req.sessionID],
     whatsappClientMap[req.sessionID],
     session,
-    gapiSemaphore,
     token
   );
   res.send("{}");
