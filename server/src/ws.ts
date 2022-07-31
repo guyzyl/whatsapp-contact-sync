@@ -1,4 +1,3 @@
-// TODO: Replace with WebHooks
 import { WebSocket } from "ws";
 
 import { Event, EventType } from "../../interfaces/api";

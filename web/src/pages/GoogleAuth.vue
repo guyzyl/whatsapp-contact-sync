@@ -10,7 +10,6 @@ export default defineComponent({
     tokenClient: null,
   }),
   mounted() {
-    // TODO: Implement "logged in" verification
     window.onSignIn = this.onSignIn; // So the function is accessible from the Google sign-in button
     this.addJSSrc("https://accounts.google.com/gsi/client", this.onGisLoaded);
     this.addJSSrc("https://apis.google.com/js/api.js", this.onGapiLoaded);
@@ -81,13 +80,17 @@ export default defineComponent({
           the upload of new conact photos.
         </p>
         <div>
-          <!-- TODO: Improve button -->
           <button
             @click="handleAuthClick"
             :hidden="gapiLoaded && gisLoaded"
             id="signin-button"
-            class="btn btn-primary"
+            class="btn btn-outline btn-primary gap-4"
           >
+            <img
+              class="w-8"
+              alt="Google login"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
+            />
             Sign in with Google
           </button>
         </div>

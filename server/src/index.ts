@@ -1,20 +1,19 @@
-// TODO: Convert all to imports;
-const cors = require("cors");
+import cors from "cors";
 const express = require("express");
 import { Response } from "express";
 const expressWs = require("express-ws");
 import { WebSocket } from "ws";
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import session from "express-session";
 
 import { Client } from "whatsapp-web.js";
 
-const { initWhatsApp } = require("./whatsapp");
+import { initWhatsApp } from "./whatsapp";
 import { initSync } from "./sync";
 import { SessionRequest } from "./types";
 
-const dotenv = require("dotenv");
+import dotenv from "dotenv";
 dotenv.config();
 
 var ews = expressWs(express());
@@ -27,21 +26,22 @@ const port = process.env.PORT || 8080;
 */
 app.use(
   cors({
-    origin: [process.env.ORIGIN], //frontend server localhost:8080
+    origin: [process.env.ORIGIN || "http://localhost:8080"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // enable set cookie
   })
 );
 
+const secret = process.env.SESSION_SECRET || "secret";
 app.use(bodyParser.json());
-app.use(cookieParser("helloworld"));
+app.use(cookieParser(secret));
 app.use(
   session({
-    secret: "helloworld", // TODO: Replace
+    secret: secret,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       httpOnly: false,
-      secure: false, // for normal http connection if https is there we have to set it to true
+      secure: process.env.NODE_ENV == "prod" ? true : false,
     },
     resave: false,
     saveUninitialized: true,
@@ -58,6 +58,10 @@ app.use(function (req: SessionRequest, res: Response, next: CallableFunction) {
   );
   next();
 });
+
+if (process.env.NODE_ENV == "prod") {
+  app.set("trust proxy", 1);
+}
 
 /*
   Session id to objects mapping (since they cant be stored in session directly).

@@ -8,7 +8,6 @@ dotenv.config();
 
 const pageSize = 250;
 
-// TODO: Create / use interface for token
 export function googleLogin(
   token: typeof AccessTokenResponse
 ): typeof AuthClient {
