@@ -1,7 +1,7 @@
 import { Event, EventType } from "../../../interfaces/api";
 
-var WS;
-var eventHandlers = {};
+export var WS: WebSocket;
+var eventHandlers: { [eventType: string]: Function } = {};
 
 export function initWs(): void {
   fetch("/api/init_session", { credentials: "include" }).then(() => {
@@ -15,7 +15,7 @@ export function initWs(): void {
   });
 }
 
-async function messageHandler(rawEvent): void {
+async function messageHandler(rawEvent: MessageEvent): Promise<void> {
   const event: Event = JSON.parse(rawEvent.data);
 
   if (event.type in eventHandlers) {
@@ -33,5 +33,3 @@ export function addHandler(
   const eventTypeString = eventType;
   eventHandlers[eventTypeString] = func;
 }
-
-export default WS;

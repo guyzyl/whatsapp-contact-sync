@@ -1,16 +1,20 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
+// Since we are importing the Google APIs using a script tag,
+//  their types are missing so this is a workaround.
+var google: any;
+var gapi: any;
+
 export default defineComponent({
   data: () => ({
     CLIENT_ID: "436316840541-2o1496o38gjv2udalq8tg32rao3ehdlv",
     API_KEY: "AIzaSyAy5TqbYpjFKzZq-ho-hS3aLkfVnAw9iBg",
     gisLoaded: false,
     gapiLoaded: false,
-    tokenClient: null,
+    tokenClient: undefined as any, // Another Google typing workaround
   }),
   mounted() {
-    window.onSignIn = this.onSignIn; // So the function is accessible from the Google sign-in button
     this.addJSSrc("https://accounts.google.com/gsi/client", this.onGisLoaded);
     this.addJSSrc("https://apis.google.com/js/api.js", this.onGapiLoaded);
   },
@@ -47,9 +51,10 @@ export default defineComponent({
       });
     },
     handleAuthClick() {
+      // if (!this.tokenClient) return;
       this.tokenClient.requestAccessToken({ prompt: "consent" });
     },
-    async onSignIn(resp) {
+    async onSignIn(resp: any) {
       if (resp.error !== undefined) {
         throw resp;
       }

@@ -48,7 +48,7 @@ export default defineComponent({
           class="inline-flex"
           v-if="qrData"
           :value="qrData"
-          size="288"
+          :size="288"
         ></qrcode-vue>
       </div>
     </div>
