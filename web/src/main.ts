@@ -1,14 +1,16 @@
-import { createApp } from 'vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import App from './App.vue';
-import vuetify from './plugins/vuetify';
-import { loadFonts } from './plugins/webfontloader';
+import { createApp } from "vue";
+import { createRouter, createWebHistory } from "vue-router";
+import "./style.css";
+import App from "./App.vue";
 
-loadFonts();
+import "./index.css";
+import { initWs } from "./services/ws";
 
 const routes = [
-  { path: '/', component: () => import('./pages/Home.vue') },
-  { path: '/about', component: () => import('./pages/About.vue') },
+  { path: "/", component: () => import("./pages/Home.vue") },
+  { path: "/whatsapp", component: () => import("./pages/WhatsApp.vue") },
+  { path: "/gauth", component: () => import("./pages/GoogleAuth.vue") },
+  { path: "/sync", component: () => import("./pages/Sync.vue") },
 ];
 
 const router = createRouter({
@@ -16,7 +18,5 @@ const router = createRouter({
   routes,
 });
 
-createApp(App)
-  .use(vuetify)
-  .use(router)
-  .mount('#app');
+initWs();
+createApp(App).use(router).mount("#app");

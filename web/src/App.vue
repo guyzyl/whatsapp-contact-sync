@@ -1,21 +1,30 @@
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
+import { EventType } from "../../interfaces/api";
+import { addHandler } from "./services/ws";
 import Header from "./components/Header.vue";
-import Footer from "./components/Footer.vue";
 
-const components = {
-  Header,
-  Footer,
-};
+export default defineComponent({
+  data: () => ({}),
+  mounted() {
+    addHandler(EventType.Redirect, this.onRedirect);
+  },
+  methods: {
+    onRedirect(url: string): void {
+      this.$router.push(url);
+    },
+  },
+  components: {
+    Header,
+  },
+});
 </script>
 
 <template>
-  <v-app>
-    <v-main>
-      <Header />
-      <router-view></router-view>
-      <Footer />
-    </v-main>
-  </v-app>
+  <div class="flex flex-col h-screen">
+    <Header></Header>
+    <router-view></router-view>
+  </div>
 </template>
 
 <style scoped></style>
