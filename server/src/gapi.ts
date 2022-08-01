@@ -12,8 +12,8 @@ export function googleLogin(
   token: typeof AccessTokenResponse
 ): typeof AuthClient {
   const oauth2Client = new google.auth.OAuth2(
-    process.env.CLIENT_ID,
-    process.env.YOUR_CLIENT_SECRET
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET
   );
   oauth2Client.setCredentials(token);
   verifyAuth(oauth2Client);
