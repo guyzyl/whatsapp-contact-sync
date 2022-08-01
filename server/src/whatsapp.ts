@@ -3,25 +3,19 @@ import { WebSocket } from "ws";
 import { Client, MessageMedia } from "whatsapp-web.js";
 
 import { sendEvent } from "./ws";
-import { ServerSession, Base64 } from "./types";
+import { Base64 } from "./types";
 import { SimpleContact } from "./interfaces";
 import { EventType } from "../../interfaces/api";
 
-export function initWhatsApp(ws: WebSocket, session: ServerSession): Client {
+export function initWhatsApp(ws: WebSocket): Client {
   const client = new Client({});
 
   client.on("qr", (qr: string) => {
     sendEvent(ws, EventType.WhatsAppQR, qr);
   });
 
-  client.on("authenticated", () => {
-    sendEvent(ws, EventType.Redirect, "/gauth");
-  });
-
   client.on("ready", async () => {
-    const contacts = await loadContacts(client);
-    session.whatsappContacts = contacts;
-    session.save();
+    sendEvent(ws, EventType.Redirect, "/gauth");
   });
 
   client.on("auth_failure", (msg) => {});
@@ -30,18 +24,15 @@ export function initWhatsApp(ws: WebSocket, session: ServerSession): Client {
   return client;
 }
 
-async function loadContacts(client: Client): Promise<Array<SimpleContact>> {
+export async function loadContacts(
+  client: Client
+): Promise<Array<SimpleContact>> {
   var simpleContacts: Array<SimpleContact> = [];
 
   const contacts = await client.getContacts();
 
   for (const contact of contacts) {
-    if (
-      // For some reason the isMyContact property wasn't working during testing, so removed it.
-      contact.isMe === true ||
-      contact.isGroup === true ||
-      contact.number === null
-    ) {
+    if (!contact.isMyContact) {
       continue;
     }
 

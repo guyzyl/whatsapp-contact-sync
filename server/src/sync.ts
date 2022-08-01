@@ -1,26 +1,22 @@
 import { WebSocket } from "ws";
-
-import { EventType } from "../../interfaces/api";
-import { ServerSession } from "./types";
-import { googleLogin, listContacts, updateContactPhoto } from "./gapi";
-import { downloadFile } from "./whatsapp";
-import { sendEvent } from "./ws";
+const { AuthClient } = require("googleapis");
 import { Client } from "whatsapp-web.js";
 
+import { EventType } from "../../interfaces/api";
+import { listContacts, updateContactPhoto } from "./gapi";
+import { downloadFile, loadContacts } from "./whatsapp";
+import { sendEvent } from "./ws";
+
+// Split into 2 API calls
 export async function initSync(
   ws: WebSocket,
   whatsappClient: Client,
-  session: ServerSession,
-  token: object
+  gAuth: typeof AuthClient
 ) {
-  const gAuth = googleLogin(token);
-
-  sendEvent(ws, EventType.Redirect, "/sync");
-
   // Syncing the contacts off Google happens here and not directly in
   //  gapi.ts since we need the gAuth client again for updating the photos.
   const googleContacts = await listContacts(gAuth);
-  const whatsappContacts = session.whatsappContacts;
+  const whatsappContacts = await loadContacts(whatsappClient)!;
 
   var syncCount = 0;
   var photo: string | null = null;

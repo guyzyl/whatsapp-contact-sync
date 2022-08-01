@@ -27,7 +27,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div id="home" class="hero min-h-screen bg-base-200">
+  <div id="home" class="hero h-full bg-base-200">
     <div class="hero-content text-center">
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Authorize WhatsApp</h1>
@@ -38,7 +38,7 @@ export default defineComponent({
           >
           for help.
           <br />
-          It will take a few seconds to authorize after the code is scanned.
+          It may take a few seconds to authorize after the code is scanned.
         </p>
         <button
           class="btn btn-square btn-outline loading w-72 h-72"

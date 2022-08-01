@@ -2,6 +2,7 @@
 import { defineComponent } from "vue";
 import { EventType } from "../../interfaces/api";
 import { addHandler } from "./services/ws";
+import Header from "./components/Header.vue";
 
 export default defineComponent({
   data: () => ({}),
@@ -13,11 +14,15 @@ export default defineComponent({
       this.$router.push(url);
     },
   },
+  components: {
+    Header,
+  },
 });
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col h-screen">
+    <Header></Header>
     <router-view></router-view>
   </div>
 </template>

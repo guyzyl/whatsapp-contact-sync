@@ -12,8 +12,12 @@ export default defineComponent({
   }),
   mounted() {
     addHandler(EventType.SyncProgress, this.onSyncProgress);
+    this.initSync();
   },
   methods: {
+    initSync() {
+      fetch("/api/init_sync", { credentials: "include" });
+    },
     onSyncProgress(progress: SyncProgress): void {
       this.syncProgress = progress.progress;
       this.syncCount = progress.syncCount;
@@ -26,7 +30,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div id="home" class="hero min-h-screen bg-base-200">
+  <div id="home" class="hero h-full bg-base-200">
     <div class="hero-content text-center">
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Sync In Progress</h1>
@@ -66,6 +70,16 @@ export default defineComponent({
               >
             </div>
           </div>
+        </div>
+
+        <div class="pt-8">
+          <a href="https://www.buymeacoffee.com/guyzyl" target="_blank"
+            ><img
+              class="inline-flex"
+              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+              alt="Buy Me A Coffee"
+              style="height: 60px !important; width: 217px !important"
+          /></a>
         </div>
       </div>
     </div>

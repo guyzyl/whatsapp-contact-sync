@@ -7,12 +7,16 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 
+const { AuthClient } = require("googleapis");
 import { Client } from "whatsapp-web.js";
+
+const winston = require("winston");
+const expressWinston = require("express-winston");
 
 import { initWhatsApp } from "./whatsapp";
 import { initSync } from "./sync";
 import { SessionRequest } from "./types";
-// TODO: Add server logging
+import { googleLogin } from "./gapi";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -64,22 +68,34 @@ if (process.env.NODE_ENV == "prod") {
   app.set("trust proxy", 1);
 }
 
+app.use(
+  expressWinston.logger({
+    transports: [new winston.transports.Console()],
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.json()
+    ),
+    expressFormat: true,
+    colorize: false,
+  })
+);
+
 /*
   Session id to objects mapping (since they cant be stored in session directly).
 */
 var wsMap: { [id: string]: WebSocket } = {};
 var whatsappClientMap: { [id: string]: Client } = {};
+var googleAuthMap: { [id: string]: typeof AuthClient } = {};
 
 /*
   Setup the routes.
 */
 
 app.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
-  const session = req.session;
   wsMap[req.sessionID] = ws;
 });
 
-// An "empty" route to make sure a session is created before opening the ws connection.
+// This can possibly be removed.
 app.get("/init_session", (req: SessionRequest, res: Response) => {
   const session = req.session;
   session.exists = true;
@@ -87,19 +103,23 @@ app.get("/init_session", (req: SessionRequest, res: Response) => {
 });
 
 app.get("/init_whatsapp", (req: SessionRequest, res: Response) => {
-  const client = initWhatsApp(wsMap[req.sessionID], req.session);
+  const client = initWhatsApp(wsMap[req.sessionID]);
   whatsappClientMap[req.sessionID] = client;
   res.send("{}");
 });
 
-app.post("/init_sync", (req: SessionRequest, res: Response) => {
-  var session = req.session;
+app.post("/init_gapi", (req: SessionRequest, res: Response) => {
   const token = req.body.token;
+  const gAuth = googleLogin(token);
+  googleAuthMap[req.sessionID] = gAuth;
+  res.redirect("/sync");
+});
+
+app.get("/init_sync", (req: SessionRequest, res: Response) => {
   initSync(
     wsMap[req.sessionID],
     whatsappClientMap[req.sessionID],
-    session,
-    token
+    googleAuthMap[req.sessionID]
   );
   res.send("{}");
 });

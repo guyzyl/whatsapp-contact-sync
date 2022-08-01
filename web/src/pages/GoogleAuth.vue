@@ -1,10 +1,7 @@
 <script lang="ts">
+// @ts-nocheck
+// This is indeed a bad solution, but the Google imports just don't play nice with Typesciprt...
 import { defineComponent } from "vue";
-
-// Since we are importing the Google APIs using a script tag,
-//  their types are missing so this is a workaround.
-var google: any;
-var gapi: any;
 
 export default defineComponent({
   data: () => ({
@@ -59,13 +56,20 @@ export default defineComponent({
         throw resp;
       }
       const token = gapi.client.getToken();
-      fetch("/api/init_sync", {
+      fetch("/api/init_gapi", {
         credentials: "include",
         method: "POST",
         body: JSON.stringify({ token: token }),
         headers: {
           "Content-Type": "application/json",
         },
+      }).then((res) => {
+        if (res.status === 200) {
+          const url = new URL(res.url);
+          this.$router.push(url.pathname);
+        } else {
+          throw res;
+        }
       });
     },
   },
@@ -73,7 +77,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div id="home" class="hero min-h-screen bg-base-200">
+  <div id="home" class="hero h-full bg-base-200">
     <div class="hero-content text-center">
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Authorize Google</h1>
@@ -81,13 +85,13 @@ export default defineComponent({
           Connect you Google account.
           <br />
           Make sure to
-          <b>tick and authorize the requested contacts permission</b> to enable
-          the upload of new conact photos.
+          <b>select and authorize the requested contacts permission</b> to
+          enable the upload of new conact photos.
         </p>
         <div>
           <button
             @click="handleAuthClick"
-            :hidden="gapiLoaded && gisLoaded"
+            :disabled="!gapiLoaded && !gisLoaded"
             id="signin-button"
             class="btn btn-outline btn-primary gap-4"
           >
