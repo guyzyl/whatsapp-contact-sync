@@ -12,6 +12,7 @@ import { Client } from "whatsapp-web.js";
 import { initWhatsApp } from "./whatsapp";
 import { initSync } from "./sync";
 import { SessionRequest } from "./types";
+// TODO: Add server logging
 
 import dotenv from "dotenv";
 dotenv.config();
