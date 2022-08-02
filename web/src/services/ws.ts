@@ -5,7 +5,7 @@ var eventHandlers: { [eventType: string]: Function } = {};
 
 export function initWs(): void {
   fetch("/api/init_session", { credentials: "include" }).then(() => {
-    WS = new WebSocket("ws://localhost:8080/ws");
+    WS = new WebSocket("ws://" + location.host + "/ws");
 
     WS.onopen = (rawEvent) => {
       console.log(`WS connected to server - ${rawEvent}`);
