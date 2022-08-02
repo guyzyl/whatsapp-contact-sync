@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18
 ENV NODE_ENV=prod
 
 WORKDIR /app/server
