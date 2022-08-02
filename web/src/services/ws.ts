@@ -5,19 +5,19 @@ var eventHandlers: { [eventType: string]: Function } = {};
 
 export function initWs(): void {
   fetch("/api/init_session", { credentials: "include" }).then(() => {
-    const wsType = process.env.NODE_ENV === "prod" ? "wss" : "ws";
-    WS = new WebSocket(wsType + "://" + location.host + "/api/ws");
+    const wsType = location.protocol === "https:" ? "wss" : "ws";
+    WS = new WebSocket(`${wsType}://${location.host}/api/ws`);
 
-    WS.onopen = (rawEvent) => {
-      console.log(`WS connected to server - ${rawEvent}`);
+    WS.onopen = (wsEvent) => {
+      console.log(`WS connected to server - ${wsEvent}`);
     };
 
     WS.onmessage = messageHandler;
   });
 }
 
-async function messageHandler(rawEvent: MessageEvent): Promise<void> {
-  const event: Event = JSON.parse(rawEvent.data);
+async function messageHandler(wsEvent: MessageEvent): Promise<void> {
+  const event: Event = JSON.parse(wsEvent.data);
 
   if (event.type in eventHandlers) {
     const func = eventHandlers[event.type];
