@@ -7,8 +7,14 @@ import { Base64 } from "./types";
 import { SimpleContact } from "./interfaces";
 import { EventType } from "../../interfaces/api";
 
+const puppeteerOptions = {
+  puppeteer: {
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  },
+};
+
 export function initWhatsApp(ws: WebSocket): Client {
-  const client = new Client({});
+  const client = new Client(puppeteerOptions);
 
   client.on("qr", (qr: string) => {
     sendEvent(ws, EventType.WhatsAppQR, qr);
