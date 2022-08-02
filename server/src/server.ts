@@ -23,7 +23,7 @@ dotenv.config();
 
 var ews = expressWs(express());
 const app = ews.app;
-var router = express.Router();
+var router = express.Router({ mergeParams: true });
 const port = process.env.PORT || 8080;
 
 /*
