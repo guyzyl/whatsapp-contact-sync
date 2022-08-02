@@ -1,5 +1,5 @@
 FROM node:18-alpine
-ENV NODE_ENV=production
+ENV NODE_ENV=prod
 
 WORKDIR /app/server
 RUN npm install -g typescript ts-node --production
