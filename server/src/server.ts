@@ -23,6 +23,7 @@ dotenv.config();
 
 var ews = expressWs(express());
 const app = ews.app;
+var router = express.Router();
 const port = process.env.PORT || 8080;
 
 /*
@@ -80,6 +81,9 @@ app.use(
   })
 );
 
+// To fix 304 responses.
+app.disable("etag");
+
 /*
   Session id to objects mapping (since they cant be stored in session directly).
 */
@@ -91,31 +95,31 @@ var googleAuthMap: { [id: string]: typeof AuthClient } = {};
   Setup the routes.
 */
 
-app.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
+router.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
   wsMap[req.sessionID] = ws;
 });
 
 // This can possibly be removed.
-app.get("/init_session", (req: SessionRequest, res: Response) => {
+router.get("/init_session", (req: SessionRequest, res: Response) => {
   const session = req.session;
   session.exists = true;
   res.send("{}");
 });
 
-app.get("/init_whatsapp", (req: SessionRequest, res: Response) => {
+router.get("/init_whatsapp", (req: SessionRequest, res: Response) => {
   const client = initWhatsApp(wsMap[req.sessionID]);
   whatsappClientMap[req.sessionID] = client;
   res.send("{}");
 });
 
-app.post("/init_gapi", (req: SessionRequest, res: Response) => {
+router.post("/init_gapi", (req: SessionRequest, res: Response) => {
   const token = req.body.token;
   const gAuth = googleLogin(token);
   googleAuthMap[req.sessionID] = gAuth;
   res.redirect("/sync");
 });
 
-app.get("/init_sync", (req: SessionRequest, res: Response) => {
+router.get("/init_sync", (req: SessionRequest, res: Response) => {
   initSync(
     wsMap[req.sessionID],
     whatsappClientMap[req.sessionID],
@@ -124,6 +128,8 @@ app.get("/init_sync", (req: SessionRequest, res: Response) => {
   res.send("{}");
 });
 
+const routePrefix = process.env.ROUTE_PREFIX || "";
+app.use(routePrefix, router);
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
