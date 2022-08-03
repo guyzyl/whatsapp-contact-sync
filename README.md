@@ -55,7 +55,20 @@ npm run dev
 
 ## Build Docker Images
 
-In order to build the docker images, execute the following commands from the projects main directory:
+There are 3 different `Dockerfile`s for this app:
+
+- [`Dockerfile`](Dockerfile) - This is an image containing both the backend and the web app
+- [`Dockerfile`](web/Dockerfile) - An image containing only the web app
+- [`Dockerfile`](server/Dockerfile) - An image containing only the backend
+
+In order to build and run the complete app, you need to run the following commands:
+
+```bash
+docker build -t whasync .
+docker run --rm -it -p 80:80 whasync
+```
+
+In order to build the seperate images for the backend and frontend, execute the following commands from the projects main directory:
 
 ```bash
 docker build -t whasync-backend -f server/Dockerfile .
