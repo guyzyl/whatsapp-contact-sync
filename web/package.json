@@ -6,7 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postbuild": "react-snap"
+  },
+  "reactSnap": {
+    "source": "dist",
+    "minifyHtml": {
+      "collapseWhitespace": false,
+      "removeComments": false
+    },
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
+    ]
   },
   "dependencies": {
     "daisyui": "^2.19.0",
@@ -20,6 +32,7 @@
     "@vitejs/plugin-vue": "^3.0.0",
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
+    "react-snap": "^1.23.0",
     "tailwindcss": "^3.1.6",
     "typescript": "^4.6.4",
     "vite": "^3.0.0",

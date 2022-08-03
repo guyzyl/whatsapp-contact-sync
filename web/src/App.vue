@@ -24,6 +24,11 @@ export default defineComponent({
   <div class="flex flex-col h-screen">
     <Header></Header>
     <router-view></router-view>
+
+    <!-- Hidden router links so pre-rendering will find all routes -->
+    <router-link to="/whatsapp" tag="button" hidden>Get Started</router-link>
+    <router-link to="/gauth" tag="button" hidden>Get Started</router-link>
+    <router-link to="/sync" tag="button" hidden>Get Started</router-link>
   </div>
 </template>
 
