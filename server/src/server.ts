@@ -24,7 +24,7 @@ dotenv.config();
 var ews = expressWs(express());
 const app = ews.app;
 var router = express.Router({ mergeParams: true });
-const port = process.env.PORT || 8080;
+const port = process.env.SERVER_PORT || 8080;
 
 /*
   Setup the session and cookie parser.
