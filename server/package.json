@@ -6,17 +6,12 @@
   "scripts": {
     "serve": "ts-node .",
     "dev": "nodemon --exec 'ts-node' .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prod": "pm2 start build/server/src/server.js --max-memory-restart 500M --no-daemon -i 1",
+    "build": "tsc"
   },
   "author": "guyzyl",
   "license": "ISC",
   "dependencies": {
-    "@types/cookie-parser": "^1.4.3",
-    "@types/cors": "^2.8.12",
-    "@types/express": "^4.17.13",
-    "@types/express-session": "^1.17.5",
-    "@types/node": "^18.0.4",
-    "@types/ws": "^8.5.3",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -26,13 +21,19 @@
     "express-winston": "^4.2.0",
     "express-ws": "^5.0.2",
     "googleapis": "^105.0.0",
-    "ts-node": "^10.9.1",
     "whatsapp-web.js": "^1.17.1",
     "winston": "^3.8.1"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.3",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/express-session": "^1.17.5",
+    "@types/node": "^18.0.4",
+    "@types/ws": "^8.5.3",
     "nodemon": "^2.0.19",
     "open": "^8.4.0",
-    "server-destroy": "^1.0.1"
+    "server-destroy": "^1.0.1",
+    "ts-node": "^10.9.1"
   }
 }
