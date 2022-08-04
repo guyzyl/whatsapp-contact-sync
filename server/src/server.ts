@@ -130,6 +130,6 @@ router.get("/init_sync", (req: SessionRequest, res: Response) => {
 
 const routePrefix = process.env.ROUTE_PREFIX || "";
 app.use(routePrefix, router);
-app.listen(port, () => {
+app.listen(port, "localhost", () => {
   console.log(`Listening on port ${port}`);
 });
