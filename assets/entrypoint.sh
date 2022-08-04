@@ -1,7 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
-# Turn on bash's job control
-set -m
-
-npm run serve &
+npm run prod &
 nginx

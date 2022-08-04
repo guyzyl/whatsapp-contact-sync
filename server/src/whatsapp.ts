@@ -1,4 +1,5 @@
 import { WebSocket } from "ws";
+import fs from "fs";
 
 import { Client, MessageMedia } from "whatsapp-web.js";
 
@@ -9,7 +10,10 @@ import { EventType } from "../../interfaces/api";
 
 const puppeteerOptions = {
   puppeteer: {
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    executablePath: fs.existsSync("/.dockerenv")
+      ? "/usr/bin/chromium-browser"
+      : undefined,
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
   },
 };
 

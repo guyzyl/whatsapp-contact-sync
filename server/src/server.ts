@@ -47,7 +47,7 @@ app.use(
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       httpOnly: false,
-      secure: process.env.NODE_ENV == "prod" ? true : false,
+      secure: process.env.NODE_ENV == "production" ? true : false,
     },
     resave: false,
     saveUninitialized: true,
@@ -65,7 +65,7 @@ app.use(function (req: SessionRequest, res: Response, next: CallableFunction) {
   next();
 });
 
-if (process.env.NODE_ENV == "prod") {
+if (process.env.NODE_ENV == "production") {
   app.set("trust proxy", 1);
 }
 

@@ -1,4 +1,5 @@
-FROM node:18 AS build
+### Build web files
+FROM node:18 AS web-build
 
 WORKDIR /app/web
 
@@ -12,30 +13,45 @@ COPY ./web .
 RUN npm run build
 
 
-# Build final image
-FROM node:18
+### Build server files
+FROM node:18 AS server-build
 
 WORKDIR /app/server
-RUN npm install -g typescript ts-node --production
-
-# Install Chromium.
-RUN \
-  wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-  echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
-  apt-get update && \
-  apt-get install -y nginx google-chrome-stable && \
-  rm -rf /var/lib/apt/lists/*s
 
 COPY ["server/package.json", "server/package-lock.json*", "./"]
 
-RUN npm install --production
+RUN npm install
 
-COPY ./assets/entrypoint.sh .
-COPY ./assets/nginx.conf /etc/nginx/nginx.conf
-COPY --from=build /app/web/dist /var/www/html
 COPY ./interfaces /app/interfaces
 COPY ./server .
 
-RUN chmod -R 777 /app
+RUN npm run build
+
+
+### Build final image
+FROM node:18-alpine
+USER root
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+WORKDIR /app/server
+
+# Install Chromium
+RUN apk update \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache nss udev ttf-freefont chromium nginx && \
+    rm -rf /var/cache/apk/* /tmp/*
+
+RUN npm install -g pm2 --production
+COPY ["server/package.json", "server/package-lock.json*", "./"]
+RUN npm install --production
+
+COPY ./assets/nginx.conf /etc/nginx/nginx.conf
+COPY ./assets/entrypoint.sh .
+RUN chmod 755 entrypoint.sh
+
+COPY --from=web-build /app/web/dist /var/www/html
+COPY --from=server-build /app/server/build ./build
 
 ENTRYPOINT ["./entrypoint.sh"]

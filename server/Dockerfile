@@ -1,22 +1,37 @@
-FROM node:18
-ENV NODE_ENV=prod
+### Build server files
+FROM node:18 AS server-build
 
 WORKDIR /app/server
-RUN npm install -g typescript ts-node --production
-
-# Install Chromium.
-RUN \
-  wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-  echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
-  apt-get update && \
-  apt-get install -y google-chrome-stable && \
-  rm -rf /var/lib/apt/lists/*s
 
 COPY ["server/package.json", "server/package-lock.json*", "./"]
 
-RUN npm install --production
+RUN npm install
 
 COPY ./interfaces /app/interfaces
 COPY ./server .
 
-CMD [ "npm", "run", "serve" ]
+RUN npm run build
+
+
+### Build final image
+FROM node:18-alpine
+USER root
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+WORKDIR /app/server
+
+# Install Chromium.
+RUN apk update \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache nss udev ttf-freefont chromium nginx && \
+    rm -rf /var/cache/apk/* /tmp/*
+
+RUN npm install -g pm2 --production
+COPY ["server/package.json", "server/package-lock.json*", "./"]
+RUN npm install --production
+
+COPY --from=server-build /app/server/build ./build
+
+CMD [ "npm", "run", "prod" ]
