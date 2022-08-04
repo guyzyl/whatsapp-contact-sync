@@ -32,6 +32,7 @@ RUN npm run build
 FROM node:18-alpine
 USER root
 
+ENV RUNNING_IN_DOCKER="true"
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 WORKDIR /app/server
 
@@ -43,9 +44,8 @@ RUN apk update \
     apk add --no-cache nss udev ttf-freefont chromium nginx && \
     rm -rf /var/cache/apk/* /tmp/*
 
-RUN npm install -g pm2 --production
 COPY ["server/package.json", "server/package-lock.json*", "./"]
-RUN npm install --production
+RUN npm install --production && npm install -g pm2 --production
 
 COPY ./assets/nginx.conf /etc/nginx/nginx.conf
 COPY ./assets/entrypoint.sh .
