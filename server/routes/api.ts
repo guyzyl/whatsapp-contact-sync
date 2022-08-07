@@ -35,9 +35,7 @@ function cleanup(sessionID: string) {
       try {
         await whatsappClientMap[sessionID].logout();
         await whatsappClientMap[sessionID].destroy();
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) {}
     }
 
     delete whatsappClientMap[sessionID];
@@ -78,9 +76,7 @@ router.get("/init_whatsapp", async (req: Request, res: Response) => {
   if (whatsappClientMap[req.sessionID] !== undefined)
     try {
       await whatsappClientMap[req.sessionID].destroy();
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
 
   const client = initWhatsApp(wsMap[req.sessionID]);
   whatsappClientMap[req.sessionID] = client;
