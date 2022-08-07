@@ -44,23 +44,22 @@ export async function listContacts(
     nextPageToken = res.data.nextPageToken!;
     const connections = res.data.connections;
 
-    for (const connection of connections) {
-      let phoneNumbers: string[] = [];
-      if (connection.phoneNumbers) {
-        for (const phoneNumberObj of connection.phoneNumbers) {
-          if (!phoneNumberObj.canonicalForm) continue;
-          phoneNumbers.push(phoneNumberObj.canonicalForm.replace("+", ""));
-        }
-      }
+    const contacts = connections!
+      .filter((connection) => connection.phoneNumbers)
+      .map(
+        (connection) =>
+          <SimpleContact>{
+            id: connection.resourceName,
+            name: connection.names![0].displayName,
+            numbers: connection
+              .phoneNumbers!.filter((phoneNumber) => phoneNumber.canonicalForm)
+              .map((phoneNumber) =>
+                phoneNumber.canonicalForm!.replace("+", "")
+              ),
+          }
+      );
 
-      const simpleContact: SimpleContact = {
-        id: connection.resourceName,
-        numbers: phoneNumbers,
-        name: connection.names[0].displayName,
-      };
-
-      simpleContacts.push(simpleContact);
-    }
+    simpleContacts = simpleContacts.concat(contacts);
   } while (nextPageToken);
 
   return simpleContacts;
