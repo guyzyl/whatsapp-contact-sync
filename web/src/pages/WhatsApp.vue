@@ -38,7 +38,10 @@ export default defineComponent({
           >
           for help.
           <br />
-          It may take a few seconds to authorize after the code is scanned.
+          <b
+            >It may take a few seconds to authorize after the code is
+            scanned.</b
+          >
         </p>
         <button
           class="btn btn-square btn-outline loading w-72 h-72"

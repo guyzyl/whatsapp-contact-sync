@@ -6,20 +6,17 @@
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">WhatsApp Contact Sync</h1>
         <p class="py-6">
-          This app will help you sync the contact images from WhatsApp and to
-          Google Contacts (Apple support might be added in the future).
+          This app will sync your contact images from WhatsApp to Google
+          Contacts (Apple support might be added in the future).
           <br /><br />
           In order to use this app, you will need to authorize access to your
-          WhatsApp account, and to your Google (with People permissions only).
-          <br /><br />
-          We don't store any data on the server, and even delete all of the
-          access keys after the sync has complete!
+          WhatsApp account and to your Google account.
           <br />
-          Don't believe me? You can checkout the code yourself over on
+          You can checkout the code and open new issues on the
           <a
             href="
           https://github.com/guyzyl/whatsapp-contact-sync"
-            >GitHub</a
+            >GitHub repository</a
           >.
         </p>
         <router-link to="/whatsapp" tag="button" class="btn btn-primary"

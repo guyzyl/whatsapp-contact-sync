@@ -82,11 +82,11 @@ export default defineComponent({
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Authorize Google</h1>
         <p class="py-6">
-          Connect you Google account.
+          Connect your Google account.
           <br />
           Make sure to
           <b>select and authorize the requested contacts permission</b> to
-          enable the upload of new conact photos.
+          enable the upload of new contact photos.
         </p>
         <div>
           <button

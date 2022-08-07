@@ -35,7 +35,9 @@ export default defineComponent({
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Sync In Progress</h1>
         <p class="py-6">
-          We're syncing your contacts. You can sit back and realx.
+          We're syncing your contacts, you can sit back and realx.
+          <br />
+          (Syncing will stop if the tab is closed)
         </p>
         <div>
           <progress
