@@ -15,7 +15,7 @@ export async function initSync(
   gAuth: typeof AuthClient
 ) {
   // The limiter is implemented due to Google API's limit of 60 photo uploads per minute per user
-  const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 1000 });
+  const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 1500 });
 
   const googleContacts = await listContacts(gAuth);
   const whatsappContacts = await loadContacts(whatsappClient)!;
