@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 const { AuthClient } = require("googleapis");
+import { RateLimiter } from "limiter";
 import { Client } from "whatsapp-web.js";
 
 import { EventType } from "../../interfaces/api";
@@ -13,8 +14,9 @@ export async function initSync(
   whatsappClient: Client,
   gAuth: typeof AuthClient
 ) {
-  // Syncing the contacts off Google happens here and not directly in
-  //  gapi.ts since we need the gAuth client again for updating the photos.
+  // The limiter is implemented due to Google API's limit of 60 photo uploads per minute per user
+  const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 1000 });
+
   const googleContacts = await listContacts(gAuth);
   const whatsappContacts = await loadContacts(whatsappClient)!;
 
@@ -30,14 +32,12 @@ export async function initSync(
         continue;
       }
 
-      /*
-        This is done synchornously since Google API has a limit on 60 photo uploads
-        per minute per user, and that's the easies way to enfore it.
-      */
       photo = await downloadFile(whatsappClient, whatsappContact.id);
       if (photo === null) {
         break;
       }
+
+      await limiter.removeTokens(1);
       await updateContactPhoto(gAuth, googleContact.id, photo);
       syncCount++;
 
