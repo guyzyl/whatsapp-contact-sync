@@ -138,7 +138,10 @@ router.get("/status", async (req: Request, res: Response) => {
   res.send(status);
 });
 
-router.get("/init_whatsapp", (req: Request, res: Response) => {
+router.get("/init_whatsapp", async (req: Request, res: Response) => {
+  if (whatsappClientMap[req.sessionID] !== undefined)
+    await whatsappClientMap[req.sessionID].destroy();
+
   const client = initWhatsApp(wsMap[req.sessionID]);
   whatsappClientMap[req.sessionID] = client;
   res.send("{}");
