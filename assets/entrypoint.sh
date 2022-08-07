@@ -1,4 +1,4 @@
 #!/bin/sh
 
-npm run prod &
+while true; do npm run prod && break; done &
 nginx

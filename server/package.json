@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "ts-node .",
     "dev": "nodemon --exec 'ts-node' .",
-    "prod": "pm2 start build/server/src/server.js --max-memory-restart 500M --no-daemon -i 1",
+    "prod": "node build/server/src/server.js",
     "build": "tsc"
   },
   "author": "guyzyl",

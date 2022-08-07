@@ -45,7 +45,7 @@ RUN apk update \
     rm -rf /var/cache/apk/* /tmp/*
 
 COPY ["server/package.json", "server/package-lock.json*", "./"]
-RUN npm install --production && npm install -g pm2 --production
+RUN npm install --production
 
 COPY ./assets/nginx.conf /etc/nginx/nginx.conf
 COPY ./assets/entrypoint.sh .
