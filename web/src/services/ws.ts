@@ -1,7 +1,8 @@
 import { Event, EventType } from "../../../interfaces/api";
+import { HandlerFunction } from "../types";
 
 export let WS: WebSocket;
-let eventHandlers: { [eventType: string]: Function } = {};
+let eventHandlers: { [eventType: string]: HandlerFunction } = {};
 
 export function initWs(): void {
   const wsType = location.protocol === "https:" ? "wss" : "ws";
@@ -18,7 +19,7 @@ async function messageHandler(wsEvent: MessageEvent): Promise<void> {
   const event: Event = JSON.parse(wsEvent.data);
 
   if (event.type in eventHandlers) {
-    const func = eventHandlers[event.type];
+    const func: HandlerFunction = eventHandlers[event.type];
     func(event.data);
   } else {
     console.error(`No event handler for ${event.type}`);
@@ -27,7 +28,7 @@ async function messageHandler(wsEvent: MessageEvent): Promise<void> {
 
 export function addHandler(
   eventType: EventType,
-  func: (data: any) => void
+  func: HandlerFunction
 ): void {
   const eventTypeString = eventType;
   eventHandlers[eventTypeString] = func;

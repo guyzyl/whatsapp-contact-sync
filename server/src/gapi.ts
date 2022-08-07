@@ -6,7 +6,7 @@ import { Base64 } from "./types";
 import dotenv from "dotenv";
 dotenv.config();
 
-const pageSize = 250;
+const pageSize: number = 250;
 
 export function googleLogin(
   token: typeof google.Auth.AccessTokenResponse

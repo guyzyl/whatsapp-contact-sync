@@ -7,6 +7,7 @@ import { EventType } from "../../interfaces/api";
 import { listContacts, updateContactPhoto } from "./gapi";
 import { downloadFile, loadContacts } from "./whatsapp";
 import { sendEvent } from "./ws";
+import { SimpleContact } from "./interfaces";
 
 export async function initSync(
   ws: WebSocket,
@@ -16,10 +17,10 @@ export async function initSync(
   // The limiter is implemented due to Google API's limit of 60 photo uploads per minute per user
   const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 1500 });
 
-  const googleContacts = await listContacts(gAuth);
-  const whatsappContacts = await loadContacts(whatsappClient)!;
+  const googleContacts: SimpleContact[] = await listContacts(gAuth);
+  const whatsappContacts: SimpleContact[] = await loadContacts(whatsappClient)!;
 
-  let syncCount = 0;
+  let syncCount: number = 0;
   let photo: string | null = null;
 
   for (const [index, googleContact] of googleContacts.entries()) {

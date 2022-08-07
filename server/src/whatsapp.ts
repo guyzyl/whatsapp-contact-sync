@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 
-import { Client, MessageMedia } from "whatsapp-web.js";
+import { Client, Contact, MessageMedia } from "whatsapp-web.js";
 
 import { sendEvent } from "./ws";
 import { Base64 } from "./types";
@@ -39,7 +39,7 @@ export async function loadContacts(
 ): Promise<Array<SimpleContact>> {
   let simpleContacts: Array<SimpleContact> = [];
 
-  const contacts = await client.getContacts();
+  const contacts: Contact[] = await client.getContacts();
 
   for (const contact of contacts) {
     if (!contact.isMyContact) {
