@@ -37,10 +37,7 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 WORKDIR /app/server
 
 # Install Chromium
-RUN apk update \
-    echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
-    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
-    apk update && \
+RUN apk update && \
     apk add --no-cache nss udev ttf-freefont chromium nginx && \
     rm -rf /var/cache/apk/* /tmp/*
 
