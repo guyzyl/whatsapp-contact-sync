@@ -37,24 +37,18 @@ export function initWhatsApp(ws: WebSocket): Client {
 export async function loadContacts(
   client: Client
 ): Promise<Array<SimpleContact>> {
-  let simpleContacts: Array<SimpleContact> = [];
-
   const contacts: Contact[] = await client.getContacts();
 
-  for (const contact of contacts) {
-    if (!contact.isMyContact) {
-      continue;
-    }
-
-    const simpleContact: SimpleContact = {
-      id: contact.id._serialized,
-      numbers: [contact.number],
-      name: contact.name,
-      // whatsappPhotoUrl: photoUrl,
-    };
-
-    simpleContacts.push(simpleContact);
-  }
+  const simpleContacts: Array<SimpleContact> = contacts
+    .filter((contact) => contact.isMyContact)
+    .map(
+      (contact) =>
+        <SimpleContact>{
+          id: contact.id._serialized,
+          numbers: [contact.number],
+          name: contact.name,
+        }
+    );
 
   return simpleContacts;
 }
