@@ -90,23 +90,39 @@ app.disable("etag");
 var wsMap: { [id: string]: WebSocket } = {};
 var whatsappClientMap: { [id: string]: Client } = {};
 var googleAuthMap: { [id: string]: typeof AuthClient } = {};
+var cleanupMap: { [id: string]: ReturnType<typeof setTimeout> } = {};
+
+function cleanup(sessionID: string) {
+  /*
+    Cleanup the session and client objects.
+    This is done with a timeout to prevent cleanup on websocket disconnect
+      and re-connect (for example, during a page refresh).
+  */
+  const timeout = setTimeout(async () => {
+    if (whatsappClientMap[sessionID] !== undefined) {
+      await whatsappClientMap[sessionID].logout();
+      await whatsappClientMap[sessionID].destroy();
+    }
+
+    delete whatsappClientMap[sessionID];
+    delete googleAuthMap[sessionID];
+    delete wsMap[sessionID];
+  }, 30 * 1000);
+
+  cleanupMap[sessionID] = timeout;
+}
 
 /*
   Setup the routes.
 */
 
 router.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
-  ws.addEventListener("close", async () => {
-    if (whatsappClientMap[req.session.id] !== undefined) {
-      await whatsappClientMap[req.session.id].logout();
-      await whatsappClientMap[req.session.id].destroy();
-    }
+  if (cleanupMap[req.sessionID] !== undefined) {
+    clearTimeout(cleanupMap[req.sessionID]);
+    delete cleanupMap[req.sessionID];
+  }
 
-    delete whatsappClientMap[req.session.id];
-    delete googleAuthMap[req.session.id];
-    delete wsMap[req.session.id];
-  });
-
+  ws.addEventListener("close", () => cleanup(req.sessionID));
   wsMap[req.sessionID] = ws;
 });
 
