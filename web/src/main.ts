@@ -28,11 +28,9 @@ router.beforeEach(async (to, from) => {
     router.push("/");
   else if (to.path === "/sync" && !status.googleConnected)
     router.push("/gauth");
-
   else if (to.path === "/whatsapp" && status.whatsappConnected)
     router.push("/gauth");
-  else if (to.path === "/gauth" && status.googleConnected)
-    router.push("/sync");
+  else if (to.path === "/gauth" && status.googleConnected) router.push("/sync");
 });
 
 initWs();
