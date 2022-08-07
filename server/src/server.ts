@@ -139,13 +139,6 @@ router.get("/status", async (req: SessionRequest, res: Response) => {
   res.send(status);
 });
 
-// This can possibly be removed.
-router.get("/init_session", (req: SessionRequest, res: Response) => {
-  const session = req.session;
-  session.exists = true;
-  res.send("{}");
-});
-
 router.get("/init_whatsapp", (req: SessionRequest, res: Response) => {
   const client = initWhatsApp(wsMap[req.sessionID]);
   whatsappClientMap[req.sessionID] = client;

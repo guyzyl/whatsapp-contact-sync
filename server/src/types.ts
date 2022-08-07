@@ -8,9 +8,7 @@ import { SimpleContact } from "./interfaces";
 export type Base64 = string;
 
 export type ServerSession = Session & {
-  exists: boolean;
   whatsappContacts: Array<SimpleContact>;
-  whatsappClient: Client;
 };
 
 export type SessionRequest = Request & {
