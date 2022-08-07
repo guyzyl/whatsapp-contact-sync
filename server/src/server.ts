@@ -96,6 +96,17 @@ var googleAuthMap: { [id: string]: typeof AuthClient } = {};
 */
 
 router.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
+  ws.addEventListener("close", async () => {
+    if (whatsappClientMap[req.session.id] !== undefined) {
+      await whatsappClientMap[req.session.id].logout();
+      await whatsappClientMap[req.session.id].destroy();
+    }
+
+    delete whatsappClientMap[req.session.id];
+    delete googleAuthMap[req.session.id];
+    delete wsMap[req.session.id];
+  });
+
   wsMap[req.sessionID] = ws;
 });
 

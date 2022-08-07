@@ -8,7 +8,6 @@ import { listContacts, updateContactPhoto } from "./gapi";
 import { downloadFile, loadContacts } from "./whatsapp";
 import { sendEvent } from "./ws";
 
-// Split into 2 API calls
 export async function initSync(
   ws: WebSocket,
   whatsappClient: Client,
@@ -24,6 +23,8 @@ export async function initSync(
   var photo: string | null = null;
 
   for (const [index, googleContact] of googleContacts.entries()) {
+    if (ws.readyState !== WebSocket.OPEN) return; // Stop sync if user disconnected.
+
     for (const phoneNumber of googleContact.numbers) {
       const whatsappContact = whatsappContacts.find((contact) =>
         contact.numbers.includes(phoneNumber)
@@ -56,4 +57,6 @@ export async function initSync(
     progress: 100,
     syncCount: syncCount,
   });
+
+  ws.close();
 }
