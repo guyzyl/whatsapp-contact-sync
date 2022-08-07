@@ -1,22 +1,21 @@
 import cors from "cors";
-const express = require("express");
-import { Response } from "express";
-const expressWs = require("express-ws");
+import express from "express";
+import { Request, Response } from "express";
+import expressWs from "express-ws";
 import { WebSocket } from "ws";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 
-const { AuthClient } = require("googleapis");
+import { Auth } from "googleapis";
 import { Client, WAState } from "whatsapp-web.js";
 
-const winston = require("winston");
-const expressWinston = require("express-winston");
+import winston from "winston";
+import expressWinston from "express-winston";
 
 import { SessionStatus } from "../../interfaces/api";
 import { initWhatsApp } from "./whatsapp";
 import { initSync } from "./sync";
-import { SessionRequest } from "./types";
 import { googleLogin } from "./gapi";
 
 import dotenv from "dotenv";
@@ -25,7 +24,7 @@ dotenv.config();
 var ews = expressWs(express());
 const app = ews.app;
 var router = express.Router({ mergeParams: true });
-const port = process.env.SERVER_PORT || 8080;
+const port = 8080;
 
 /*
   Setup the session and cookie parser.
@@ -55,7 +54,7 @@ app.use(
   })
 );
 
-app.use(function (req: SessionRequest, res: Response, next: CallableFunction) {
+app.use(function (req: Request, res: Response, next: CallableFunction) {
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
   res.header("Access-Control-Allow-Origin", process.env.ORIGIN);
@@ -90,7 +89,7 @@ app.disable("etag");
 */
 var wsMap: { [id: string]: WebSocket } = {};
 var whatsappClientMap: { [id: string]: Client } = {};
-var googleAuthMap: { [id: string]: typeof AuthClient } = {};
+var googleAuthMap: { [id: string]: Auth.AuthClient } = {};
 var cleanupMap: { [id: string]: ReturnType<typeof setTimeout> } = {};
 
 function cleanup(sessionID: string) {
@@ -117,7 +116,7 @@ function cleanup(sessionID: string) {
   Setup the routes.
 */
 
-router.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
+router.ws("/ws", (ws: WebSocket, req: Request) => {
   if (cleanupMap[req.sessionID] !== undefined) {
     clearTimeout(cleanupMap[req.sessionID]);
     delete cleanupMap[req.sessionID];
@@ -128,7 +127,7 @@ router.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
 });
 
 // Used by route guard
-router.get("/status", async (req: SessionRequest, res: Response) => {
+router.get("/status", async (req: Request, res: Response) => {
   const status: SessionStatus = {
     whatsappConnected:
       whatsappClientMap[req.sessionID] !== undefined &&
@@ -139,20 +138,20 @@ router.get("/status", async (req: SessionRequest, res: Response) => {
   res.send(status);
 });
 
-router.get("/init_whatsapp", (req: SessionRequest, res: Response) => {
+router.get("/init_whatsapp", (req: Request, res: Response) => {
   const client = initWhatsApp(wsMap[req.sessionID]);
   whatsappClientMap[req.sessionID] = client;
   res.send("{}");
 });
 
-router.post("/init_gapi", (req: SessionRequest, res: Response) => {
+router.post("/init_gapi", (req: Request, res: Response) => {
   const token = req.body.token;
   const gAuth = googleLogin(token);
   googleAuthMap[req.sessionID] = gAuth;
   res.redirect("/sync");
 });
 
-router.get("/init_sync", (req: SessionRequest, res: Response) => {
+router.get("/init_sync", (req: Request, res: Response) => {
   initSync(
     wsMap[req.sessionID],
     whatsappClientMap[req.sessionID],

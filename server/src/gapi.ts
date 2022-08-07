@@ -1,16 +1,16 @@
-const { google, AuthClient, AccessTokenResponse } = require("googleapis");
+import { google, Auth } from "googleapis";
 
 import { SimpleContact } from "./interfaces";
 import { Base64 } from "./types";
 
-const dotenv = require("dotenv");
+import dotenv from "dotenv";
 dotenv.config();
 
 const pageSize = 250;
 
 export function googleLogin(
-  token: typeof AccessTokenResponse
-): typeof AuthClient {
+  token: typeof google.Auth.AccessTokenResponse
+): Auth.AuthClient {
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET
@@ -21,14 +21,14 @@ export function googleLogin(
   return oauth2Client;
 }
 
-export function verifyAuth(auth: typeof AuthClient): void {
+export function verifyAuth(auth: Auth.AuthClient): void {
   // TODO: Implement
 }
 
 export async function listContacts(
-  auth: typeof AuthClient
+  auth: Auth.AuthClient
 ): Promise<SimpleContact[]> {
-  const service = google.people({ version: "v1", auth });
+  const service = google.people_v1.people({ version: "v1", auth });
 
   var simpleContacts: SimpleContact[] = [];
   var nextPageToken = "";
@@ -67,11 +67,11 @@ export async function listContacts(
 }
 
 export async function updateContactPhoto(
-  auth: typeof AuthClient,
+  auth: Auth.AuthClient,
   resourceName: string,
   photo: Base64
 ): Promise<void> {
-  const service = google.people({ version: "v1", auth });
+  const service = google.people_v1.people({ version: "v1", auth });
 
   await service.people.updateContactPhoto({
     resourceName: resourceName,

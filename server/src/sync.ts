@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-const { AuthClient } = require("googleapis");
+import { Auth } from "googleapis";
 import { RateLimiter } from "limiter";
 import { Client } from "whatsapp-web.js";
 
@@ -11,7 +11,7 @@ import { sendEvent } from "./ws";
 export async function initSync(
   ws: WebSocket,
   whatsappClient: Client,
-  gAuth: typeof AuthClient
+  gAuth: Auth.AuthClient
 ) {
   // The limiter is implemented due to Google API's limit of 60 photo uploads per minute per user
   const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 1500 });
