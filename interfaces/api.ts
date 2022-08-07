@@ -14,3 +14,8 @@ export interface SyncProgress {
   syncCount: number;
   image?: string;
 }
+
+export interface SessionStatus {
+  whatsappConnected: boolean;
+  googleConnected: boolean;
+}

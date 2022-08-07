@@ -8,11 +8,12 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 
 const { AuthClient } = require("googleapis");
-import { Client } from "whatsapp-web.js";
+import { Client, WAState } from "whatsapp-web.js";
 
 const winston = require("winston");
 const expressWinston = require("express-winston");
 
+import { SessionStatus } from "../../interfaces/api";
 import { initWhatsApp } from "./whatsapp";
 import { initSync } from "./sync";
 import { SessionRequest } from "./types";
@@ -124,6 +125,18 @@ router.ws("/ws", (ws: WebSocket, req: SessionRequest) => {
 
   ws.addEventListener("close", () => cleanup(req.sessionID));
   wsMap[req.sessionID] = ws;
+});
+
+// Used by route guard
+router.get("/status", async (req: SessionRequest, res: Response) => {
+  const status: SessionStatus = {
+    whatsappConnected:
+      whatsappClientMap[req.sessionID] !== undefined &&
+      (await whatsappClientMap[req.sessionID].getState()) === WAState.CONNECTED,
+    googleConnected: googleAuthMap[req.sessionID] !== undefined,
+  };
+
+  res.send(status);
 });
 
 // This can possibly be removed.
