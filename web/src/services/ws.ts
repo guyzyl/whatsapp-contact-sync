@@ -1,7 +1,7 @@
 import { Event, EventType } from "../../../interfaces/api";
 
-export var WS: WebSocket;
-var eventHandlers: { [eventType: string]: Function } = {};
+export let WS: WebSocket;
+let eventHandlers: { [eventType: string]: Function } = {};
 
 export function initWs(): void {
   const wsType = location.protocol === "https:" ? "wss" : "ws";

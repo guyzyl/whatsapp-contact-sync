@@ -37,7 +37,7 @@ export function initWhatsApp(ws: WebSocket): Client {
 export async function loadContacts(
   client: Client
 ): Promise<Array<SimpleContact>> {
-  var simpleContacts: Array<SimpleContact> = [];
+  let simpleContacts: Array<SimpleContact> = [];
 
   const contacts = await client.getContacts();
 

@@ -19,8 +19,8 @@ export async function initSync(
   const googleContacts = await listContacts(gAuth);
   const whatsappContacts = await loadContacts(whatsappClient)!;
 
-  var syncCount = 0;
-  var photo: string | null = null;
+  let syncCount = 0;
+  let photo: string | null = null;
 
   for (const [index, googleContact] of googleContacts.entries()) {
     if (ws.readyState !== WebSocket.OPEN) return; // Stop sync if user disconnected.

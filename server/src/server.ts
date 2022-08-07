@@ -21,9 +21,9 @@ import { googleLogin } from "./gapi";
 import dotenv from "dotenv";
 dotenv.config();
 
-var ews = expressWs(express());
+let ews = expressWs(express());
 const app = ews.app;
-var router = express.Router({ mergeParams: true });
+let router = express.Router({ mergeParams: true });
 const port = 8080;
 
 /*
@@ -87,10 +87,10 @@ app.disable("etag");
 /*
   Session id to objects mapping (since they cant be stored in session directly).
 */
-var wsMap: { [id: string]: WebSocket } = {};
-var whatsappClientMap: { [id: string]: Client } = {};
-var googleAuthMap: { [id: string]: Auth.AuthClient } = {};
-var cleanupMap: { [id: string]: ReturnType<typeof setTimeout> } = {};
+let wsMap: { [id: string]: WebSocket } = {};
+let whatsappClientMap: { [id: string]: Client } = {};
+let googleAuthMap: { [id: string]: Auth.AuthClient } = {};
+let cleanupMap: { [id: string]: ReturnType<typeof setTimeout> } = {};
 
 function cleanup(sessionID: string) {
   /*

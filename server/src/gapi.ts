@@ -30,8 +30,8 @@ export async function listContacts(
 ): Promise<SimpleContact[]> {
   const service = google.people_v1.people({ version: "v1", auth });
 
-  var simpleContacts: SimpleContact[] = [];
-  var nextPageToken = "";
+  let simpleContacts: SimpleContact[] = [];
+  let nextPageToken = "";
 
   do {
     const res = await service.people.connections.list({
@@ -45,7 +45,7 @@ export async function listContacts(
     const connections = res.data.connections;
 
     for (const connection of connections) {
-      var phoneNumbers: string[] = [];
+      let phoneNumbers: string[] = [];
       if (connection.phoneNumbers) {
         for (const phoneNumberObj of connection.phoneNumbers) {
           if (!phoneNumberObj.canonicalForm) continue;
