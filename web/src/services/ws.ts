@@ -4,7 +4,10 @@ import { HandlerFunction } from "../types";
 export let WS: WebSocket;
 let eventHandlers: { [eventType: string]: HandlerFunction } = {};
 
-export function initWs(): void {
+export async function initWs(): Promise<void> {
+  // An empty request is made to the server because without it on the first connection
+  //  the websocket receives a different session id, causing the app to hang.
+  await fetch("/api/", { credentials: "include" });
   const wsType = location.protocol === "https:" ? "wss" : "ws";
   WS = new WebSocket(`${wsType}://${location.host}/api/ws`);
 
@@ -26,10 +29,7 @@ async function messageHandler(wsEvent: MessageEvent): Promise<void> {
   }
 }
 
-export function addHandler(
-  eventType: EventType,
-  func: HandlerFunction
-): void {
+export function addHandler(eventType: EventType, func: HandlerFunction): void {
   const eventTypeString = eventType;
   eventHandlers[eventTypeString] = func;
 }

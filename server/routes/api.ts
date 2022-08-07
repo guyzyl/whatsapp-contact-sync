@@ -48,6 +48,10 @@ function cleanup(sessionID: string) {
   cleanupMap[sessionID] = timeout;
 }
 
+router.get("/", (req: Request, res: Response) => {
+  res.send("{}");
+});
+
 router.ws("/ws", (ws: WebSocket, req: Request) => {
   if (cleanupMap[req.sessionID] !== undefined) {
     clearTimeout(cleanupMap[req.sessionID]);
