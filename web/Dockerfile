@@ -15,4 +15,6 @@ RUN npm run build
 # Build final image
 FROM nginx:alpine
 
+EXPOSE 80
+
 COPY --from=build /app/web/dist /usr/share/nginx/html

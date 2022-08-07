@@ -34,4 +34,6 @@ RUN npm install --production && npm install -g pm2 --production
 
 COPY --from=server-build /app/server/build ./build
 
+EXPOSE 8080
+
 CMD [ "npm", "run", "prod" ]

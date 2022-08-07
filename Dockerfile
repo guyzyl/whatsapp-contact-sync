@@ -54,4 +54,6 @@ RUN chmod 755 entrypoint.sh
 COPY --from=web-build /app/web/dist /var/www/html
 COPY --from=server-build /app/server/build ./build
 
+EXPOSE 80
+
 ENTRYPOINT ["./entrypoint.sh"]
