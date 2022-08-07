@@ -18,7 +18,7 @@ export async function initSync(
   const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 1500 });
 
   const googleContacts: SimpleContact[] = await listContacts(gAuth);
-  const whatsappContacts: SimpleContact[] = await loadContacts(whatsappClient)!;
+  const whatsappContacts: SimpleContact[] = await loadContacts(whatsappClient);
 
   let syncCount: number = 0;
   let photo: string | null = null;
@@ -30,14 +30,10 @@ export async function initSync(
       const whatsappContact = whatsappContacts.find((contact) =>
         contact.numbers.includes(phoneNumber)
       );
-      if (!whatsappContact) {
-        continue;
-      }
+      if (!whatsappContact) continue;
 
       photo = await downloadFile(whatsappClient, whatsappContact.id);
-      if (photo === null) {
-        break;
-      }
+      if (photo === null) break;
 
       await limiter.removeTokens(1);
       await updateContactPhoto(gAuth, googleContact.id, photo);
