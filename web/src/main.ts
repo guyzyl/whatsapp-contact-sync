@@ -22,7 +22,6 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   const response = await fetch("/api/status", { credentials: "include" });
   const status: SessionStatus = await response.json();
-  console.log(status);
 
   if (["/sync", "/gauth"].includes(to.path) && !status.whatsappConnected)
     router.push("/");
