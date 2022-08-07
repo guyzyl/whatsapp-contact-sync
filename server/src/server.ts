@@ -89,7 +89,7 @@ app.disable("etag");
 */
 let wsMap: { [id: string]: WebSocket } = {};
 let whatsappClientMap: { [id: string]: Client } = {};
-let googleAuthMap: { [id: string]: Auth.AuthClient } = {};
+let googleAuthMap: { [id: string]: Auth.OAuth2Client } = {};
 let cleanupMap: { [id: string]: ReturnType<typeof setTimeout> } = {};
 
 function cleanup(sessionID: string) {

@@ -12,7 +12,7 @@ import { SimpleContact } from "./interfaces";
 export async function initSync(
   ws: WebSocket,
   whatsappClient: Client,
-  gAuth: Auth.AuthClient
+  gAuth: Auth.OAuth2Client
 ) {
   // The limiter is implemented due to Google API's limit of 60 photo uploads per minute per user
   const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 1500 });

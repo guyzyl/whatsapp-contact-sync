@@ -1,4 +1,4 @@
-import { google, Auth } from "googleapis";
+import { google, Auth, people_v1 } from "googleapis";
 
 import { SimpleContact } from "./interfaces";
 import { Base64 } from "./types";
@@ -10,7 +10,7 @@ const pageSize: number = 250;
 
 export function googleLogin(
   token: typeof google.Auth.AccessTokenResponse
-): Auth.AuthClient {
+): Auth.OAuth2Client {
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET
@@ -21,27 +21,27 @@ export function googleLogin(
   return oauth2Client;
 }
 
-export function verifyAuth(auth: Auth.AuthClient): void {
+export function verifyAuth(auth: Auth.OAuth2Client): void {
   // TODO: Implement
 }
 
 export async function listContacts(
-  auth: Auth.AuthClient
+  auth: Auth.OAuth2Client
 ): Promise<SimpleContact[]> {
-  const service = google.people_v1.people({ version: "v1", auth });
+  const people: people_v1.People = google.people({ version: "v1", auth });
 
   let simpleContacts: SimpleContact[] = [];
   let nextPageToken = "";
 
   do {
-    const res = await service.people.connections.list({
+    const res = await people.people.connections.list({
       resourceName: "people/me",
       pageSize: pageSize,
       personFields: "names,emailAddresses,phoneNumbers",
       pageToken: nextPageToken,
     });
 
-    nextPageToken = res.data.nextPageToken;
+    nextPageToken = res.data.nextPageToken!;
     const connections = res.data.connections;
 
     for (const connection of connections) {
@@ -67,13 +67,13 @@ export async function listContacts(
 }
 
 export async function updateContactPhoto(
-  auth: Auth.AuthClient,
+  auth: Auth.OAuth2Client,
   resourceName: string,
   photo: Base64
 ): Promise<void> {
-  const service = google.people_v1.people({ version: "v1", auth });
+  const people: people_v1.People = google.people({ version: "v1", auth });
 
-  await service.people.updateContactPhoto({
+  await people.people.updateContactPhoto({
     resourceName: resourceName,
     requestBody: { photoBytes: photo },
   });
