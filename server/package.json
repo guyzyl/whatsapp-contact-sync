@@ -2,11 +2,11 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.ts",
+  "main": "main.ts",
   "scripts": {
     "serve": "ts-node .",
     "dev": "nodemon --exec 'ts-node' .",
-    "prod": "node build/server/src/server.js",
+    "prod": "node build/server/main.js",
     "build": "tsc"
   },
   "author": "guyzyl",
