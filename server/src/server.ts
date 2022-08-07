@@ -100,8 +100,12 @@ function cleanup(sessionID: string) {
   */
   const timeout = setTimeout(async () => {
     if (whatsappClientMap[sessionID] !== undefined) {
-      await whatsappClientMap[sessionID].logout();
-      await whatsappClientMap[sessionID].destroy();
+      try {
+        await whatsappClientMap[sessionID].logout();
+        await whatsappClientMap[sessionID].destroy();
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     delete whatsappClientMap[sessionID];
@@ -140,7 +144,11 @@ router.get("/status", async (req: Request, res: Response) => {
 
 router.get("/init_whatsapp", async (req: Request, res: Response) => {
   if (whatsappClientMap[req.sessionID] !== undefined)
-    await whatsappClientMap[req.sessionID].destroy();
+    try {
+      await whatsappClientMap[req.sessionID].destroy();
+    } catch (e) {
+      console.error(e);
+    }
 
   const client = initWhatsApp(wsMap[req.sessionID]);
   whatsappClientMap[req.sessionID] = client;
