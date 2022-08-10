@@ -1,6 +1,6 @@
 #!/bin/sh
 
-npm run prod &
+node build/server/main.js &
 
 # Wait for the server to start
 while ! nc -z localhost 8080; do
