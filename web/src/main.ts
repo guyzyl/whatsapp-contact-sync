@@ -10,7 +10,10 @@ import { SessionStatus } from "../../interfaces/api";
 const routes = [
   { path: "/", component: () => import("./pages/Home.vue") },
   { path: "/whatsapp", component: () => import("./pages/WhatsApp.vue") },
-  { path: "/gauth", component: () => import("./pages/GoogleAuth.vue") },
+  {
+    path: "/contacts_auth",
+    component: () => import("./pages/ContactsAuth.vue"),
+  },
   { path: "/sync", component: () => import("./pages/Sync.vue") },
 ];
 
@@ -27,13 +30,17 @@ router.beforeEach(async (to, from) => {
   //  This is done on every request to make sure the server didn't discconect in the meantime.
   initWs();
 
-  if (["/sync", "/gauth"].includes(to.path) && !status.whatsappConnected)
+  if (
+    ["/sync", "/contacts_auth"].includes(to.path) &&
+    !status.whatsappConnected
+  )
     router.push("/");
   else if (to.path === "/sync" && !status.googleConnected)
-    router.push("/gauth");
+    router.push("/contacts_auth");
   else if (to.path === "/whatsapp" && status.whatsappConnected)
-    router.push("/gauth");
-  else if (to.path === "/gauth" && status.googleConnected) router.push("/sync");
+    router.push("/contacts_auth");
+  else if (to.path === "/contacts_auth" && status.googleConnected)
+    router.push("/sync");
 });
 
 createApp(App).use(router).mount("#app");

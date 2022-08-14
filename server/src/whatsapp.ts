@@ -25,7 +25,7 @@ export function initWhatsApp(ws: WebSocket): Client {
   });
 
   client.on("ready", async () => {
-    sendEvent(ws, EventType.Redirect, "/gauth");
+    sendEvent(ws, EventType.Redirect, "/contacts_auth");
   });
 
   client.on("auth_failure", (msg) => {});

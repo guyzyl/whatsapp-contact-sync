@@ -6,7 +6,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   data: () => ({
     CLIENT_ID: "436316840541-2o1496o38gjv2udalq8tg32rao3ehdlv",
-    API_KEY: "AIzaSyAy5TqbYpjFKzZq-ho-hS3aLkfVnAw9iBg",
+    API_KEY: "AIzaSyAy5TqbYpjFKzZq-ho-hS3aLkfVnAw9iBg", // This isn't a secret since it's exposed to the browser (but it's limited to whasync.com domain only).
     gisLoaded: false,
     gapiLoaded: false,
     tokenClient: undefined as any, // Another Google typing workaround
@@ -48,7 +48,6 @@ export default defineComponent({
       });
     },
     handleAuthClick() {
-      // if (!this.tokenClient) return;
       this.tokenClient.requestAccessToken({ prompt: "consent" });
     },
     async onSignIn(resp: any) {
@@ -77,34 +76,20 @@ export default defineComponent({
 </script>
 
 <template>
-  <div id="home" class="hero h-full bg-base-200">
-    <div class="hero-content text-center">
-      <div class="max-w-md">
-        <h1 class="text-5xl font-bold">Authorize Google</h1>
-        <p class="py-6">
-          Connect your Google account.
-          <br />
-          Make sure to
-          <b>select and authorize the requested contacts permission</b> to
-          enable the upload of new contact photos.
-        </p>
-        <div>
-          <button
-            @click="handleAuthClick"
-            :disabled="!gapiLoaded && !gisLoaded"
-            id="signin-button"
-            class="btn btn-outline btn-primary gap-4"
-          >
-            <img
-              class="w-8"
-              alt="Google login"
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
-            />
-            Sign in with Google
-          </button>
-        </div>
-      </div>
-    </div>
+  <div>
+    <button
+      @click="handleAuthClick"
+      :disabled="!gapiLoaded && !gisLoaded"
+      id="signin-button"
+      class="btn btn-outline btn-primary gap-4"
+    >
+      <img
+        class="w-8"
+        alt="Google login"
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
+      />
+      Sign in with Google
+    </button>
   </div>
 </template>
 
