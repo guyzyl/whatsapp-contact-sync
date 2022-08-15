@@ -1,4 +1,4 @@
-<script lang="ts"></script>
+<script setup lang="ts"></script>
 
 <!-- This page exists since it's required by Google for publishing an OAuth app -->
 <!-- Generated using https://github.com/digitalmalayali/free-website-privacy-policy-generator -->
