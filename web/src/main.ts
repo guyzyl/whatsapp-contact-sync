@@ -9,6 +9,7 @@ import { SessionStatus } from "../../interfaces/api";
 
 const routes = [
   { path: "/", component: () => import("./pages/Home.vue") },
+  { path: "/privacy", component: () => import("./pages/Privacy.vue") },
   { path: "/whatsapp", component: () => import("./pages/WhatsApp.vue") },
   { path: "/gauth", component: () => import("./pages/GoogleAuth.vue") },
   { path: "/sync", component: () => import("./pages/Sync.vue") },
