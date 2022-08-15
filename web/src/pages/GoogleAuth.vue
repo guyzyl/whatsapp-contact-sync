@@ -2,6 +2,7 @@
 // @ts-nocheck
 // This is indeed a bad solution, but the Google imports just don't play nice with Typesciprt...
 import { defineComponent } from "vue";
+import { event } from "vue-gtag";
 
 export default defineComponent({
   data: () => ({
@@ -55,6 +56,7 @@ export default defineComponent({
       if (resp.error !== undefined) {
         throw resp;
       }
+      event("google_authorized", { method: "Google" });
       const token = gapi.client.getToken();
       fetch("/api/init_gapi", {
         credentials: "include",

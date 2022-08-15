@@ -1,5 +1,10 @@
 import { createApp } from "vue";
-import { createRouter, createWebHistory } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocationNormalized,
+} from "vue-router";
+import VueGtag from "vue-gtag";
 import "./style.css";
 import App from "./App.vue";
 
@@ -20,21 +25,34 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from) => {
-  const response = await fetch("/api/status", { credentials: "include" });
-  const status: SessionStatus = await response.json();
+router.beforeEach(
+  async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+    const response = await fetch("/api/status", { credentials: "include" });
+    const status: SessionStatus = await response.json();
 
-  // Make sure websocket is initialized.
-  //  This is done on every request to make sure the server didn't discconect in the meantime.
-  initWs();
+    // Makes sure websocket is initialized.
+    //  This is done on every request to make sure the server didn't discconect in the meantime.
+    initWs();
 
-  if (["/sync", "/gauth"].includes(to.path) && !status.whatsappConnected)
-    router.push("/");
-  else if (to.path === "/sync" && !status.googleConnected)
-    router.push("/gauth");
-  else if (to.path === "/whatsapp" && status.whatsappConnected)
-    router.push("/gauth");
-  else if (to.path === "/gauth" && status.googleConnected) router.push("/sync");
-});
+    if (["/sync", "/gauth"].includes(to.path) && !status.whatsappConnected)
+      router.push("/");
+    else if (to.path === "/sync" && !status.googleConnected)
+      router.push("/gauth");
+    else if (to.path === "/whatsapp" && status.whatsappConnected)
+      router.push("/gauth");
+    else if (to.path === "/gauth" && status.googleConnected)
+      router.push("/sync");
+  }
+);
 
-createApp(App).use(router).mount("#app");
+const vueTagSettings = {
+  pageTrackerTemplate(to: RouteLocationNormalized) {
+    return {
+      page_title: to.path,
+      page_path: to.path,
+    };
+  },
+  config: { id: "G-4PJJZRPWG4" },
+};
+
+createApp(App).use(router).use(VueGtag, vueTagSettings, router).mount("#app");

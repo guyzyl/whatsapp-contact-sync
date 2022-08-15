@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import QrcodeVue from "qrcode.vue";
+import { event } from "vue-gtag";
 import { EventType } from "../../../interfaces/api";
 import { addHandler } from "../services/ws";
 
@@ -17,6 +18,7 @@ export default defineComponent({
       fetch("/api/init_whatsapp", { credentials: "include" });
     },
     onQR(data: string): void {
+      if (!this.qrData) event("qr_loaded", { method: "Google" });
       this.qrData = data;
     },
   },
