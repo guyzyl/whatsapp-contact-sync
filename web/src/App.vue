@@ -3,6 +3,7 @@ import { defineComponent } from "vue";
 import { EventType } from "../../interfaces/api";
 import { addHandler } from "./services/ws";
 import Header from "./components/Header.vue";
+import Footer from "./components/Footer.vue";
 
 export default defineComponent({
   data: () => ({}),
@@ -16,6 +17,7 @@ export default defineComponent({
   },
   components: {
     Header,
+    Footer,
   },
 });
 </script>
@@ -24,6 +26,7 @@ export default defineComponent({
   <div class="flex flex-col h-screen">
     <Header></Header>
     <router-view></router-view>
+    <Footer></Footer>
   </div>
 </template>
 
