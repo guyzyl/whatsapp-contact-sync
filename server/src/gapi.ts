@@ -16,13 +16,8 @@ export function googleLogin(
     process.env.GOOGLE_CLIENT_SECRET
   );
   oauth2Client.setCredentials(token);
-  verifyAuth(oauth2Client);
 
   return oauth2Client;
-}
-
-export function verifyAuth(auth: Auth.OAuth2Client): void {
-  // TODO: Implement
 }
 
 export async function listContacts(
@@ -72,8 +67,12 @@ export async function updateContactPhoto(
 ): Promise<void> {
   const people: people_v1.People = google.people({ version: "v1", auth });
 
-  await people.people.updateContactPhoto({
-    resourceName: resourceName,
-    requestBody: { photoBytes: photo },
-  });
+  try {
+    await people.people.updateContactPhoto({
+      resourceName: resourceName,
+      requestBody: { photoBytes: photo },
+    });
+  } catch (e) {
+    console.error(e);
+  }
 }
