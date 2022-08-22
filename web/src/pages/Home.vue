@@ -42,7 +42,7 @@ export default defineComponent({
         <router-link
           to="/whatsapp"
           class="btn btn-primary"
-          :class="{ 'btn-disabled': WS.readyState !== WebSocket.OPEN }"
+          :class="{ 'btn-disabled': WS?.readyState !== WebSocket.OPEN }"
         >
           {{
             Object.values(sessionStatus).includes(true)
