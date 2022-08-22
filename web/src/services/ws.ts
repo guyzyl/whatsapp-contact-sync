@@ -1,6 +1,8 @@
 import { Event, EventType } from "../../../interfaces/api";
 import { HandlerFunction } from "../types";
 
+const errorTimeout = 3 * 1000;
+
 export let WS: WebSocket;
 let eventHandlers: { [eventType: string]: HandlerFunction } = {};
 
@@ -17,6 +19,13 @@ export async function initWs(): Promise<void> {
 
   WS.onopen = (wsEvent) => {
     console.log(`WS connected to server - ${wsEvent}`);
+  };
+
+  WS.onerror = (wsEvent) => {
+    console.error(`WS error - ${wsEvent}`);
+    setTimeout(() => {
+      initWs();
+    }, errorTimeout);
   };
 
   WS.onmessage = messageHandler;
