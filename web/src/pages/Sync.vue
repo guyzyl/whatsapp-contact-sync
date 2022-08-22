@@ -37,6 +37,12 @@ export default defineComponent({
         <p class="py-6">
           We're syncing your contacts, you can sit back and relax.
           <br />
+          Read about the syncing speed
+          <a
+            href="https://github.com/guyzyl/whatsapp-contact-sync/blob/24a9933c47579d9a49847ea5b5a8b8f00ea465ec/server/src/sync.ts#L17"
+            target="”_blank”"
+            >here</a
+          >.<br /><br />
           (Syncing will stop if the tab is closed)
         </p>
         <div>

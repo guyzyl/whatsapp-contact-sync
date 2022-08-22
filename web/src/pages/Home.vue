@@ -28,11 +28,11 @@ export default defineComponent({
         <h1 class="text-5xl font-bold">WhatsApp Contact Sync</h1>
         <p class="py-6">
           This app will sync your contact images from WhatsApp to Google
-          Contacts (Apple support might be added in the future).
+          Contacts.
           <br /><br />
-          In order to use this app, you will need to authorize access to your
-          WhatsApp account and to your Google account.
-          <br />
+          To use this app, you will need to authorize access to your WhatsApp
+          account and to your Google account with contacts permissions.
+          <br /><br />
           You can checkout the code and open new issues on the
           <a
             href="
