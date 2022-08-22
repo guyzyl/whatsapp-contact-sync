@@ -1,9 +1,11 @@
 import { Event, EventType } from "../../../interfaces/api";
 import { HandlerFunction } from "../types";
+import { Deferred } from "../deferred";
 
 const errorTimeout = 3 * 1000;
 
 export let WS: WebSocket;
+export const isWsReady: Deferred<boolean> = new Deferred();
 let eventHandlers: { [eventType: string]: HandlerFunction } = {};
 
 export async function initWs(): Promise<void> {
@@ -19,6 +21,7 @@ export async function initWs(): Promise<void> {
 
   WS.onopen = (wsEvent) => {
     console.log(`WS connected to server - ${wsEvent}`);
+    isWsReady.resolve(true);
   };
 
   WS.onerror = (wsEvent) => {
