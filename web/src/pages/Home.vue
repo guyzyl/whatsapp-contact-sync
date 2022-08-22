@@ -1,14 +1,16 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import { WS } from "../services/ws";
+import { isWsReady } from "../services/ws";
 
 export default defineComponent({
   data: () => ({
     sessionStatus: {},
-    WS: WS,
-    WebSocket: WebSocket,
+    wsReady: false,
   }),
   mounted() {
+    isWsReady.then((val) => {
+      this.wsReady = val;
+    });
     fetch("/api/status", { credentials: "include" }).then((res) => {
       res.json().then((data) => {
         this.sessionStatus = data;
@@ -42,7 +44,7 @@ export default defineComponent({
         <router-link
           to="/whatsapp"
           class="btn btn-primary"
-          :class="{ 'btn-disabled': WS?.readyState !== WebSocket.OPEN }"
+          :class="{ 'btn-disabled': !wsReady }"
         >
           {{
             Object.values(sessionStatus).includes(true)
