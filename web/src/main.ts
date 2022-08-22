@@ -27,12 +27,16 @@ const router = createRouter({
 
 router.beforeEach(
   async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
-    const response = await fetch("/api/status", { credentials: "include" });
-    const status: SessionStatus = await response.json();
-
     // Makes sure websocket is initialized.
     //  This is done on every request to make sure the server didn't discconect in the meantime.
     initWs();
+
+    // Don't make any checks for serving the index page.
+    // This is done so the user can access it even if the backend is down.
+    if (to.path == "/") return;
+
+    const response = await fetch("/api/status", { credentials: "include" });
+    const status: SessionStatus = await response.json();
 
     if (["/sync", "/gauth"].includes(to.path) && !status.whatsappConnected)
       router.push("/");
