@@ -4,10 +4,17 @@ import { WS } from "../services/ws";
 
 export default defineComponent({
   data: () => ({
+    sessionStatus: {},
     WS: WS,
     WebSocket: WebSocket,
   }),
-  mounted() {},
+  mounted() {
+    fetch("/api/status", { credentials: "include" }).then((res) => {
+      res.json().then((data) => {
+        this.sessionStatus = data;
+      });
+    });
+  },
   methods: {},
 });
 </script>
@@ -37,7 +44,11 @@ export default defineComponent({
           class="btn btn-primary"
           :class="{ 'btn-disabled': WS.readyState !== WebSocket.OPEN }"
         >
-          Get Started</router-link
+          {{
+            Object.values(sessionStatus).includes(true)
+              ? "Continue"
+              : "Get Started"
+          }}</router-link
         >
       </div>
     </div>
