@@ -5,6 +5,7 @@ import expressWs from "express-ws";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import MemoryStore from "memorystore";
 
 import winston from "winston";
 import expressWinston from "express-winston";
@@ -15,6 +16,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 let ews = expressWs(express());
+const mStore = MemoryStore(session);
 const app = ews.app;
 const port = 8080;
 
@@ -36,6 +38,9 @@ app.use(cookieParser(secret));
 app.use(
   session({
     secret: secret,
+    store: new mStore({
+      checkPeriod: 86400000, // Prune expired entries every 24h
+    }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       httpOnly: false,
