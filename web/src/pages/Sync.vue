@@ -23,6 +23,7 @@ export default defineComponent({
       this.syncCount = progress.syncCount;
       if (progress.image) {
         this.images.push(progress.image);
+        if (this.images.length > this.imageDisplayedCount) this.images.shift();
       }
     },
   },
