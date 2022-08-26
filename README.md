@@ -22,7 +22,8 @@ The app is extremley easy to use (and self explantory):
 2. Press "Get Started"
 3. Scan the QR code with WhatsApp to authorize it
 4. Connect you Google account
-5. That's it :)
+5. Choose you sync options
+6. That's it :)
 
 The whole process is very simple and automated, so you don't need to worry about anything else.\
 Setting up should take less then a minute, and syncing should take about 1 second per photo (due to Google's API rate limitiations of 60 requests per user per minute)
