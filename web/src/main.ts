@@ -17,6 +17,7 @@ const routes = [
   { path: "/privacy", component: () => import("./pages/Privacy.vue") },
   { path: "/whatsapp", component: () => import("./pages/WhatsApp.vue") },
   { path: "/gauth", component: () => import("./pages/GoogleAuth.vue") },
+  { path: "/options", component: () => import("./pages/Options.vue") },
   { path: "/sync", component: () => import("./pages/Sync.vue") },
 ];
 
@@ -38,14 +39,17 @@ router.beforeEach(
     const response = await fetch("/api/status", { credentials: "include" });
     const status: SessionStatus = await response.json();
 
-    if (["/sync", "/gauth"].includes(to.path) && !status.whatsappConnected)
+    if (
+      ["/sync", "/gauth", "/options"].includes(to.path) &&
+      !status.whatsappConnected
+    )
       router.push("/");
     else if (to.path === "/sync" && !status.googleConnected)
       router.push("/gauth");
     else if (to.path === "/whatsapp" && status.whatsappConnected)
       router.push("/gauth");
     else if (to.path === "/gauth" && status.googleConnected)
-      router.push("/sync");
+      router.push("/options");
   }
 );
 

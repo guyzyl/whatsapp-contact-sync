@@ -7,7 +7,7 @@ import patch from "express-ws/lib/add-ws-method";
 import { Auth } from "googleapis";
 import { Client, WAState } from "whatsapp-web.js";
 
-import { SessionStatus } from "../../interfaces/api";
+import { SessionStatus, SyncOptions } from "../../interfaces/api";
 import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
@@ -64,8 +64,8 @@ router.ws("/ws", (ws: WebSocket, req: Request) => {
 router.get("/status", async (req: Request, res: Response) => {
   const status: SessionStatus = {
     whatsappConnected:
-      whatsappClientMap[req.sessionID] !== undefined &&
-      (await whatsappClientMap[req.sessionID].getState()) === WAState.CONNECTED,
+      (await whatsappClientMap[req.sessionID]?.getState()) ===
+      WAState.CONNECTED,
     googleConnected: googleAuthMap[req.sessionID] !== undefined,
   };
 
@@ -89,14 +89,15 @@ router.post("/init_gapi", (req: Request, res: Response) => {
   const token = req.body.token;
   const gAuth = googleLogin(token);
   googleAuthMap[req.sessionID] = gAuth;
-  res.redirect("/sync");
+  res.redirect("/options");
 });
 
 router.get("/init_sync", (req: Request, res: Response) => {
   initSync(
     wsMap[req.sessionID],
     whatsappClientMap[req.sessionID],
-    googleAuthMap[req.sessionID]
+    googleAuthMap[req.sessionID],
+    req.query as SyncOptions
   );
   res.send("{}");
 });

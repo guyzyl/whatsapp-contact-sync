@@ -19,3 +19,7 @@ export interface SessionStatus {
   whatsappConnected: boolean;
   googleConnected: boolean;
 }
+
+export interface SyncOptions {
+  overwrite_photos?: string; // "true" or "false" (since converted to string via query params)
+}
