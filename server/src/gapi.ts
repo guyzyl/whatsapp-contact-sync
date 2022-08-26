@@ -32,7 +32,7 @@ export async function listContacts(
     const res = await people.people.connections.list({
       resourceName: "people/me",
       pageSize: pageSize,
-      personFields: "names,emailAddresses,phoneNumbers",
+      personFields: "names,emailAddresses,phoneNumbers,photos",
       pageToken: nextPageToken,
     });
 
@@ -51,6 +51,9 @@ export async function listContacts(
               .map((phoneNumber) =>
                 phoneNumber.canonicalForm!.replace("+", "")
               ),
+            hasPhoto: !connection.photos // Check if photos contain only the "default" photo
+              ?.map((photo) => photo.default)
+              .every((v) => v === true),
           }
       );
 
