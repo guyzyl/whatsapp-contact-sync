@@ -16,7 +16,9 @@ export default defineComponent({
   },
   methods: {
     initSync() {
-      fetch("/api/init_sync", { credentials: "include" });
+      fetch(`/api/init_sync${window.location.search}`, {
+        credentials: "include",
+      });
     },
     onSyncProgress(progress: SyncProgress): void {
       this.syncProgress = progress.progress;
