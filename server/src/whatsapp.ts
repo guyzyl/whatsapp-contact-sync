@@ -46,7 +46,6 @@ export async function loadContacts(
         <SimpleContact>{
           id: contact.id._serialized,
           numbers: [contact.number],
-          name: contact.name,
         }
     );
 
