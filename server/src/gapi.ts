@@ -45,7 +45,6 @@ export async function listContacts(
         (connection) =>
           <SimpleContact>{
             id: connection.resourceName,
-            name: connection.names![0].displayName,
             numbers: connection
               .phoneNumbers!.filter((phoneNumber) => phoneNumber.canonicalForm)
               .map((phoneNumber) =>
