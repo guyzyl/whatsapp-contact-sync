@@ -4,101 +4,62 @@ import { WebSocket } from "ws";
 // @ts-ignore
 import patch from "express-ws/lib/add-ws-method";
 
-import { Auth } from "googleapis";
-import { Client, WAState } from "whatsapp-web.js";
+import { WAState } from "whatsapp-web.js";
 
 import { SessionStatus, SyncOptions } from "../../interfaces/api";
 import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
+import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
 
 // Based on https://github.com/HenningM/express-ws/issues/86
 patch(express.Router);
 const router = express.Router({ mergeParams: true });
-
-/*
-  Session id to objects mapping (since they cant be stored in session directly).
-*/
-let wsMap: { [id: string]: WebSocket } = {};
-let whatsappClientMap: { [id: string]: Client } = {};
-let googleAuthMap: { [id: string]: Auth.OAuth2Client } = {};
-let cleanupMap: { [id: string]: ReturnType<typeof setTimeout> } = {};
-
-function cleanup(sessionID: string) {
-  /*
-    Cleanup the session and client objects.
-    This is done with a timeout to prevent cleanup on websocket disconnect
-      and re-connect (for example, during a page refresh).
-  */
-  const timeout = setTimeout(async () => {
-    if (whatsappClientMap[sessionID] !== undefined) {
-      try {
-        const client = whatsappClientMap[sessionID];
-        delete whatsappClientMap[sessionID];
-        client.destroy();
-      } catch (e) {}
-    }
-
-    delete googleAuthMap[sessionID];
-    delete wsMap[sessionID];
-  }, 30 * 1000);
-
-  cleanupMap[sessionID] = timeout;
-}
 
 router.get("/", (req: Request, res: Response) => {
   res.send("{}");
 });
 
 router.ws("/ws", (ws: WebSocket, req: Request) => {
-  if (cleanupMap[req.sessionID] !== undefined) {
-    clearTimeout(cleanupMap[req.sessionID]);
-    delete cleanupMap[req.sessionID];
-  }
-
-  ws.addEventListener("close", () => cleanup(req.sessionID));
-  wsMap[req.sessionID] = ws;
+  setInCache(req.sessionID, "ws", ws);
 });
 
 // Used by route guard
 router.get("/status", async (req: Request, res: Response) => {
   const status: SessionStatus = {
     whatsappConnected:
-      (await whatsappClientMap[req.sessionID]?.getState()) ===
+      (await getFromCache(req.sessionID, "whatsapp")?.getState()) ===
       WAState.CONNECTED,
-    googleConnected: googleAuthMap[req.sessionID] !== undefined,
+    googleConnected: getFromCache(req.sessionID, "gauth") !== undefined,
   };
 
   res.send(status);
 });
 
 router.get("/init_whatsapp", async (req: Request, res: Response) => {
-  if (whatsappClientMap[req.sessionID] !== undefined)
+  if (getFromCache(req.sessionID, "whatsapp") !== undefined)
     try {
-      const client = whatsappClientMap[req.sessionID];
-      delete whatsappClientMap[req.sessionID];
+      const client = getFromCache(req.sessionID, "whatsapp");
+      deleteFromCache(req.sessionID, "whatsapp");
       client.destroy();
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
 
-  const client = initWhatsApp(wsMap[req.sessionID]);
-  whatsappClientMap[req.sessionID] = client;
+  const client = initWhatsApp(req.sessionID);
+  setInCache(req.sessionID, "whatsapp", client);
   res.send("{}");
 });
 
 router.post("/init_gapi", (req: Request, res: Response) => {
   const token = req.body.token;
   const gAuth = googleLogin(token);
-  googleAuthMap[req.sessionID] = gAuth;
+  setInCache(req.sessionID, "gauth", gAuth);
   res.redirect("/options");
 });
 
 router.get("/init_sync", (req: Request, res: Response) => {
-  initSync(
-    wsMap[req.sessionID],
-    whatsappClientMap[req.sessionID],
-    googleAuthMap[req.sessionID],
-    req.query as SyncOptions
-  );
+  initSync(req.sessionID, req.query as SyncOptions);
   res.send("{}");
 });
 

@@ -6,6 +6,7 @@ import { sendEvent } from "./ws";
 import { Base64 } from "./types";
 import { SimpleContact } from "./interfaces";
 import { EventType } from "../../interfaces/api";
+import { getFromCache } from "./cache";
 
 const puppeteerOptions = {
   puppeteer: {
@@ -17,14 +18,16 @@ const puppeteerOptions = {
   },
 };
 
-export function initWhatsApp(ws: WebSocket): Client {
+export function initWhatsApp(id: string): Client {
   const client = new Client(puppeteerOptions);
 
   client.on("qr", (qr: string) => {
+    let ws = getFromCache(id, "ws");
     sendEvent(ws, EventType.WhatsAppQR, qr);
   });
 
   client.on("ready", async () => {
+    let ws = getFromCache(id, "ws");
     sendEvent(ws, EventType.Redirect, "/gauth");
   });
 
