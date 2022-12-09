@@ -2,6 +2,8 @@
 import { defineComponent } from "vue";
 import QrcodeVue from "qrcode.vue";
 import { event } from "vue-gtag";
+import isbot from "isbot";
+
 import { EventType } from "../../../interfaces/api";
 import { addHandler } from "../services/ws";
 
@@ -11,7 +13,8 @@ export default defineComponent({
   }),
   mounted() {
     addHandler(EventType.WhatsAppQR, this.onQR);
-    this.initWhatsApp();
+    // Make sure we don't load the QR code for bots (this is uses resources on the server)
+    if (!isbot(navigator.userAgent)) this.initWhatsApp();
   },
   methods: {
     async initWhatsApp() {

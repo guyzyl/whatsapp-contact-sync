@@ -11,6 +11,7 @@ import App from "./App.vue";
 import "./index.css";
 import { initWs } from "./services/ws";
 import { SessionStatus } from "../../interfaces/api";
+import isbot from "isbot";
 
 const routes = [
   { path: "/", component: () => import("./pages/Home.vue") },
@@ -34,7 +35,8 @@ router.beforeEach(
 
     // Don't make any checks for serving the index page.
     // This is done so the user can access it even if the backend is down.
-    if (to.path == "/") return;
+    // Additionally, bots are allowed to access any page they want.
+    if (to.path == "/" || isbot(navigator.userAgent)) return;
 
     const response = await fetch("/api/status", { credentials: "include" });
     const status: SessionStatus = await response.json();
