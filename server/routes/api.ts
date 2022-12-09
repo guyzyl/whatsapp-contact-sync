@@ -16,11 +16,39 @@ import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
 patch(express.Router);
 const router = express.Router({ mergeParams: true });
 
+function cleanup(sessionID: string) {
+  /*
+    Cleanup the session and client objects.
+    This is done with a timeout to prevent cleanup on websocket disconnect
+      and re-connect (for example, during a page refresh).
+  */
+  const timeout = setTimeout(async () => {
+    if (getFromCache(sessionID, "whatsapp") !== undefined) {
+      try {
+        const client = getFromCache(sessionID, "whatsapp");
+        deleteFromCache(sessionID, "whatsapp");
+        client.destroy();
+      } catch (e) {}
+    }
+
+    deleteFromCache(sessionID, "gauth");
+    deleteFromCache(sessionID, "ws");
+  }, 30 * 1000);
+
+  setInCache(sessionID, "cleanup", timeout);
+}
+
 router.get("/", (req: Request, res: Response) => {
   res.send("{}");
 });
 
 router.ws("/ws", (ws: WebSocket, req: Request) => {
+  if (getFromCache(req.sessionID, "cleanup") !== undefined) {
+    clearTimeout(getFromCache(req.sessionID, "cleanup"));
+    deleteFromCache(req.sessionID, "cleanup");
+  }
+
+  ws.addEventListener("close", () => cleanup(req.sessionID));
   setInCache(req.sessionID, "ws", ws);
 });
 
