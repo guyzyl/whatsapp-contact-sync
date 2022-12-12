@@ -53,7 +53,7 @@ export default defineComponent({
           v-if="!qrData"
         ></button>
         <qrcode-vue
-          class="inline-flex"
+          class="inline-flex qr-code"
           v-if="qrData"
           :value="qrData"
           :size="288"

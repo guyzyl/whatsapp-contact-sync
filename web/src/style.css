@@ -78,3 +78,10 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.qr-code {
+  border-width: 5px;
+  border-style: solid;
+  border-color: #747bff;
+  border-radius: 8px;
+}
