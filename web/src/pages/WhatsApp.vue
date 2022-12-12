@@ -52,12 +52,12 @@ export default defineComponent({
           class="btn btn-square btn-outline loading w-72 h-72"
           v-if="!qrData"
         ></button>
-          <qrcode-vue
-            class="inline-flex qr-code"
-            v-if="qrData"
-            :value="qrData"
-            :size="288"
-          ></qrcode-vue>
+        <qrcode-vue
+          class="inline-flex qr-code"
+          v-if="qrData"
+          :value="qrData"
+          :size="288"
+        ></qrcode-vue>
       </div>
     </div>
   </div>
