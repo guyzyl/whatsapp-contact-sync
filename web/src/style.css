@@ -80,8 +80,8 @@ button:focus-visible {
 }
 
 .qr-code {
-  border-width: 5px;
+  border-width: 10px;
   border-style: solid;
-  border-color: #747bff;
+  border-color: white;
   border-radius: 8px;
 }
