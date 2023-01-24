@@ -8,17 +8,17 @@ A simple web app for syncing the profile pictures from WhatsApp to Google Contac
 The app matches contacts based on their phone numbers, and utilizes
 [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) and [Google People API](https://developers.google.com/people) to update the profile picture in Google Contacts.
 
-## Why Was This Developed?
-
-Whenever someone used to call me or I looked them up in my contacts, they all apear as colorful circles with a single letter in it.\
-The annoying part is that every single person I know has a WhatsApp account which has a profile picture. They are both based on the same phone number but the picture is only available in one of them.\
-In order to fix this grievence I developed this app which allows anyone to sync their contacts photos from WhatsApp to Google Contacts.
-
 ## Demo
 
 <p align="center">
     <img src="https://user-images.githubusercontent.com/3015856/214192748-1681d9be-201a-4ffc-b8da-79857718b7eb.gif" width="600"/>
 </p>
+
+## Why Was This Developed?
+
+Whenever someone used to call me or I looked them up in my contacts, they all apear as colorful circles with a single letter in it.\
+The annoying part is that every single person I know has a WhatsApp account which has a profile picture. They are both based on the same phone number but the picture is only available in one of them.\
+In order to fix this grievence I developed this app which allows anyone to sync their contacts photos from WhatsApp to Google Contacts.
 
 ## How To Use
 
