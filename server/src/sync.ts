@@ -49,6 +49,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
     sendEvent(ws, EventType.SyncProgress, {
       progress: (index / googleContacts.length) * 100,
       syncCount: syncCount,
+      totalContacts: googleContacts.length,
       image: photo,
     });
     photo = null;

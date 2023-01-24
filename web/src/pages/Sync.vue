@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { event } from 'vue-gtag'
 import { EventType, SyncProgress } from "../../../interfaces/api";
 import { addHandler } from "../services/ws";
 
@@ -9,18 +10,30 @@ export default defineComponent({
     syncProgress: 0,
     syncCount: 0,
     images: [] as string[],
+    totalContactsPushed: false,
   }),
+
   mounted() {
     addHandler(EventType.SyncProgress, this.onSyncProgress);
     this.initSync();
   },
+
   methods: {
     initSync() {
       fetch(`/api/init_sync${window.location.search}`, {
         credentials: "include",
       });
     },
+
     onSyncProgress(progress: SyncProgress): void {
+      if (!this.totalContactsPushed) {
+        event("num_contacts_synced", {
+          method: "Google",
+          value: progress.totalContacts,
+        });
+        this.totalContactsPushed = true;
+      }
+
       this.syncProgress = progress.progress;
       this.syncCount = progress.syncCount;
       if (progress.image) {
