@@ -12,6 +12,7 @@ export interface Event {
 export interface SyncProgress {
   progress: number;
   syncCount: number;
+  totalContacts?: number;
   image?: string;
 }
 
