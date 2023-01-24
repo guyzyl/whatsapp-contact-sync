@@ -14,6 +14,12 @@ Whenever someone used to call me or I looked them up in my contacts, they all ap
 The annoying part is that every single person I know has a WhatsApp account which has a profile picture. They are both based on the same phone number but the picture is only available in one of them.\
 In order to fix this grievence I developed this app which allows anyone to sync their contacts photos from WhatsApp to Google Contacts.
 
+## Demo
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/3015856/214192748-1681d9be-201a-4ffc-b8da-79857718b7eb.gif" width="600"/>
+</p>
+
 ## How To Use
 
 The app is extremley easy to use (and self explantory):
