@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "daisyui": "^2.19.0",
+    "daisyui": "^2.51.3",
     "isbot": "^3.6.6",
     "qrcode.vue": "^3.3.3",
     "vue": "^3.2.37",
