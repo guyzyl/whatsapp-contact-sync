@@ -20,7 +20,7 @@
     "express-session": "^1.17.3",
     "express-winston": "^4.2.0",
     "express-ws": "^5.0.2",
-    "googleapis": "^109.0.1",
+    "googleapis": "^112.0.0",
     "limiter": "^2.1.0",
     "lru-cache": "^7.14.1",
     "memorystore": "^1.6.7",
