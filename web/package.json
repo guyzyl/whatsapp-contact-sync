@@ -11,7 +11,7 @@
   "dependencies": {
     "daisyui": "^2.51.3",
     "isbot": "^3.6.7",
-    "qrcode.vue": "^3.3.3",
+    "qrcode.vue": "^3.3.4",
     "vue": "^3.2.37",
     "vue-gtag": "^2.0.1",
     "vue-router": "^4.1.2"
