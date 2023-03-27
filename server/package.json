@@ -36,7 +36,7 @@
     "@types/node": "^18.11.12",
     "@types/ws": "^8.5.3",
     "nodemon": "^2.0.20",
-    "open": "^8.4.0",
+    "open": "^9.1.0",
     "server-destroy": "^1.0.1",
     "ts-node": "^10.9.1"
   }
