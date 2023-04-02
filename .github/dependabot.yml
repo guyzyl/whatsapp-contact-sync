@@ -9,13 +9,3 @@ updates:
     allow:
       - dependency-name: "whatsapp-web.js"
         dependency-type: "direct"
-
-  - package-ecosystem: "npm"
-    directory: "/server"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/web"
-    schedule:
-      interval: "weekly"
