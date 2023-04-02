@@ -14,7 +14,7 @@
     "qrcode.vue": "^3.3.3",
     "vue": "^3.2.47",
     "vue-gtag": "^2.0.1",
-    "vue-router": "^4.1.2"
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.9",
