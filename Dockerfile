@@ -54,6 +54,10 @@ RUN apk update && \
 
 COPY ./assets/nginx.conf /etc/nginx/nginx.conf
 COPY ./assets/entrypoint.sh .
+# Install dos2unix, convert line endings of entrypoint.sh, and then remove dos2unix
+RUN apk add --no-cache dos2unix && \
+    dos2unix entrypoint.sh && \
+    apk del dos2unix
 RUN chmod 755 entrypoint.sh
 
 COPY --from=web-build /app/web/dist /var/www/html
