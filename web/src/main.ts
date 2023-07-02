@@ -55,14 +55,22 @@ router.beforeEach(
   }
 );
 
+let currentRoute: RouteLocationNormalized;
+
+router.afterEach((to: RouteLocationNormalized) => {
+  // This is run after each navigation, including the initial navigation.
+  currentRoute = to;
+});
+
 const vueTagSettings = {
-  pageTrackerTemplate(to: RouteLocationNormalized) {
+  pageTrackerTemplate: () => {
     return {
-      page_title: to.path,
-      page_path: to.path,
+      page_title: currentRoute.path,
+      page_path: currentRoute.path,
     };
   },
   config: { id: "G-4PJJZRPWG4" },
 };
+
 
 createApp(App).use(router).use(VueGtag, vueTagSettings, router).mount("#app");
