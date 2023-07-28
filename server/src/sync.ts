@@ -19,12 +19,19 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   const gAuth: Auth.OAuth2Client = getFromCache(id, "gauth");
 
   const googleContacts: SimpleContact[] = await listContacts(gAuth);
-  const whatsappContacts: Map<string, string> = await loadContacts(whatsappClient);
+  const whatsappContacts: Map<string, string> = await loadContacts(
+    whatsappClient
+  );
 
   let syncCount: number = 0;
   let photo: string | null = null;
 
-  for (const [index, googleContact] of googleContacts.entries()) {
+  // For some reason all of the contacts that don't have a photo are at the beggining of the array.
+  // This causes the sync to feel slow since no photos show up on the UI.
+  // To "fix" this, we shuffle the array so that the contacts without photos are spread out.
+  const shuffledGoogleContacts = googleContacts.sort(() => Math.random() - 0.5);
+
+  for (const [index, googleContact] of shuffledGoogleContacts.entries()) {
     if (ws.readyState !== WebSocket.OPEN) return; // Stop sync if user disconnected.
 
     if (syncOptions.overwrite_photos === "false" && googleContact.hasPhoto)
