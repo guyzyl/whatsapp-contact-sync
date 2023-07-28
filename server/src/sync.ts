@@ -26,7 +26,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   let syncCount: number = 0;
   let photo: string | null = null;
 
-  // For some reason all of the contacts that don't have a photo are at the beggining of the array.
+  // For some reason all of the contacts that don't have a photo are at the beginning of the array.
   // This causes the sync to feel slow since no photos show up on the UI.
   // To "fix" this, we shuffle the array so that the contacts without photos are spread out.
   const shuffledGoogleContacts = googleContacts.sort(() => Math.random() - 0.5);
