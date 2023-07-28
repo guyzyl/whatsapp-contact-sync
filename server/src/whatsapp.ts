@@ -8,7 +8,7 @@ import { SimpleContact } from "./interfaces";
 import { EventType } from "../../interfaces/api";
 import { getFromCache } from "./cache";
 
-const puppeteerOptions = {
+const clientOptions = {
   puppeteer: {
     executablePath:
       process.env.RUNNING_IN_DOCKER === "true"
@@ -19,7 +19,7 @@ const puppeteerOptions = {
 };
 
 export function initWhatsApp(id: string): Client {
-  const client = new Client(puppeteerOptions);
+  const client = new Client(clientOptions);
 
   client.on("qr", (qr: string) => {
     let ws = getFromCache(id, "ws");
@@ -39,20 +39,16 @@ export function initWhatsApp(id: string): Client {
 
 export async function loadContacts(
   client: Client
-): Promise<Array<SimpleContact>> {
+): Promise<Map<string, string>> {
   const contacts: Contact[] = await client.getContacts();
 
-  const simpleContacts: Array<SimpleContact> = contacts
-    .filter((contact) => contact.isMyContact)
-    .map(
-      (contact) =>
-        <SimpleContact>{
-          id: contact.id._serialized,
-          numbers: [contact.number],
-        }
-    );
+  const contactsMap: Map<string, string> = new Map();
+  contacts.forEach((contact) => {
+    if (contact.id.user && contact.id._serialized)
+      contactsMap.set(contact.id.user, contact.id._serialized);
+  });
 
-  return simpleContacts;
+  return contactsMap;
 }
 
 export async function downloadFile(
@@ -60,9 +56,7 @@ export async function downloadFile(
   whatsappId: string
 ): Promise<Base64 | null> {
   const photoUrl = await client.getProfilePicUrl(whatsappId);
-  if (!photoUrl) {
-    return null;
-  }
+  if (!photoUrl) return null;
 
   const image = await MessageMedia.fromUrl(photoUrl);
   return image.data;

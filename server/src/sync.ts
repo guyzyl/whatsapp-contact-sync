@@ -19,7 +19,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   const gAuth: Auth.OAuth2Client = getFromCache(id, "gauth");
 
   const googleContacts: SimpleContact[] = await listContacts(gAuth);
-  const whatsappContacts: SimpleContact[] = await loadContacts(whatsappClient);
+  const whatsappContacts: Map<string, string> = await loadContacts(whatsappClient);
 
   let syncCount: number = 0;
   let photo: string | null = null;
@@ -31,12 +31,10 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
       continue;
 
     for (const phoneNumber of googleContact.numbers) {
-      const whatsappContact = whatsappContacts.find((contact) =>
-        contact.numbers.includes(phoneNumber)
-      );
-      if (!whatsappContact) continue;
+      const whatsappContactId = whatsappContacts.get(phoneNumber);
+      if (!whatsappContactId) continue;
 
-      photo = await downloadFile(whatsappClient, whatsappContact.id);
+      photo = await downloadFile(whatsappClient, whatsappContactId);
       if (photo === null) break;
 
       await limiter.removeTokens(1);
