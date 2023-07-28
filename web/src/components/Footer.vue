@@ -2,11 +2,11 @@
 
 <template>
   <div>
-    <footer class="footer items-center px-4 py-2 bg-base-200 text-neutral">
-      <div class="items-center grid-flow-col">
+    <footer class="footer px-4 py-2 bg-base-200 text-neutral grid-cols-2">
+      <div class="grid-flow-col">
         <router-link to="/privacy" tag="a">Privacy Policy</router-link>
       </div>
-      <div class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
+      <div class="grid-flow-col justify-self-end">
         <a href="https://github.com/guyzyl/whatsapp-contact-sync"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
