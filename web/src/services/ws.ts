@@ -20,7 +20,6 @@ export async function initWs(): Promise<void> {
   WS = new WebSocket(`${wsType}://${location.host}/api/ws`);
 
   WS.onopen = (wsEvent) => {
-    console.log(`WS connected to server - ${wsEvent}`);
     isWsReady.resolve(true);
   };
 
