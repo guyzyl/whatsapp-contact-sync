@@ -133,3 +133,4 @@ dist
 token.json
 credentials.json
 build
+.wwebjs_cache
