@@ -38,7 +38,16 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
       continue;
 
     for (const phoneNumber of googleContact.numbers) {
-      const whatsappContactId = whatsappContacts.get(phoneNumber);
+      let whatsappContactId = whatsappContacts.get(phoneNumber);
+
+      // Fix for Brazilian numbers with extra '9'
+      if (!whatsappContactId && phoneNumber.slice(0, 2) === '55') {
+        if (phoneNumber.length === 12) {
+          whatsappContactId = whatsappContacts.get(phoneNumber.slice(0, 4) + '9' + phoneNumber.slice(4));
+        } else {
+          whatsappContactId = whatsappContacts.get(phoneNumber.slice(0, 4) + phoneNumber.slice(5));
+        }
+      }
       if (!whatsappContactId) continue;
 
       photo = await downloadFile(whatsappClient, whatsappContactId);
