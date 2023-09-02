@@ -10,5 +10,5 @@ done
 echo "Starting Nginx server"
 nginx &
 
-# Crach container if node failes
+# Crash container if node failes
 wait %1
