@@ -36,7 +36,10 @@ Setting up should take less then a minute, and syncing should take about 1 secon
 
 ## How to Run Locally
 
-In order for the backend to function, it requires an OAuth client id and secret + an API key.Since (for obvious reasons) this is a private app, you will need to create one for your own.You can see instructions on how to do that [here](https://developers.google.com/workspace/guides/create-credentials).Once you do that, create the file `server/.env`, and set the following environment variables:
+In order for the backend to function, it requires an OAuth client id and secret + an API key.
+Since (for obvious reasons) this is a private app, you will need to create one for your own.
+You can see instructions on how to do that [here](https://developers.google.com/workspace/guides/create-credentials).
+Once you do that, create the file `server/.env`, and set the following environment variables:
 
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
