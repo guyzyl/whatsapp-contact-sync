@@ -4,6 +4,14 @@
     <img src="web/public/logo.png" alt="logo" width="150"/>
 </p>
 
+<p align="center">
+    <img
+        src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+        alt="Buy Me A Coffee"
+        width="220px"
+    />
+</p>
+
 A simple web app for syncing the profile pictures from WhatsApp to Google Contacts.\
 The app matches contacts based on their phone numbers, and utilizes
 [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) and [Google People API](https://developers.google.com/people) to update the profile picture in Google Contacts.
