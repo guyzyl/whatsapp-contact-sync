@@ -5,11 +5,13 @@
 </p>
 
 <p align="center">
-    <img
-        src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-        alt="Buy Me A Coffee"
-        width="220px"
-    />
+    <a href="https://www.buymeacoffee.com/guyzyl">
+        <img
+            src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+            alt="Buy Me A Coffee"
+            width="220px"
+        />
+    </a>
 </p>
 
 A simple web app for syncing the profile pictures from WhatsApp to Google Contacts.\
