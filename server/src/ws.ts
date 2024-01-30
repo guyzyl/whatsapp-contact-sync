@@ -5,7 +5,7 @@ import { Event, EventType } from "../../interfaces/api";
 export function sendEvent(
   ws: WebSocket,
   eventType: EventType,
-  data: any
+  data: any = null,
 ): void {
   const event: Event = {
     type: eventType,

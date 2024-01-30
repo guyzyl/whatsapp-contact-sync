@@ -10,10 +10,14 @@ import { addHandler } from "../services/ws";
 export default defineComponent({
   data: () => ({
     qrData: "",
+    qrColorBlack: "#000000",
+    qrColorGray: "oklch(0.961151 0 0)",
+    waCon: false,
   }),
   mounted() {
     addHandler(EventType.WhatsAppQR, this.onQR);
-    // Make sure we don't load the QR code for bots (this is uses resources on the server)
+    addHandler(EventType.WhatsAppConnecting, this.onConnecting);
+    // Make sure we don't load the QR code for bots (this uses resources on the server)
     if (!isbot(navigator.userAgent)) this.initWhatsApp();
   },
   methods: {
@@ -23,6 +27,11 @@ export default defineComponent({
     onQR(data: string): void {
       if (!this.qrData) event("qr_loaded", { method: "Google" });
       this.qrData = data;
+    },
+    onConnecting(): void {
+      // Just in case the event is triggered multiple times
+      if (!this.waCon) event("whatsapp_connecting", { method: "Google" });
+      this.waCon = true;
     },
   },
   components: {
@@ -43,21 +52,30 @@ export default defineComponent({
           >
           for help.
           <br />
-          <b
-            >It may take a few seconds to authorize after the code is
-            scanned.</b
-          >
+          <b>Authorization will take a few seconds after QR code is scanned.</b>
         </p>
         <button
           class="btn btn-square btn-outline loading w-72 h-72"
           v-if="!qrData"
         ></button>
-        <qrcode-vue
-          class="inline-flex qr-code"
-          v-if="qrData"
-          :value="qrData"
-          :size="288"
-        ></qrcode-vue>
+        <div class="relative z-0">
+          <qrcode-vue
+            class="inline-flex qr-code"
+            v-if="qrData"
+            :value="qrData"
+            :size="288"
+            :foreground="waCon ? qrColorGray : qrColorBlack"
+          ></qrcode-vue>
+          <div
+            class="absolute inset-0 flex justify-center items-center z-10"
+            v-if="waCon"
+          >
+            <div class="grid">
+              <button class="btn btn-square btn-ghost loading w-auto"></button>
+              <p>WhatsApp Authorizing</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -1,5 +1,6 @@
 export enum EventType {
   WhatsAppQR = "whatsapp_qr",
+  WhatsAppConnecting = "whatsapp_connecting",
   Redirect = "redirect",
   SyncProgress = "sync_progress",
 }

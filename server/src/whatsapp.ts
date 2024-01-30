@@ -1,10 +1,7 @@
-import { WebSocket } from "ws";
-
 import { Client, Contact, MessageMedia } from "whatsapp-web.js";
 
 import { sendEvent } from "./ws";
 import { Base64 } from "./types";
-import { SimpleContact } from "./interfaces";
 import { EventType } from "../../interfaces/api";
 import { getFromCache } from "./cache";
 
@@ -24,6 +21,11 @@ export function initWhatsApp(id: string): Client {
   client.on("qr", (qr: string) => {
     let ws = getFromCache(id, "ws");
     sendEvent(ws, EventType.WhatsAppQR, qr);
+  });
+
+  client.on("loading_screen", async () => {
+    let ws = getFromCache(id, "ws");
+    sendEvent(ws, EventType.WhatsAppConnecting);
   });
 
   client.on("ready", async () => {
