@@ -72,7 +72,7 @@ export default defineComponent({
           >
             <div class="grid">
               <button class="btn btn-square btn-ghost loading w-auto"></button>
-              <p>WhatsApp Authenticating</p>
+              <p>WhatsApp Authorizing</p>
             </div>
           </div>
         </div>
