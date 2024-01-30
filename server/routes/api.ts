@@ -54,10 +54,15 @@ router.ws("/ws", (ws: WebSocket, req: Request) => {
 
 // Used by route guard
 router.get("/status", async (req: Request, res: Response) => {
-  const status: SessionStatus = {
-    whatsappConnected:
+  let whatsappConnected = false;
+  try {
+    whatsappConnected =
       (await getFromCache(req.sessionID, "whatsapp")?.getState()) ===
-      WAState.CONNECTED,
+      WAState.CONNECTED;
+  } catch {}
+
+  const status: SessionStatus = {
+    whatsappConnected,
     googleConnected: getFromCache(req.sessionID, "gauth") !== undefined,
   };
 
