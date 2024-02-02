@@ -1,8 +1,8 @@
 import LRU from "lru-cache";
 
 export let sessionCache: LRU<string, object> = new LRU({
-  max: 1024,
-  ttl: 3 * 60 * 60 * 1000,
+  max: 4096,
+  ttl: 60 * 60 * 1000,
 });
 
 export function getFromCache(id: string, key: string): any {
