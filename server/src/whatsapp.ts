@@ -1,4 +1,5 @@
 import { Client, Contact, MessageMedia } from "whatsapp-web.js";
+import makeWASocket, { ConnectionState } from "@whiskeysockets/baileys";
 
 import { sendEvent } from "./ws";
 import { Base64 } from "./types";
@@ -15,28 +16,35 @@ const clientOptions = {
   },
 };
 
-export function initWhatsApp(id: string): Client {
-  const client = new Client(clientOptions);
-
-  client.on("qr", (qr: string) => {
-    let ws = getFromCache(id, "ws");
-    sendEvent(ws, EventType.WhatsAppQR, qr);
+export function initWhatsApp(id: string): void {
+  const waSock = makeWASocket({
+    markOnlineOnConnect: false,
+    syncFullHistory: false,
+    // fireInitQueries: false,
+    printQRInTerminal: true,  // TODO: Remove this test
   });
 
-  client.on("loading_screen", async () => {
-    let ws = getFromCache(id, "ws");
-    sendEvent(ws, EventType.WhatsAppConnecting);
+
+  waSock.ev.on("connection.update", (conState: Partial<ConnectionState>) => {
+    const status = conState.connection;
+    const ws = getFromCache(id, "ws");
+
+    if (status === "open" || status === "connecting")
+      // sendEvent(ws, EventType.WhatsAppQR, conState.qr);
+      console.log(conState.qr);
+
+    // if (status === "connecting") sendEvent(ws, EventType.WhatsAppConnecting);
+    if (status === "connecting") console.log("Connecting to WhatsApp...");
+    else if (status === "open") console.log("/gauth");
+    // else if (status === "open") sendEvent(ws, EventType.Redirect, "/gauth");
+    // client.on("auth_failure", (msg) => {});
   });
 
-  client.on("ready", async () => {
-    let ws = getFromCache(id, "ws");
-    sendEvent(ws, EventType.Redirect, "/gauth");
+  waSock.ev.on("contacts.upsert", (contacts: Contact[]) => {
+
   });
 
-  client.on("auth_failure", (msg) => {});
-
-  client.initialize();
-  return client;
+  return waSock;
 }
 
 export async function loadContacts(
