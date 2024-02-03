@@ -84,7 +84,7 @@ export default defineComponent({
             </div>
           </div>
           <div class="avatar placeholder">
-            <div class="w-12 bg-neutral-focus text-neutral-content">
+            <div class="w-12 bg-neutral text-neutral-content">
               <span
                 >+{{
                   syncCount > imageDisplayedCount

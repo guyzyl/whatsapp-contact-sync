@@ -85,3 +85,14 @@ button:focus-visible {
   border-color: white;
   border-radius: 8px;
 }
+
+.qr-placeholder {
+  border: solid;
+  border-color: black;
+  border-radius: 8px;
+  border-width: 1px;
+}
+
+.center-spinner {
+  margin: 0px auto;
+}

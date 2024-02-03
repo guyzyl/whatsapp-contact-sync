@@ -11,7 +11,7 @@ import App from "./App.vue";
 import "./index.css";
 import { initWs } from "./services/ws";
 import { SessionStatus } from "../../interfaces/api";
-import isbot from "isbot";
+import { isbot } from "isbot";
 
 const routes = [
   { path: "/", component: () => import("./pages/Home.vue") },
@@ -71,6 +71,5 @@ const vueTagSettings = {
   },
   config: { id: "G-4PJJZRPWG4" },
 };
-
 
 createApp(App).use(router).use(VueGtag, vueTagSettings, router).mount("#app");
