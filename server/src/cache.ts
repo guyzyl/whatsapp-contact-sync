@@ -1,6 +1,6 @@
-import LRU from "lru-cache";
+import { LRUCache } from "lru-cache";
 
-export let sessionCache: LRU<string, object> = new LRU({
+export let sessionCache: LRUCache<string, object> = new LRUCache({
   max: 4096,
   ttl: 60 * 60 * 1000,
 });

@@ -2,7 +2,7 @@
 import { defineComponent } from "vue";
 import QrcodeVue from "qrcode.vue";
 import { event } from "vue-gtag";
-import isbot from "isbot";
+import { isbot } from "isbot";
 
 import { EventType } from "../../../interfaces/api";
 import { addHandler } from "../services/ws";
@@ -54,10 +54,9 @@ export default defineComponent({
           <br />
           <b>Authorization will take a few seconds after QR code is scanned.</b>
         </p>
-        <button
-          class="btn btn-square btn-outline loading w-72 h-72"
-          v-if="!qrData"
-        ></button>
+        <div class="qr-placeholder inline-flex w-72 h-72" v-if="!qrData">
+          <button class="center-spinner loading loading-spinner"></button>
+        </div>
         <div class="relative z-0">
           <qrcode-vue
             class="inline-flex qr-code"
@@ -71,7 +70,9 @@ export default defineComponent({
             v-if="waCon"
           >
             <div class="grid">
-              <button class="btn btn-square btn-ghost loading w-auto"></button>
+              <div
+                class="center-spinner loading loading-spinner inline-flex"
+              ></div>
               <p>WhatsApp Authorizing</p>
             </div>
           </div>
