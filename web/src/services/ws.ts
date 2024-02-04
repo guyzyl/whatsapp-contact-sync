@@ -9,7 +9,7 @@ export const isWsReady: Deferred<boolean> = new Deferred();
 let eventHandlers: { [eventType: string]: HandlerFunction } = {};
 
 export async function initWs(): Promise<void> {
-  if (WS && [WebSocket.OPEN, WebSocket.CONNECTING].includes(WS.readyState)) {
+  if (WS && WS.readyState) {
     return;
   }
 
