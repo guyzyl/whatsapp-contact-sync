@@ -18,6 +18,7 @@ const routes = [
   { path: "/privacy", component: () => import("./pages/Privacy.vue") },
   { path: "/whatsapp", component: () => import("./pages/WhatsApp.vue") },
   { path: "/gauth", component: () => import("./pages/GoogleAuth.vue") },
+  { path: "/contribute", component: () => import("./pages/Contribute.vue") },
   { path: "/options", component: () => import("./pages/Options.vue") },
   { path: "/sync", component: () => import("./pages/Sync.vue") },
 ];
