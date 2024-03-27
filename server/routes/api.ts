@@ -88,7 +88,10 @@ router.post("/init_gapi", (req: Request, res: Response) => {
   const token = req.body.token;
   const gAuth = googleLogin(token);
   setInCache(req.sessionID, "gauth", gAuth);
-  res.redirect("/options");
+
+  const redirectUrl =
+    process.env.NODE_ENV == "production" ? "/contribute" : "/options";
+  res.redirect(redirectUrl);
 });
 
 router.get("/init_sync", (req: Request, res: Response) => {
