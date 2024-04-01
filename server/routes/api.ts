@@ -11,6 +11,7 @@ import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
 import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
+import { isProd } from "../main";
 
 // Based on https://github.com/HenningM/express-ws/issues/86
 patch(express.Router);
@@ -89,8 +90,7 @@ router.post("/init_gapi", (req: Request, res: Response) => {
   const gAuth = googleLogin(token);
   setInCache(req.sessionID, "gauth", gAuth);
 
-  const redirectUrl =
-    process.env.NODE_ENV == "production" ? "/contribute" : "/options";
+  const redirectUrl = isProd ? "/contribute" : "/options";
   res.redirect(redirectUrl);
 });
 
