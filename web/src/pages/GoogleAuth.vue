@@ -94,11 +94,7 @@ export default defineComponent({
             id="signin-button"
             class="btn btn-outline btn-primary gap-4"
           >
-            <img
-              class="w-8"
-              alt="Google login"
-              src="/google_logo.svg"
-            />
+            <img class="w-8" alt="Google login" src="/google_logo.svg" />
             Sign in with Google
           </button>
         </div>
