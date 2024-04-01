@@ -16,9 +16,9 @@ import { isbot } from "isbot";
 const routes = [
   { path: "/", component: () => import("./pages/Home.vue") },
   { path: "/privacy", component: () => import("./pages/Privacy.vue") },
+  { path: "/contribute", component: () => import("./pages/Contribute.vue") },
   { path: "/whatsapp", component: () => import("./pages/WhatsApp.vue") },
   { path: "/gauth", component: () => import("./pages/GoogleAuth.vue") },
-  { path: "/contribute", component: () => import("./pages/Contribute.vue") },
   { path: "/options", component: () => import("./pages/Options.vue") },
   { path: "/sync", component: () => import("./pages/Sync.vue") },
 ];
@@ -43,6 +43,13 @@ router.beforeEach(
     const status: SessionStatus = await response.json();
 
     if (
+      ["/whatsapp", "/sync", "/gauth", "/options"].includes(to.path) &&
+      !status.purchased
+    )
+      router.push("/contribute");
+    else if (to.path === "/contribute" && status.purchased)
+      router.push("/whatsapp");
+    else if (
       ["/sync", "/gauth", "/options"].includes(to.path) &&
       !status.whatsappConnected
     )

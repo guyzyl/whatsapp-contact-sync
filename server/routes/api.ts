@@ -12,6 +12,7 @@ import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
 import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
 import { isProd } from "../main";
+import { checkPurchase } from "../src/payments";
 
 // Based on https://github.com/HenningM/express-ws/issues/86
 patch(express.Router);
@@ -65,6 +66,7 @@ router.get("/status", async (req: Request, res: Response) => {
   const status: SessionStatus = {
     whatsappConnected,
     googleConnected: getFromCache(req.sessionID, "gauth") !== undefined,
+    purchased: isProd ? getFromCache(req.sessionID, "purchased") : true,
   };
 
   res.send(status);
@@ -97,6 +99,13 @@ router.post("/init_gapi", (req: Request, res: Response) => {
 router.get("/init_sync", (req: Request, res: Response) => {
   initSync(req.sessionID, req.query as SyncOptions);
   res.send("{}");
+});
+
+router.post("/check_purchase", async (req: Request, res: Response) => {
+  const customerId = req.body.email;
+  const purchased = await checkPurchase(customerId);
+  setInCache(req.sessionID, "purchased", true);
+  res.send({ purchased });
 });
 
 export default router;
