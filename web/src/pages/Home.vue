@@ -1,10 +1,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { isWsReady } from "../services/ws";
+import { SessionStatus } from "../../../interfaces/api";
 
 export default defineComponent({
   data: () => ({
-    sessionStatus: {},
+    sessionStatus: undefined as SessionStatus | undefined,
     wsReady: false,
   }),
   mounted() {
@@ -42,12 +43,12 @@ export default defineComponent({
         </p>
         <!-- Button is disabled until WS is connected to ensure the backed is serving before continuing. -->
         <router-link
-          to="/whatsapp"
+          to="/contribute"
           class="btn btn-primary"
           :class="{ 'btn-disabled': !wsReady }"
         >
           {{
-            Object.values(sessionStatus).includes(true)
+            sessionStatus?.whatsappConnected || sessionStatus?.googleConnected
               ? "Continue"
               : "Get Started"
           }}</router-link
