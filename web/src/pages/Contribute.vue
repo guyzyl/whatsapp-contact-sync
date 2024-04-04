@@ -4,17 +4,37 @@ import { event } from "vue-gtag";
 
 export default defineComponent({
   data: () => ({
-    contributed: false,
+    email: "",
+    checkingPurchase: false,
+    showError: false,
   }),
 
-  mounted() {
-    event("contribution", { method: "Google" });
-  },
+  mounted() {},
 
   methods: {
     coffeeClicked() {
-      this.contributed = true;
       event("contribution_coffee_clicked", { method: "Google" });
+      this.showError = false;
+    },
+
+    checkPurchase() {
+      if (!this.email) return;
+      this.checkingPurchase = true;
+
+      fetch("/api/check_purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: this.email }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.purchased) {
+            this.$router.push("/whatsapp");
+          } else {
+            this.showError = true;
+            this.checkingPurchase = false;
+          }
+        });
     },
   },
 });
@@ -29,7 +49,15 @@ export default defineComponent({
           After paying hundreds of dollars for hosting whasync.com over the past
           year, I can no longer afford to pay for it myself.
           <br /><br />
-          Please help out so I can keep the service running 😊
+          To use <a href="/">whasync.com</a>, you'll need to help pay for the
+          servers and contribute money using the button bellow.
+          <br />
+          Each contribution gives you a month of access to the service!
+          <br /><br />
+          The project itself is open source, you can always run the project
+          locally if you prefer not to help out.
+          <br /><br />
+          Thanks for understanding 💜
         </p>
         <div class="mt-2" @click="coffeeClicked">
           <a href="https://www.buymeacoffee.com/guyzyl" target="_blank"
@@ -40,24 +68,68 @@ export default defineComponent({
               style="height: 60px !important; width: 217px !important"
           /></a>
         </div>
-        <div class="inline-flex max-w-64 py-1">
-          <label class="label cursor-pointer">
-            <input
-              type="checkbox"
-              class="checkbox mr-2"
-              v-model="contributed"
-            />
-            <span
-              >I'm an awesome person and helped pay for the servers! 💜</span
-            >
-          </label>
+
+        <div class="inline-flex max-w-64 py-4">
+          <div class="grid grid-cols-1">
+            <div class="inline">Email used for contribution:</div>
+            <div>
+              <label class="input input-bordered flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  class="w-4 h-4 opacity-70"
+                >
+                  <path
+                    d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z"
+                  />
+                  <path
+                    d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z"
+                  />
+                </svg>
+                <input
+                  v-model="email"
+                  v-on:input="showError = false"
+                  type="text"
+                  class="grow"
+                  placeholder="Email"
+                />
+              </label>
+            </div>
+          </div>
         </div>
+
+        <div
+          role="alert"
+          v-if="showError"
+          class="inline-flex mb-2 alert alert-error max-w-64"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>Failed to verify purchase.</span>
+        </div>
+
         <div class="mt-2">
-          <router-link
-            to="/options"
+          <a
+            @click="checkPurchase()"
             class="btn btn-primary"
-            :class="{ 'btn-disabled': !contributed }"
-            >Continue</router-link
+            :class="{ 'btn-disabled': !email || checkingPurchase }"
+            ><span
+              v-if="checkingPurchase"
+              class="loading loading-spinner"
+            ></span
+            >Continue</a
           >
         </div>
       </div>

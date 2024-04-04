@@ -21,6 +21,7 @@
     "express-winston": "^4.2.0",
     "express-ws": "^5.0.2",
     "googleapis": "^131.0.0",
+    "ioredis": "^5.3.2",
     "limiter": "^2.1.0",
     "lru-cache": "^10.2.0",
     "memorystore": "^1.6.7",

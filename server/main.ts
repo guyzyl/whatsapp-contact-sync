@@ -19,6 +19,7 @@ let ews = expressWs(express());
 const mStore = MemoryStore(session);
 const app = ews.app;
 const port = 8080;
+export const isProd = process.env.NODE_ENV == "production";
 
 /*
   Setup the session and cookie parser.
@@ -44,7 +45,7 @@ app.use(
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       httpOnly: false,
-      secure: process.env.NODE_ENV == "production" ? true : false,
+      secure: isProd ? true : false,
     },
     resave: false,
     saveUninitialized: true,
@@ -62,7 +63,7 @@ app.use(function (req: Request, res: Response, next: CallableFunction) {
   next();
 });
 
-if (process.env.NODE_ENV == "production") {
+if (isProd) {
   app.set("trust proxy", 1);
 }
 

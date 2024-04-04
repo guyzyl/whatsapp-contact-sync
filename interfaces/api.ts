@@ -20,6 +20,7 @@ export interface SyncProgress {
 export interface SessionStatus {
   whatsappConnected: boolean;
   googleConnected: boolean;
+  purchased: boolean;
 }
 
 export interface SyncOptions {
