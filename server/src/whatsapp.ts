@@ -1,10 +1,16 @@
-import { Client, Contact, MessageMedia } from "whatsapp-web.js";
+import {
+  Client,
+  Contact,
+  MessageMedia,
+  RemoteWebCacheOptions,
+} from "whatsapp-web.js";
 
 import { sendEvent } from "./ws";
 import { Base64 } from "./types";
 import { EventType } from "../../interfaces/api";
 import { getFromCache } from "./cache";
 
+const wwebVersion = "2.2407.3";
 const clientOptions = {
   puppeteer: {
     executablePath:
@@ -13,6 +19,10 @@ const clientOptions = {
         : undefined,
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
   },
+  webVersionCache: {
+    type: "remote",
+    remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
+  } as RemoteWebCacheOptions,
 };
 
 export function initWhatsApp(id: string): Client {
