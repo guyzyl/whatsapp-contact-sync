@@ -49,11 +49,15 @@ async function queryPurchase(customerId: string): Promise<boolean> {
 
   try {
     const purchaseId = await redisClient.get(customerId);
-    return purchaseId !== null;
+    if (purchaseId !== null) {
+      customerCache.push(customerId);
+      return true;
+    }
   } catch (e) {
     console.error(e);
-    return false;
   }
+
+  return false;
 }
 
 export async function checkPurchase(customerId: string): Promise<boolean> {
