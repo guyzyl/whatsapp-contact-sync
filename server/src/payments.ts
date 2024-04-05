@@ -16,9 +16,15 @@ async function queryPurchases() {
     { headers: { Authorization: `Bearer ${coffeeToken}` } }
   );
 
-  const json = await response.json();
-  const ThreeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
+  let json: any;
+  try {
+    json = await response.json();
+  } catch (e) {
+    console.error(e);
+    return;
+  }
 
+  const ThreeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
   for (const purchase of json.data) {
     if (Date.parse(purchase.support_created_on) > ThreeDaysAgo) {
       await recordPurchase(purchase.payer_email, purchase.support_id);
