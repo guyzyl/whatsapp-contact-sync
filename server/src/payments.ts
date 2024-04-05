@@ -9,6 +9,7 @@ const emailRegex =
 let redisClient: Redis;
 if (isProd || process.env.REDIS_URL)
   redisClient = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+let customerCache: Array<string> = [];
 
 async function queryPurchases() {
   const response = await fetch(
@@ -33,12 +34,30 @@ async function queryPurchases() {
 }
 
 async function recordPurchase(customerId: string, purhcaseId: string) {
-  await redisClient.set(customerId, purhcaseId, "EX", expires);
+  if (customerCache.includes(customerId)) return;
+
+  try {
+    await redisClient.set(customerId, purhcaseId, "EX", expires);
+    customerCache.push(customerId);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function queryPurchase(customerId: string): Promise<boolean> {
+  if (customerCache.includes(customerId)) return true;
+
+  try {
+    const purchaseId = await redisClient.get(customerId);
+    return purchaseId !== null;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
 }
 
 export async function checkPurchase(customerId: string): Promise<boolean> {
   if (!emailRegex.test(customerId)) return false;
   await queryPurchases();
-  const purchaseId = await redisClient.get(customerId);
-  return purchaseId !== null;
+  return await queryPurchase(customerId);
 }
