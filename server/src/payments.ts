@@ -9,9 +9,9 @@ const emailRegex =
 let redisClient: Redis;
 if (isProd || process.env.REDIS_URL)
   redisClient = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
-let customerCache: Array<string> = [];
+let customerCache: Map<string, string> = new Map();
 
-async function queryPurchases() {
+async function queryCoffeePurchases() {
   const response = await fetch(
     "https://developers.buymeacoffee.com/api/v1/supporters",
     { headers: { Authorization: `Bearer ${coffeeToken}` } }
@@ -28,29 +28,29 @@ async function queryPurchases() {
   const ThreeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
   for (const purchase of json.data) {
     if (Date.parse(purchase.support_created_on) > ThreeDaysAgo) {
-      await recordPurchase(purchase.payer_email, purchase.support_id);
+      await recordPurchase(purchase.payer_email);
     }
   }
 }
 
-async function recordPurchase(customerId: string, purhcaseId: string) {
-  if (customerCache.includes(customerId)) return;
+async function recordPurchase(email: string) {
+  if (await queryPurchase(email)) return;
 
   try {
-    await redisClient.set(customerId, purhcaseId, "EX", expires);
-    customerCache.push(customerId);
+    await redisClient.set(email, "", "EX", expires);
+    customerCache.set(email, "");
   } catch (e) {
     console.error(e);
   }
 }
 
-async function queryPurchase(customerId: string): Promise<boolean> {
-  if (customerCache.includes(customerId)) return true;
+async function queryPurchase(email: string): Promise<boolean> {
+  if (customerCache.has(email)) return true;
 
   try {
-    const purchaseId = await redisClient.get(customerId);
-    if (purchaseId !== null) {
-      customerCache.push(customerId);
+    const WAId = await redisClient.get(email);
+    if (WAId !== null) {
+      customerCache.set(email, WAId);
       return true;
     }
   } catch (e) {
@@ -60,8 +60,27 @@ async function queryPurchase(customerId: string): Promise<boolean> {
   return false;
 }
 
-export async function checkPurchase(customerId: string): Promise<boolean> {
-  if (!emailRegex.test(customerId)) return false;
-  await queryPurchases();
-  return await queryPurchase(customerId);
+export async function verifyPurchaseWAId(email: string, whatsappId: string) {
+  if (!isProd) return true;
+
+  if (customerCache.has(email)) {
+    const cachedWAId = customerCache.get(email);
+    if (cachedWAId !== "") return cachedWAId === whatsappId;
+  }
+
+  const queriedWAId = await redisClient.get(email);
+  if (queriedWAId === "") {
+    const ttl = await redisClient.ttl(email);
+    await redisClient.set(email, whatsappId, "EX", ttl);
+    customerCache.set(email, whatsappId);
+    return true;
+  }
+
+  return queriedWAId === whatsappId;
+}
+
+export async function checkPurchase(email: string): Promise<boolean> {
+  if (!emailRegex.test(email)) return false;
+  await queryCoffeePurchases();
+  return await queryPurchase(email);
 }
