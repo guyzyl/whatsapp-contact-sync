@@ -6,15 +6,22 @@ export default defineComponent({
   data: () => ({
     email: "",
     checkingPurchase: false,
-    showError: false,
+    defaultError: "Failed to verify purchase.",
+    waValidationError: "Purchase is valid for a single WhatsApp device only.",
+    errorMessage: null as string | null,
   }),
 
-  mounted() {},
+  mounted() {
+    if (this.$route.query.show_error) {
+      this.errorMessage = this.waValidationError;
+      event("contribution_error_shown", { method: "Google" });
+    }
+  },
 
   methods: {
     coffeeClicked() {
-      event("contribution_coffee_clicked", { method: "Google" });
-      this.showError = false;
+      this.errorMessage = null;
+      event("contribution_wa_validation_failed", { method: "Google" });
     },
 
     checkPurchase() {
@@ -31,8 +38,9 @@ export default defineComponent({
           if (data.purchased) {
             this.$router.push("/whatsapp");
           } else {
-            this.showError = true;
+            this.errorMessage = this.defaultError;
             this.checkingPurchase = false;
+            event("contribution_validation_failed", { method: "Google" });
           }
         });
     },
@@ -52,7 +60,8 @@ export default defineComponent({
           To use <a href="/">whasync.com</a>, you'll need to help pay for the
           servers and contribute money using the button bellow.
           <br />
-          Each contribution gives you a month of access to the service!
+          Each contribution gives you a month of access to the service for a
+          single WhatsApp device!
           <br /><br />
           The project itself is open source, you can always run the project
           locally if you prefer not to help out.
@@ -89,7 +98,7 @@ export default defineComponent({
                 </svg>
                 <input
                   v-model="email"
-                  v-on:input="showError = false"
+                  v-on:input="errorMessage = null"
                   type="text"
                   class="grow"
                   placeholder="Email"
@@ -101,7 +110,7 @@ export default defineComponent({
 
         <div
           role="alert"
-          v-if="showError"
+          v-if="errorMessage"
           class="inline-flex mb-2 alert alert-error max-w-64"
         >
           <svg
@@ -117,7 +126,7 @@ export default defineComponent({
               d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span>Failed to verify purchase.</span>
+          <span>{{ errorMessage }}</span>
         </div>
 
         <div class="mt-2">

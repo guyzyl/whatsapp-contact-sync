@@ -8,7 +8,8 @@ import {
 import { sendEvent } from "./ws";
 import { Base64 } from "./types";
 import { EventType } from "../../interfaces/api";
-import { getFromCache } from "./cache";
+import { deleteFromCache, getFromCache } from "./cache";
+import { verifyPurchaseWAId } from "./payments";
 
 const wwebVersion = "2.2407.3";
 const clientOptions = {
@@ -40,7 +41,18 @@ export function initWhatsApp(id: string): Client {
 
   client.on("ready", async () => {
     let ws = getFromCache(id, "ws");
-    sendEvent(ws, EventType.Redirect, "/gauth");
+    const email = getFromCache(id, "email");
+
+    if (await verifyPurchaseWAId(email, client.info.wid.user)) {
+      sendEvent(ws, EventType.Redirect, "/gauth");
+    } else {
+      deleteFromCache(id, "whatsapp");
+      deleteFromCache(id, "purchased");
+      try {
+        client.destroy();
+      } catch (e) {}
+      sendEvent(ws, EventType.Redirect, "/contribute?show_error=true");
+    }
   });
 
   client.on("auth_failure", (msg) => {});

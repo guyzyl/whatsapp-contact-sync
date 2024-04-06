@@ -100,9 +100,10 @@ router.get("/init_sync", (req: Request, res: Response) => {
 });
 
 router.post("/check_purchase", async (req: Request, res: Response) => {
-  const customerId = req.body.email;
-  const purchased = await checkPurchase(customerId);
-  setInCache(req.sessionID, "purchased", true);
+  const email = req.body.email;
+  const purchased = await checkPurchase(email);
+  setInCache(req.sessionID, "purchased", purchased);
+  setInCache(req.sessionID, "email", email);
   res.send({ purchased });
 });
 
