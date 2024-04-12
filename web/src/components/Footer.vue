@@ -1,8 +1,47 @@
-<script setup lang="ts"></script>
+<script lang="ts">
+import { defineComponent } from "vue";
+
+const steps = ["/contribute", "/whatsapp", "/gauth", "/options", "/sync"];
+
+export default defineComponent({
+  data: () => ({
+    showSteps: false,
+    showContribute: false,
+    currentStep: 0,
+  }),
+
+  mounted() {},
+
+  methods: {
+    updateData() {
+      this.showSteps = steps.includes(this.$route.path);
+      this.currentStep = steps.indexOf(this.$route.path);
+      this.showContribute = window.location.host === "whasync.com";
+    },
+  },
+
+  watch: {
+    $route(to, from) {
+      this.updateData();
+    },
+  },
+});
+</script>
 
 <template>
-  <div>
-    <footer class="footer px-4 py-2 bg-base-200 text-neutral grid-cols-2">
+  <div v-if="showSteps" class="bg-base-200 pt-4">
+    <ul class="steps">
+      <li v-if="showContribute" class="step step-primary">Contribute</li>
+      <li class="step" :class="{ 'step-primary': currentStep >= 1 }">
+        Authorize WhatsApp
+      </li>
+      <li class="step" :class="{ 'step-primary': currentStep >= 2 }">
+        Authorize Google
+      </li>
+      <li class="step" :class="{ 'step-primary': currentStep >= 3 }">Sync!</li>
+    </ul>
+
+    <footer class="footer px-4 py-2 text-neutral grid-cols-2">
       <div class="grid-flow-col">
         <router-link to="/privacy" tag="a">Privacy Policy</router-link>
       </div>
