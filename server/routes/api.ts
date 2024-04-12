@@ -78,9 +78,7 @@ router.get("/init_whatsapp", async (req: Request, res: Response) => {
       const client = getFromCache(req.sessionID, "whatsapp");
       deleteFromCache(req.sessionID, "whatsapp");
       client.destroy();
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
 
   const client = initWhatsApp(req.sessionID);
   setInCache(req.sessionID, "whatsapp", client);
