@@ -4,12 +4,12 @@ WORKDIR /app/web
 
 COPY ["web/package.json", "web/package-lock.json*", "./"]
 
-RUN npm install
+RUN yarn install
 
 COPY ./interfaces /app/interfaces
 COPY ./web .
 
-RUN npm run build
+RUN yarn run build
 
 
 # Build final image

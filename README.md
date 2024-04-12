@@ -61,13 +61,13 @@ Once that's done, you can go ahead and run the app:
 ```bash
 # Run backend
 cd server
-npm install
-npm run dev
+yarn install
+yarn run dev
 
 # Run web app
 cd web
-npm install
-npm run dev
+yarn install
+yarn run dev
 ```
 
 ## Build Docker Images

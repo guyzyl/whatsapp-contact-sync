@@ -6,15 +6,15 @@ WORKDIR /app/server
 
 COPY ["server/package.json", "server/package-lock.json*", "./"]
 
-RUN npm install
+RUN yarn install
 
 COPY ./interfaces /app/interfaces
 COPY ./server .
 
-RUN npm run build
+RUN yarn run build
 
 # Prepare node_modules for docker
-RUN npm prune --production
+RUN npm prune --omit=dev
 RUN apk update && \
     apk add curl && \
     curl -sf https://gobinaries.com/tj/node-prune | sh
