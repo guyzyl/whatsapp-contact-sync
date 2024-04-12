@@ -1,5 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { event } from "vue-gtag";
+
 import { isWsReady } from "../services/ws";
 import { SessionStatus } from "../../../interfaces/api";
 
@@ -17,6 +19,8 @@ export default defineComponent({
         this.sessionStatus = data;
       });
     });
+
+    event(`host_${window.location.host}`, { method: "Google" });
   },
   methods: {},
 });
