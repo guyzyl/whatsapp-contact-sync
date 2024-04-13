@@ -63,8 +63,10 @@ export default defineComponent({
           Each contribution gives you a month of access to the service for a
           single WhatsApp device!
           <br /><br />
-          The project itself is open source, you can always run it locally if
-          you prefer not to help out.
+          The project itself is
+          <a href="https://github.com/guyzyl/whatsapp-contact-sync"
+            >open source</a
+          >, you can always run it locally if you prefer not to help out.
           <br /><br />
           Thanks for understanding 💜
         </p>
