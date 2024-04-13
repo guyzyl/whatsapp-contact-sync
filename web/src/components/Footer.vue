@@ -29,8 +29,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <div v-if="showSteps" class="bg-base-200 pt-4">
-    <ul class="steps">
+  <div class="bg-base-200 pt-4">
+    <ul v-if="showSteps" class="steps">
       <li v-if="showContribute" class="step step-primary">Contribute</li>
       <li class="step" :class="{ 'step-primary': currentStep >= 1 }">
         Authorize WhatsApp
