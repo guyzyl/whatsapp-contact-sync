@@ -18,10 +18,23 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   const whatsappClient: Client = getFromCache(id, "whatsapp");
   const gAuth: Auth.OAuth2Client = getFromCache(id, "gauth");
 
-  const googleContacts: SimpleContact[] = await listContacts(gAuth);
-  const whatsappContacts: Map<string, string> = await loadContacts(
-    whatsappClient
-  );
+  let googleContacts: SimpleContact[];
+  let whatsappContacts: Map<string, string>;
+
+  try {
+    googleContacts = await listContacts(gAuth);
+    whatsappContacts = await loadContacts(whatsappClient);
+  } catch (e) {
+    console.error(e);
+    if (ws.readyState === WebSocket.OPEN) {
+      sendEvent(ws, EventType.SyncProgress, {
+        progress: 0,
+        syncCount: 0,
+        error: "Failed to load contacts, please try again.",
+      });
+    }
+    return;
+  }
 
   let syncCount: number = 0;
   let photo: string | null = null;
@@ -47,11 +60,11 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
       ) {
         if (phoneNumber.length === 12) {
           whatsappContactId = whatsappContacts.get(
-            phoneNumber.slice(0, 4) + "9" + phoneNumber.slice(4),
+            phoneNumber.slice(0, 4) + "9" + phoneNumber.slice(4)
           );
         } else {
           whatsappContactId = whatsappContacts.get(
-            phoneNumber.slice(0, 4) + phoneNumber.slice(5),
+            phoneNumber.slice(0, 4) + phoneNumber.slice(5)
           );
         }
       } else {

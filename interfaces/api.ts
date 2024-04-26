@@ -15,6 +15,7 @@ export interface SyncProgress {
   syncCount: number;
   totalContacts?: number;
   image?: string;
+  error?: string;
 }
 
 export interface SessionStatus {
