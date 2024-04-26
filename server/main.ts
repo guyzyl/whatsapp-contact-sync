@@ -21,6 +21,11 @@ const app = ews.app;
 const port = 8080;
 export const isProd = process.env.NODE_ENV == "production";
 
+// Catch uncaught exceptions, we don't want the server to crash.
+process.on("uncaughtException", (err) => {
+  console.log("Uncaught Exception:", err);
+});
+
 /*
   Setup the session and cookie parser.
   Based on - https://stackoverflow.com/a/55597997/1403643
