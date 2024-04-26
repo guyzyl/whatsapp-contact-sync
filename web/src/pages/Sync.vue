@@ -11,6 +11,7 @@ export default defineComponent({
     syncCount: 0,
     images: [] as string[],
     totalContactsPushed: false,
+    errorMessage: undefined as string | undefined,
   }),
 
   mounted() {
@@ -36,6 +37,7 @@ export default defineComponent({
 
       this.syncProgress = progress.progress;
       this.syncCount = progress.syncCount;
+      this.errorMessage = progress.error;
       if (progress.image) {
         this.images.push(progress.image);
         if (this.images.length > this.imageDisplayedCount) this.images.shift();
@@ -51,16 +53,32 @@ export default defineComponent({
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Sync In Progress</h1>
         <p class="py-6">
-          We're syncing your contacts, you can sit back and relax.
-          <br />
-          Syncing feels slow? You can read about it
-          <a
-            href="https://github.com/guyzyl/whatsapp-contact-sync/blob/24a9933c47579d9a49847ea5b5a8b8f00ea465ec/server/src/sync.ts#L17"
-            target="”_blank”"
-            >here</a
-          >.<br /><br />
+          Your contacts are syncing, you can sit back and relax.
+          <br /><br />
           (Syncing will stop if the tab is closed)
         </p>
+
+        <div
+          role="alert"
+          v-if="errorMessage"
+          class="inline-flex mb-2 alert alert-error max-w-64"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>{{ errorMessage }}</span>
+        </div>
+
         <div>
           <progress
             class="progress progress-primary w-5/6"
