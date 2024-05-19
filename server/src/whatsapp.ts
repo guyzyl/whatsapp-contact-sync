@@ -11,7 +11,7 @@ import { EventType } from "../../interfaces/api";
 import { deleteFromCache, getFromCache } from "./cache";
 import { verifyPurchaseWAId } from "./payments";
 
-const wwebVersion = "2.2322.15";
+const wwebVersion = "2.2407.3";
 const clientOptions = {
   puppeteer: {
     executablePath:
