@@ -25,7 +25,7 @@
     "limiter": "^2.1.0",
     "lru-cache": "^10.2.0",
     "memorystore": "^1.6.7",
-    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#webpack-exodus",
+    "whatsapp-web.js": "^1.25.0",
     "winston": "^3.11.0"
   },
   "devDependencies": {
