@@ -35,7 +35,7 @@ function cleanup(sessionID: string) {
 
     deleteFromCache(sessionID, "gauth");
     deleteFromCache(sessionID, "ws");
-  }, 30 * 1000);
+  }, 5 * 60 * 1000);  // 5 minutes.
 
   setInCache(sessionID, "cleanup", timeout);
 }
