@@ -54,14 +54,11 @@ export default defineComponent({
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Servers Are Expensive</h1>
         <p class="py-6">
-          After paying hundreds of dollars for hosting whasync.com over the past
-          year, I can no longer afford to pay for it myself.
-          <br /><br />
           To use <a href="/">whasync.com</a>, you'll need to help pay for the
           servers and contribute money using the button bellow.
           <br />
-          Each contribution gives you a month of access to the service for a
-          single WhatsApp device!
+          Each contribution gives you <strong>a month of access  for a
+          single WhatsApp device</strong>.
           <br /><br />
           The project itself is
           <a href="https://github.com/guyzyl/whatsapp-contact-sync"
@@ -70,19 +67,22 @@ export default defineComponent({
           <br /><br />
           Thanks for understanding 💜
         </p>
-        <div class="mt-2" @click="coffeeClicked">
-          <a href="https://www.buymeacoffee.com/guyzyl" target="_blank"
-            ><img
-              class="inline-flex"
-              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-              alt="Buy Me A Coffee"
-              style="height: 60px !important; width: 217px !important"
-          /></a>
+        <div class="mt-2">
+          <p>1. Contribute (1$)</p>
+          <div @click="coffeeClicked">
+            <a href="https://www.buymeacoffee.com/guyzyl" target="_blank"
+              ><img
+                class="inline-flex"
+                src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                alt="Buy Me A Coffee"
+                style="height: 60px !important; width: 217px !important"
+            /></a>
+          </div>
         </div>
 
-        <div class="inline-flex max-w-64 py-4">
+        <div class="inline-flex max-w-72 py-4">
           <div class="grid grid-cols-1">
-            <div class="inline">Email used for contribution:</div>
+            <div class="inline">2. Enter email used for contribution:</div>
             <div>
               <label class="input input-bordered flex items-center gap-2">
                 <svg
@@ -140,7 +140,7 @@ export default defineComponent({
               v-if="checkingPurchase"
               class="loading loading-spinner"
             ></span
-            >Continue</a
+            >3. Continue</a
           >
         </div>
       </div>
