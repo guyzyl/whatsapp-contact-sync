@@ -12,11 +12,13 @@ export default defineComponent({
     images: [] as string[],
     totalContactsPushed: false,
     errorMessage: undefined as string | undefined,
+    lastSyncReceived: null as number | null,
   }),
 
   mounted() {
     addHandler(EventType.SyncProgress, this.onSyncProgress);
     this.initSync();
+    setInterval(this.checkServerDisconnected, 5 * 1000);
   },
 
   methods: {
@@ -24,6 +26,14 @@ export default defineComponent({
       fetch(`/api/init_sync${window.location.search}`, {
         credentials: "include",
       });
+    },
+
+    checkServerDisconnected() {
+      // Display an error message if the server has disconnected.
+      this.errorMessage =
+        this.lastSyncReceived && Date.now() - this.lastSyncReceived > 30 * 1000
+          ? "Server has disconnected. Please refresh the page and restart the process."
+          : undefined;
     },
 
     onSyncProgress(progress: SyncProgress): void {
@@ -35,6 +45,7 @@ export default defineComponent({
         this.totalContactsPushed = true;
       }
 
+      this.lastSyncReceived = Date.now();
       this.syncProgress = progress.progress;
       this.syncCount = progress.syncCount;
       this.errorMessage = progress.error;
