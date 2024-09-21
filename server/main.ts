@@ -84,6 +84,6 @@ app.disable("etag");
 
 const routePrefix = process.env.ROUTE_PREFIX || "";
 app.use(routePrefix, router);
-app.listen(port, "localhost", () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Listening on port ${port}`);
 });
