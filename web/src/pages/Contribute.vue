@@ -57,8 +57,8 @@ export default defineComponent({
           To use <a href="/">whasync.com</a>, you'll need to help pay for the
           servers and contribute money using the button bellow.
           <br />
-          Each contribution gives you <strong>a month of access  for a
-          single WhatsApp device</strong>.
+          Each contribution gives you
+          <strong>a month of access for a single WhatsApp device</strong>.
           <br /><br />
           The project itself is
           <a href="https://github.com/guyzyl/whatsapp-contact-sync"
@@ -134,6 +134,7 @@ export default defineComponent({
         <div class="mt-2">
           <a
             @click="checkPurchase()"
+            @keydown.enter="checkPurchase()"
             class="btn btn-primary"
             :class="{ 'btn-disabled': !email || checkingPurchase }"
             ><span
