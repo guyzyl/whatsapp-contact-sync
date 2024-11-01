@@ -31,7 +31,9 @@ export default defineComponent({
     checkServerDisconnected() {
       // Display an error message if the server has disconnected.
       this.errorMessage =
-        this.lastSyncReceived && Date.now() - this.lastSyncReceived > 30 * 1000
+        this.lastSyncReceived &&
+        syncProgress !== 100 &&
+        Date.now() - this.lastSyncReceived > 30 * 1000
           ? "Server has disconnected. Please refresh the page and restart the process."
           : undefined;
     },
