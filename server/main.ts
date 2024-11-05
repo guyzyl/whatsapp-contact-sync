@@ -12,9 +12,6 @@ import expressWinston from "express-winston";
 
 import router from "./routes/api";
 
-import dotenv from "dotenv";
-dotenv.config();
-
 let ews = expressWs(express());
 const mStore = MemoryStore(session);
 const app = ews.app;
