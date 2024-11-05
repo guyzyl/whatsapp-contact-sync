@@ -3,9 +3,6 @@ import { google, Auth, people_v1 } from "googleapis";
 import { SimpleContact } from "./interfaces";
 import { Base64 } from "./types";
 
-import dotenv from "dotenv";
-dotenv.config();
-
 const pageSize: number = 250;
 
 export function googleLogin(
