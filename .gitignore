@@ -129,6 +129,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Mac files
+.DS_Store
+
 # additional
 token.json
 credentials.json

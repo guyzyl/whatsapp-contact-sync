@@ -4,13 +4,13 @@ import { WebSocket } from "ws";
 // @ts-ignore
 import patch from "express-ws/lib/add-ws-method";
 
-import { WAState } from "whatsapp-web.js";
+// import { WAState } from "whatsapp-web.js";
 
 import { SessionStatus, SyncOptions } from "../../interfaces/api";
 import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
-import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
+import { CacheType, deleteFromCache, getFromCache, setInCache } from "../src/cache";
 import { isProd } from "../main";
 import { checkPurchase } from "../src/payments";
 
@@ -25,16 +25,16 @@ function cleanup(sessionID: string) {
       and re-connect (for example, during a page refresh).
   */
   const timeout = setTimeout(async () => {
-    if (getFromCache(sessionID, "whatsapp") !== undefined) {
+    if (getFromCache(sessionID, CacheType.WASock) !== undefined) {
       try {
-        const client = getFromCache(sessionID, "whatsapp");
-        deleteFromCache(sessionID, "whatsapp");
+        const client = getFromCache(sessionID, CacheType.WASock);
+        deleteFromCache(sessionID, CacheType.WASock);
         client.destroy();
       } catch (e) {}
     }
 
-    deleteFromCache(sessionID, "gauth");
-    deleteFromCache(sessionID, "ws");
+    deleteFromCache(sessionID, CacheType.GAuth);
+    deleteFromCache(sessionID, CacheType.WS);
   }, 5 * 60 * 1000);  // 5 minutes.
 
   setInCache(sessionID, "cleanup", timeout);
@@ -59,8 +59,8 @@ router.get("/status", async (req: Request, res: Response) => {
   let whatsappConnected = false;
   try {
     whatsappConnected =
-      (await getFromCache(req.sessionID, "whatsapp")?.getState()) ===
-      WAState.CONNECTED;
+      (await getFromCache(req.sessionID, CacheType.WASock)?.getState()) ===
+      true;
   } catch {}
 
   const status: SessionStatus = {
@@ -73,15 +73,14 @@ router.get("/status", async (req: Request, res: Response) => {
 });
 
 router.get("/init_whatsapp", async (req: Request, res: Response) => {
-  if (getFromCache(req.sessionID, "whatsapp") !== undefined)
+  if (getFromCache(req.sessionID, CacheType.WASock) !== undefined)
     try {
-      const client = getFromCache(req.sessionID, "whatsapp");
-      deleteFromCache(req.sessionID, "whatsapp");
+      const client = getFromCache(req.sessionID, CacheType.WASock);
+      deleteFromCache(req.sessionID, CacheType.WASock);
       client.destroy();
     } catch (e) {}
 
-  const client = initWhatsApp(req.sessionID);
-  setInCache(req.sessionID, "whatsapp", client);
+  await initWhatsApp(req.sessionID);
   res.send("{}");
 });
 

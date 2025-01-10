@@ -1,7 +1,7 @@
 import { WebSocket } from "ws";
 import { Auth } from "googleapis";
 import { RateLimiter } from "limiter";
-import { Client } from "whatsapp-web.js";
+// import { Client } from "whatsapp-web.js";
 
 import { EventType, SyncOptions } from "../../interfaces/api";
 import { listContacts, updateContactPhoto } from "./gapi";
@@ -15,7 +15,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 1500 });
 
   const ws: WebSocket = getFromCache(id, "ws");
-  const whatsappClient: Client = getFromCache(id, "whatsapp");
+  // const whatsappClient: Client = getFromCache(id, "whatsapp");
   const gAuth: Auth.OAuth2Client = getFromCache(id, "gauth");
 
   let googleContacts: SimpleContact[];
@@ -23,7 +23,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
 
   try {
     googleContacts = await listContacts(gAuth);
-    whatsappContacts = await loadContacts(whatsappClient);
+    whatsappContacts = [];
   } catch (e) {
     console.error(e);
     if (ws.readyState === WebSocket.OPEN) {

@@ -47,11 +47,6 @@ USER root
 ENV RUNNING_IN_DOCKER="true"
 WORKDIR /app/server
 
-# Install Chromium
-RUN apk update && \
-    apk add --no-cache nss udev ttf-freefont chromium nginx && \
-    rm -rf /var/cache/apk/* /tmp/*
-
 COPY ./assets/nginx.conf /etc/nginx/nginx.conf
 COPY ./assets/entrypoint.sh .
 RUN chmod 755 entrypoint.sh

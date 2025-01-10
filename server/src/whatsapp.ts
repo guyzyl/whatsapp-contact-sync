@@ -1,87 +1,83 @@
-import {
-  Client,
+import makeWASocket, {
+  Browsers,
   Contact,
-  MessageMedia,
-  RemoteWebCacheOptions,
-} from "whatsapp-web.js";
+  DisconnectReason,
+  fetchLatestBaileysVersion,
+  makeInMemoryStore,
+  useMultiFileAuthState,
+  WASocket,
+} from "@whiskeysockets/baileys";
+import { Boom } from "@hapi/boom";
+import axios from "axios";
 
 import { sendEvent } from "./ws";
-import { Base64 } from "./types";
 import { EventType } from "../../interfaces/api";
-import { deleteFromCache, getFromCache } from "./cache";
-import { verifyPurchaseWAId } from "./payments";
+import { CacheType, getFromCache, setInCache } from "./cache";
 
-const wwebVersion = "2.2407.3";
-const clientOptions = {
-  puppeteer: {
-    executablePath:
-      process.env.RUNNING_IN_DOCKER === "true"
-        ? "/usr/bin/chromium-browser"
-        : undefined,
-    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
-  },
-  webVersionCache: {
-    type: "remote",
-    remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
-  } as RemoteWebCacheOptions,
-};
+const reconnectReasons = [
+  DisconnectReason.restartRequired,
+  DisconnectReason.connectionClosed,
+  DisconnectReason.connectionLost,
+  DisconnectReason.timedOut,
+];
 
-export function initWhatsApp(id: string): Client {
-  const client = new Client(clientOptions);
+export async function initWhatsApp(id: string) {
+  // TODO: Don't use file storage for auth state, and move outside of this function.
+  const { state } = await useMultiFileAuthState("baileys_auth_info");
+  const { version } = await fetchLatestBaileysVersion();
+  const waSocketOptions = {
+    version,
+    auth: state,
+    browsers: Browsers.windows("chrome"),
+  };
 
-  client.on("qr", (qr: string) => {
-    let ws = getFromCache(id, "ws");
-    sendEvent(ws, EventType.WhatsAppQR, qr);
-  });
+  console.log("Got here!"); // TODO: Remove
+  const waSock = makeWASocket(waSocketOptions);
+  setInCache(id, CacheType.WASock, waSock);
 
-  client.on("loading_screen", async () => {
-    let ws = getFromCache(id, "ws");
-    sendEvent(ws, EventType.WhatsAppConnecting);
-  });
+  const store = makeInMemoryStore({});
+  store.bind(waSock.ev);
+  setInCache(id, CacheType.WAStore, store);
 
-  client.on("ready", async () => {
-    let ws = getFromCache(id, "ws");
-    const email = getFromCache(id, "email");
-
-    if (await verifyPurchaseWAId(email, client.info.wid.user)) {
+  waSock.ev.on("connection.update", (update) => {
+    console.log("connection update", update); // TODO: Delete
+    if (update.connection === "close") {
+      const status = (update.lastDisconnect?.error as Boom)?.output?.statusCode;
+      if (reconnectReasons.includes(status)) {
+        console.log("Should reconnect!"); // TODO: Delete
+        waSock.ev.removeAllListeners("connection.update");
+        initWhatsApp(id);
+      }
+    } else if (update.connection === "open") {
+      console.log("opened connection"); // TODO: Delete
+      let ws = getFromCache(id, CacheType.WS);
       sendEvent(ws, EventType.Redirect, "/gauth");
-    } else {
-      deleteFromCache(id, "whatsapp");
-      deleteFromCache(id, "purchased");
-      try {
-        client.destroy();
-      } catch (e) {}
-      sendEvent(ws, EventType.Redirect, "/contribute?show_error=true");
+    } else if (update.qr) {
+      let ws = getFromCache(id, CacheType.WS);
+      sendEvent(ws, EventType.WhatsAppQR, update.qr);
     }
   });
 
-  client.on("auth_failure", (msg) => {});
-
-  client.initialize();
-  return client;
-}
-
-export async function loadContacts(
-  client: Client
-): Promise<Map<string, string>> {
-  const contacts: Contact[] = await client.getContacts();
-
-  const contactsMap: Map<string, string> = new Map();
-  contacts.forEach((contact) => {
-    if (contact.id.user && contact.id._serialized)
-      contactsMap.set(contact.id.user, contact.id._serialized);
+  waSock.ev.on("contacts.upsert", () => {
+    console.log("got contacts", Object.values(store.contacts));
   });
-
-  return contactsMap;
 }
 
-export async function downloadFile(
-  client: Client,
-  whatsappId: string
-): Promise<Base64 | null> {
-  const photoUrl = await client.getProfilePicUrl(whatsappId);
-  if (!photoUrl) return null;
+export async function getContacts(id: string): Promise<Map<string, Contact>> {
+  /*
+    Get the contacts from the cache.
+    We don't do this in the initWhatsApp function because it can take
+      a few seconds for the contacts to pushed (contacts.upsert).
+  */
+  const store = getFromCache(id, CacheType.WAStore);
+  return store.contacts;
+}
 
-  const image = await MessageMedia.fromUrl(photoUrl);
-  return image.data;
+export async function getProfilePic(id: string, waId: string) {
+  const waSock: WASocket = getFromCache(id, CacheType.WASock);
+  const picUrl = await waSock.profilePictureUrl(waId, "image");
+  if (!picUrl) return null;
+
+  const picture = await axios.get(picUrl);
+  return picture;
 }

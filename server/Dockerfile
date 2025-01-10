@@ -1,7 +1,6 @@
 ### Build server files
 FROM node:21-alpine AS server-build
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 WORKDIR /app/server
 
 COPY ["server/package.json", "server/package-lock.json*", "./"]
@@ -31,11 +30,6 @@ USER root
 
 ENV RUNNING_IN_DOCKER="true"
 WORKDIR /app/server
-
-# Install Chromium
-RUN apk update && \
-    apk add --no-cache nss udev ttf-freefont chromium nginx && \
-    rm -rf /var/cache/apk/* /tmp/*
 
 COPY --from=server-build /app/server/node_modules ./node_modules
 COPY --from=server-build /app/server/build ./build
