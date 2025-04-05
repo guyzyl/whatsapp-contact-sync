@@ -134,3 +134,4 @@ token.json
 credentials.json
 build
 .wwebjs_cache
+.DS_Store
