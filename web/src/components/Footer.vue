@@ -10,13 +10,24 @@ export default defineComponent({
     currentStep: 0,
   }),
 
-  mounted() {},
+  mounted() {
+    this.setShowContribute();
+  },
 
   methods: {
     updateData() {
       this.showSteps = steps.includes(this.$route.path);
       this.currentStep = steps.indexOf(this.$route.path);
-      this.showContribute = window.location.host === "whasync.com";
+    },
+
+    setShowContribute() {
+      fetch("/api/enforce_payments", {
+        credentials: "include",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          this.showContribute = data.enforcePayments;
+        });
     },
   },
 

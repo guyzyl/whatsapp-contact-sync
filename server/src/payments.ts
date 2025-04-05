@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import { isProd } from "../main";
+import { enforcePayments } from "../main";
 
 const coffeeToken = process.env.COFFEE_TOKEN;
 const expires = 60 * 60 * 24 * 31; // 31 Days
@@ -7,7 +7,7 @@ const emailRegex =
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 let redisClient: Redis;
-if (isProd || process.env.REDIS_URL)
+if (enforcePayments || process.env.REDIS_URL)
   redisClient = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 let customerCache: Map<string, string> = new Map();
 
@@ -61,7 +61,7 @@ async function queryPurchase(email: string): Promise<boolean> {
 }
 
 export async function verifyPurchaseWAId(email: string, whatsappId: string) {
-  if (!isProd) return true;
+  if (!enforcePayments) return true;
 
   if (customerCache.has(email)) {
     const cachedWAId = customerCache.get(email);

@@ -16,7 +16,9 @@ let ews = expressWs(express());
 const mStore = MemoryStore(session);
 const app = ews.app;
 const port = 8080;
-export const isProd = process.env.NODE_ENV == "production";
+
+const isProd = process.env.NODE_ENV == "production";
+export const enforcePayments = process.env.ENFORCE_PAYMENTS == "true" || false;
 
 /*
   Setup the session and cookie parser.
@@ -42,7 +44,7 @@ app.use(
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       httpOnly: false,
-      secure: isProd ? true : false,
+      secure: isProd,
     },
     resave: false,
     saveUninitialized: true,
@@ -60,9 +62,7 @@ app.use(function (req: Request, res: Response, next: CallableFunction) {
   next();
 });
 
-if (isProd) {
-  app.set("trust proxy", 1);
-}
+if (isProd) app.set("trust proxy", 1);
 
 app.use(
   expressWinston.logger({

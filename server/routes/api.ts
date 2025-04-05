@@ -6,12 +6,16 @@ import patch from "express-ws/lib/add-ws-method";
 
 import { WAState } from "whatsapp-web.js";
 
-import { SessionStatus, SyncOptions } from "../../interfaces/api";
+import {
+  SessionStatus,
+  SyncOptions,
+  EnforcePayments,
+} from "../../interfaces/api";
 import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
 import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
-import { isProd } from "../main";
+import { enforcePayments } from "../main";
 import { checkPurchase } from "../src/payments";
 
 // Based on https://github.com/HenningM/express-ws/issues/86
@@ -35,7 +39,7 @@ function cleanup(sessionID: string) {
 
     deleteFromCache(sessionID, "gauth");
     deleteFromCache(sessionID, "ws");
-  }, 5 * 60 * 1000);  // 5 minutes.
+  }, 5 * 60 * 1000); // 5 minutes.
 
   setInCache(sessionID, "cleanup", timeout);
 }
@@ -66,7 +70,10 @@ router.get("/status", async (req: Request, res: Response) => {
   const status: SessionStatus = {
     whatsappConnected,
     googleConnected: getFromCache(req.sessionID, "gauth") !== undefined,
-    purchased: isProd ? getFromCache(req.sessionID, "purchased") : true,
+    enforcePayments,
+    purchased: enforcePayments
+      ? getFromCache(req.sessionID, "purchased")
+      : true,
   };
 
   res.send(status);
@@ -103,6 +110,12 @@ router.post("/check_purchase", async (req: Request, res: Response) => {
   setInCache(req.sessionID, "purchased", purchased);
   setInCache(req.sessionID, "email", email);
   res.send({ purchased });
+});
+
+router.get("/enforce_payments", (req: Request, res: Response) => {
+  res.send({
+    enforcePayments,
+  } as EnforcePayments);
 });
 
 export default router;

@@ -21,9 +21,14 @@ export interface SyncProgress {
 export interface SessionStatus {
   whatsappConnected: boolean;
   googleConnected: boolean;
+  enforcePayments: boolean;
   purchased: boolean;
 }
 
 export interface SyncOptions {
   overwrite_photos?: string; // "true" or "false" (since converted to string via query params)
+}
+
+export interface EnforcePayments {
+  enforcePayments: boolean;
 }

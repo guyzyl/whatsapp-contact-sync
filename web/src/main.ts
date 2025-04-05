@@ -44,6 +44,7 @@ router.beforeEach(
 
     if (
       ["/whatsapp", "/sync", "/gauth", "/options"].includes(to.path) &&
+      status.enforcePayments &&
       !status.purchased
     )
       router.push("/contribute");
