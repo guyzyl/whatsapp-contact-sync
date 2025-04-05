@@ -11,7 +11,7 @@ import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
 import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
-import { isProd } from "../main";
+import { enforcePayments } from "../main";
 import { checkPurchase } from "../src/payments";
 
 // Based on https://github.com/HenningM/express-ws/issues/86
@@ -35,7 +35,7 @@ function cleanup(sessionID: string) {
 
     deleteFromCache(sessionID, "gauth");
     deleteFromCache(sessionID, "ws");
-  }, 5 * 60 * 1000);  // 5 minutes.
+  }, 5 * 60 * 1000); // 5 minutes.
 
   setInCache(sessionID, "cleanup", timeout);
 }
@@ -66,7 +66,10 @@ router.get("/status", async (req: Request, res: Response) => {
   const status: SessionStatus = {
     whatsappConnected,
     googleConnected: getFromCache(req.sessionID, "gauth") !== undefined,
-    purchased: isProd ? getFromCache(req.sessionID, "purchased") : true,
+    enforcePayments,
+    purchased: enforcePayments
+      ? getFromCache(req.sessionID, "purchased")
+      : true,
   };
 
   res.send(status);
