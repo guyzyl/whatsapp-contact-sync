@@ -12,6 +12,7 @@ import "./index.css";
 import { initWs } from "./services/ws";
 import { SessionStatus } from "../../interfaces/api";
 import { isbot } from "isbot";
+import { setEnforcePayments } from "./settings";
 
 const routes = [
   { path: "/", component: () => import("./pages/Home.vue") },
@@ -41,6 +42,8 @@ router.beforeEach(
 
     const response = await fetch("/api/status", { credentials: "include" });
     const status: SessionStatus = await response.json();
+
+    setEnforcePayments(status.enforcePayments);
 
     if (
       ["/whatsapp", "/sync", "/gauth", "/options"].includes(to.path) &&

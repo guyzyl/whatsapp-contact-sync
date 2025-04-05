@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { enforcePayments } from "../settings";
 
 const steps = ["/contribute", "/whatsapp", "/gauth", "/options", "/sync"];
 
@@ -11,23 +12,15 @@ export default defineComponent({
   }),
 
   mounted() {
-    this.setShowContribute();
+    enforcePayments.then((val) => {
+      this.showContribute = val;
+    });
   },
 
   methods: {
     updateData() {
       this.showSteps = steps.includes(this.$route.path);
       this.currentStep = steps.indexOf(this.$route.path);
-    },
-
-    setShowContribute() {
-      fetch("/api/enforce_payments", {
-        credentials: "include",
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          this.showContribute = data.enforcePayments;
-        });
     },
   },
 

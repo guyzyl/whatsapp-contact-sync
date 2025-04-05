@@ -6,11 +6,7 @@ import patch from "express-ws/lib/add-ws-method";
 
 import { WAState } from "whatsapp-web.js";
 
-import {
-  SessionStatus,
-  SyncOptions,
-  EnforcePayments,
-} from "../../interfaces/api";
+import { SessionStatus, SyncOptions } from "../../interfaces/api";
 import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
@@ -110,12 +106,6 @@ router.post("/check_purchase", async (req: Request, res: Response) => {
   setInCache(req.sessionID, "purchased", purchased);
   setInCache(req.sessionID, "email", email);
   res.send({ purchased });
-});
-
-router.get("/enforce_payments", (req: Request, res: Response) => {
-  res.send({
-    enforcePayments,
-  } as EnforcePayments);
 });
 
 export default router;

@@ -28,7 +28,3 @@ export interface SessionStatus {
 export interface SyncOptions {
   overwrite_photos?: string; // "true" or "false" (since converted to string via query params)
 }
-
-export interface EnforcePayments {
-  enforcePayments: boolean;
-}
