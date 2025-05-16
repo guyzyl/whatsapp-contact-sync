@@ -9,9 +9,12 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="navbar bg-base-100">
+  <div id="header" class="navbar bg-base-100">
     <div class="flex-1">
-      <router-link to="/" tag="button" class="btn btn-ghost normal-case text-xl pl-0 md:pl-4"
+      <router-link
+        to="/"
+        tag="button"
+        class="btn btn-ghost normal-case text-xl pl-0 md:pl-4"
         ><img class="h-8 w-8 mr-" src="/logo.png" />WhatsApp Contact
         Sync</router-link
       >

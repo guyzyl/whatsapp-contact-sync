@@ -9,22 +9,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "daisyui": "^4.12.10",
-    "isbot": "^5.1.17",
-    "qrcode.vue": "^3.4.1",
-    "vue": "^3.5.7",
-    "vue-gtag": "^2.0.1",
-    "vue-router": "^4.4.5"
+    "@tailwindcss/postcss": "^4.1.7",
+    "autoprefixer": "^10.4.21",
+    "daisyui": "^5.0.35",
+    "isbot": "^5.1.28",
+    "qrcode.vue": "^3.6.0",
+    "tailwindcss": "^4.1.7",
+    "vue": "^3.5.14",
+    "vue-gtag": "^3.5.0",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.15",
-    "@types/node": "^22.5.5",
-    "@vitejs/plugin-vue": "^5.1.4",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.12",
-    "typescript": "^5.6.2",
-    "vite": "^5.4.7",
-    "vue-tsc": "^2.1.6"
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/node": "^22.15.18",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vue-tsc": "^2.2.10"
   }
 }

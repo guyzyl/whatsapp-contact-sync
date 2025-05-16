@@ -119,17 +119,18 @@ export default defineComponent({
               <img :src="'data:image/jpeg;base64, ' + image" />
             </div>
           </div>
-          <div :hidden="syncCount <= imageDisplayedCount">
-            <div class="avatar placeholder">
-              <div class="w-12 bg-neutral text-neutral-content">
-                <span
-                  >+{{
-                    syncCount > imageDisplayedCount
-                      ? syncCount - imageDisplayedCount
-                      : 0
-                  }}</span
-                >
-              </div>
+          <div
+            class="avatar avatar-placeholder"
+            v-if="syncCount >= imageDisplayedCount"
+          >
+            <div class="w-12 bg-neutral text-neutral-content">
+              <span
+                >+{{
+                  syncCount > imageDisplayedCount
+                    ? syncCount - imageDisplayedCount
+                    : 0
+                }}</span
+              >
             </div>
           </div>
         </div>
