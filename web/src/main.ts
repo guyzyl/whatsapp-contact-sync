@@ -4,7 +4,7 @@ import {
   createWebHistory,
   RouteLocationNormalized,
 } from "vue-router";
-import VueGtag from "vue-gtag";
+import { createGtag } from "vue-gtag";
 import "./style.css";
 import App from "./App.vue";
 
@@ -74,14 +74,9 @@ router.afterEach((to: RouteLocationNormalized) => {
   currentRoute = to;
 });
 
-const vueTagSettings = {
-  pageTrackerTemplate: () => {
-    return {
-      page_title: currentRoute.path,
-      page_path: currentRoute.path,
-    };
-  },
-  config: { id: "G-4PJJZRPWG4" },
-};
+const gtag = createGtag({
+  tagId: "G-4PJJZRPWG4",
+  pageTracker: { router },
+});
 
-createApp(App).use(router).use(VueGtag, vueTagSettings, router).mount("#app");
+createApp(App).use(router).use(gtag).mount("#app");

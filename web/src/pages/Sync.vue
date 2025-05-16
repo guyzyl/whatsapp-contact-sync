@@ -120,7 +120,7 @@ export default defineComponent({
             </div>
           </div>
           <div :hidden="syncCount <= imageDisplayedCount">
-            <div class="avatar placeholder">
+            <div class="avatar avatar-placeholder">
               <div class="w-12 bg-neutral text-neutral-content">
                 <span
                   >+{{
