@@ -2,7 +2,7 @@
 import { defineComponent } from "vue";
 import { event } from "vue-gtag";
 import { EventType, SyncProgress } from "../../../interfaces/api";
-import { addHandler } from "../services/ws";
+import { addHandler, sendEvent } from "../services/ws";
 import { enforcePayments } from "../settings";
 
 export default defineComponent({
@@ -15,10 +15,15 @@ export default defineComponent({
     errorMessage: undefined as string | undefined,
     lastSyncReceived: null as number | null,
     showCoffeeButton: true,
+    currentExistingGoogleImageUrl: null as string | null,
+    currentPhoto: null as string | null,
+    contactName: null as string | null,
+    isManualSync: false as boolean | undefined,
   }),
 
   mounted() {
     addHandler(EventType.SyncProgress, this.onSyncProgress);
+    addHandler(EventType.SyncConfirm, this.onSyncConfirm);
     this.initSync();
     setInterval(this.checkServerDisconnected, 5 * 1000);
     enforcePayments.then((val) => {
@@ -56,10 +61,23 @@ export default defineComponent({
       this.syncProgress = progress.progress;
       this.syncCount = progress.syncCount;
       this.errorMessage = progress.error;
+      this.isManualSync = progress.isManualSync;
       if (progress.image) {
         this.images.push(progress.image);
         if (this.images.length > this.imageDisplayedCount) this.images.shift();
       }
+    },
+
+    onSyncConfirm(data: any): void {
+      this.currentExistingGoogleImageUrl = data.existingPhotoUrl;
+      this.currentPhoto = data.newPhoto;
+      this.contactName = data.contactName;
+    },
+
+    onPhotoConfirm(accept: boolean): void {
+      this.currentExistingGoogleImageUrl = null;
+      this.currentPhoto = null;
+      sendEvent(EventType.SyncPhotoConfirm, { accept });
     },
   },
 });
@@ -70,7 +88,8 @@ export default defineComponent({
     <div class="hero-content text-center">
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Sync In Progress</h1>
-        <p class="py-6">
+        
+        <p class="py-6" v-if="!isManualSync">
           Your contacts are syncing, you can sit back and relax.
           <br /><br />
           (Syncing will stop if the tab is closed)
@@ -95,6 +114,30 @@ export default defineComponent({
             />
           </svg>
           <span>{{ errorMessage }}</span>
+        </div>
+
+        <div class="flex flex-col items-center my-8" v-if="isManualSync">
+          <div class="text-2xl font-bold mb-4">
+            {{ contactName ?? "Unknown person" }}'s Photo
+          </div>
+          <div class="flex flex-row gap-6">
+            <div v-if="currentExistingGoogleImageUrl" class="flex flex-col items-center">
+              <span class="mb-2 font-semibold">Existing Photo</span>
+              <img :src="currentExistingGoogleImageUrl" alt="Existing Google Photo"
+                class="w-48 h-48 rounded-full border mb-4" />
+              <button class="btn btn-success" @click="onPhotoConfirm(false)">
+                Use Existing Photo
+              </button>
+            </div>
+            <div v-if="currentPhoto" class="flex flex-col items-center">
+              <span class="mb-2 font-semibold">New Photo</span>
+              <img :src="'data:image/jpeg;base64, ' + currentPhoto" alt="New Photo"
+                class="w-48 h-48 rounded-full border mb-4" />
+              <button class="btn btn-info" @click="onPhotoConfirm(true)">
+                Use New Photo
+              </button>
+            </div>
+          </div>
         </div>
 
         <div>
