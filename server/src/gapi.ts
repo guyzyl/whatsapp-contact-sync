@@ -42,6 +42,7 @@ export async function listContacts(
         (connection) =>
           <SimpleContact>{
             id: connection.resourceName,
+            name: connection.names?.find((name) => name.displayName)?.displayName,
             numbers: connection
               .phoneNumbers!.filter((phoneNumber) => phoneNumber.canonicalForm)
               .map((phoneNumber) =>
@@ -50,6 +51,7 @@ export async function listContacts(
             hasPhoto: !connection.photos // Check if photos contain only the "default" photo
               ?.map((photo) => photo.default)
               .every((v) => v === true),
+            photoUrl: connection.photos?.find((photo) => photo.metadata?.primary)?.url,
           }
       );
 
