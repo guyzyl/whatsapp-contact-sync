@@ -5,6 +5,12 @@ import { EventType, SyncProgress } from "../../../interfaces/api";
 import { addHandler, sendEvent } from "../services/ws";
 import { enforcePayments } from "../settings";
 
+interface ManualSyncData {
+  existingPhotoUrl: string | null;
+  newPhoto: string;
+  contactName: string | null;
+}
+
 export default defineComponent({
   data: () => ({
     imageDisplayedCount: 9,
@@ -15,10 +21,9 @@ export default defineComponent({
     errorMessage: undefined as string | undefined,
     lastSyncReceived: null as number | null,
     showCoffeeButton: true,
-    currentExistingGoogleImageUrl: null as string | null,
-    currentPhoto: null as string | null,
-    contactName: null as string | null,
     isManualSync: false as boolean | undefined,
+    isManualSyncLoading: false as boolean | undefined,
+    manualSyncData: null as ManualSyncData | null,
   }),
 
   mounted() {
@@ -69,14 +74,13 @@ export default defineComponent({
     },
 
     onSyncConfirm(data: any): void {
-      this.currentExistingGoogleImageUrl = data.existingPhotoUrl;
-      this.currentPhoto = data.newPhoto;
-      this.contactName = data.contactName;
+      this.manualSyncData = data;
+      this.isManualSyncLoading = false;
     },
 
     onPhotoConfirm(accept: boolean): void {
-      this.currentExistingGoogleImageUrl = null;
-      this.currentPhoto = null;
+      this.isManualSyncLoading = true;
+      this.manualSyncData = null;
       sendEvent(EventType.SyncPhotoConfirm, { accept });
     },
   },
@@ -116,28 +120,39 @@ export default defineComponent({
           <span>{{ errorMessage }}</span>
         </div>
 
-        <div class="flex flex-col items-center my-8" v-if="isManualSync">
+        <div class="flex flex-col items-center my-8" v-if="isManualSync && !isManualSyncLoading">
           <div class="text-2xl font-bold mb-4">
-            {{ contactName ?? "Unknown person" }}'s Photo
+            {{ manualSyncData?.contactName ?? "Unknown person" }}'s Photo
           </div>
           <div class="flex flex-row gap-6">
-            <div v-if="currentExistingGoogleImageUrl" class="flex flex-col items-center">
+            <div class="flex flex-col items-center">
               <span class="mb-2 font-semibold">Existing Photo</span>
-              <img :src="currentExistingGoogleImageUrl" alt="Existing Google Photo"
-                class="w-48 h-48 rounded-full border mb-4" />
+              <div class="avatar mb-4">
+                <div class="w-48 rounded-full">
+                  <img :src="manualSyncData?.existingPhotoUrl ?? ''" alt="Existing Google Photo" />
+                </div>
+              </div>
               <button class="btn btn-success" @click="onPhotoConfirm(false)">
                 Use Existing Photo
               </button>
             </div>
-            <div v-if="currentPhoto" class="flex flex-col items-center">
+            <div class="flex flex-col items-center">
               <span class="mb-2 font-semibold">New Photo</span>
-              <img :src="'data:image/jpeg;base64, ' + currentPhoto" alt="New Photo"
-                class="w-48 h-48 rounded-full border mb-4" />
+              <div class="avatar mb-4">
+                <div class="w-48 rounded-full">
+                  <img :src="'data:image/jpeg;base64, ' + manualSyncData?.newPhoto" alt="New Photo" />
+                </div>
+              </div>
               <button class="btn btn-info" @click="onPhotoConfirm(true)">
                 Use New Photo
               </button>
             </div>
           </div>
+        </div>
+
+        <div class="flex flex-col items-center mt-4 mb-4" v-if="isManualSync && isManualSyncLoading">
+          <span class="text-xl">Loading next contact...</span>
+          <span class="loading loading-spinner loading-lg"></span>
         </div>
 
         <div>

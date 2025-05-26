@@ -6,35 +6,9 @@ import { Client } from "whatsapp-web.js";
 import { EventType, SyncOptions } from "../../interfaces/api";
 import { listContacts, updateContactPhoto } from "./gapi";
 import { downloadFile, loadContacts } from "./whatsapp";
-import { sendEvent } from "./ws";
+import { sendEvent, sendMessageAndWait } from "./ws";
 import { SimpleContact } from "./interfaces";
 import { getFromCache } from "./cache";
-
-const sendMessageAndWait = (ws: WebSocket, message: any) => {
-  return new Promise((resolve, reject) => {
-    const handleMessage = (data: any) => {
-      try {
-        const parsed = JSON.parse(data.toString());
-        if (parsed?.type === EventType.SyncPhotoConfirm) {
-          ws.off('message', handleMessage);
-          resolve(parsed.data);
-        }
-      } catch (e) {
-        // Ignore parse errors
-        console.error("Error parsing message", e);
-      }
-    };
-
-    ws.on('message', handleMessage);
-
-    sendEvent(ws, EventType.SyncConfirm, message);
-
-    setTimeout(() => {
-      ws.off('message', handleMessage);
-      reject(new Error('Timeout waiting for response'));
-    }, 30000);
-  });
-}
 
 export async function initSync(id: string, syncOptions: SyncOptions) {
   // The limiter is implemented due to Google API's limit of 60 photo uploads per minute per user
@@ -119,7 +93,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
             contactName: googleContact.name,
           });
         } catch (e) {
-          console.error("Error waiting for message", e);
+          console.error("Error waiting for response message for manual sync confirmation", e);
           continue;
         }
 
