@@ -87,11 +87,14 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
       if (isManualSync) {
         let message: any;
         try {
-          message = await sendMessageAndWait(ws, {
-            existingPhotoUrl: googleContact.photoUrl,
-            newPhoto: photo,
-            contactName: googleContact.name,
-          });
+          message = await sendMessageAndWait(ws,
+            EventType.SyncConfirm,
+            EventType.SyncPhotoConfirm,
+            {
+              existingPhotoUrl: googleContact.photoUrl,
+              newPhoto: photo,
+              contactName: googleContact.name,
+            });
         } catch (e) {
           console.error("Error waiting for response message for manual sync confirmation", e);
           continue;
