@@ -3,6 +3,8 @@ export enum EventType {
   WhatsAppConnecting = "whatsapp_connecting",
   Redirect = "redirect",
   SyncProgress = "sync_progress",
+  SyncConfirm = "sync_confirm",
+  SyncPhotoConfirm = "sync_photo_confirm",
 }
 
 export interface Event {
@@ -16,6 +18,7 @@ export interface SyncProgress {
   totalContacts?: number;
   image?: string;
   error?: string;
+  isManualSync?: boolean;
 }
 
 export interface SessionStatus {
@@ -27,4 +30,5 @@ export interface SessionStatus {
 
 export interface SyncOptions {
   overwrite_photos?: string; // "true" or "false" (since converted to string via query params)
+  manual_sync?: string; // "true" or "false" (since converted to string via query params)
 }
