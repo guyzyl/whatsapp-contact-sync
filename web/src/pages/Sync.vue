@@ -127,9 +127,10 @@ export default defineComponent({
           <div class="flex flex-row gap-6">
             <div class="flex flex-col items-center">
               <span class="mb-2 font-semibold">Existing Photo</span>
-              <div class="avatar mb-4">
-                <div class="w-48 rounded-full">
-                  <img :src="'data:image/jpeg;base64, ' + manualSyncData?.existingPhoto" alt="Existing Google Photo" />
+              <div class="avatar avatar-placeholder mb-4">
+                <div class="w-48 rounded-full ring-2 ring-white">
+                  <img v-if="manualSyncData?.existingPhoto" :src="'data:image/jpeg;base64, ' + manualSyncData?.existingPhoto" alt="Existing Google Photo" />
+                  <div v-if="!manualSyncData?.existingPhoto" class="text-xl">No photo</div>
                 </div>
               </div>
               <button class="btn btn-success" @click="onPhotoConfirm(false)">
@@ -138,9 +139,10 @@ export default defineComponent({
             </div>
             <div class="flex flex-col items-center">
               <span class="mb-2 font-semibold">New Photo</span>
-              <div class="avatar mb-4">
-                <div class="w-48 rounded-full">
-                  <img :src="'data:image/jpeg;base64, ' + manualSyncData?.newPhoto" alt="New Photo" />
+              <div class="avatar avatar-placeholder mb-4">
+                <div class="w-48 rounded-full ring-2 ring-white">
+                  <img v-if="manualSyncData?.newPhoto" :src="'data:image/jpeg;base64, ' + manualSyncData?.newPhoto" alt="New Photo" />
+                  <div v-if="!manualSyncData?.newPhoto" class="text-xl">No photo</div>
                 </div>
               </div>
               <button class="btn btn-info" @click="onPhotoConfirm(true)">
