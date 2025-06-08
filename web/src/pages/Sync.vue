@@ -129,7 +129,7 @@ export default defineComponent({
               <span class="mb-2 font-semibold">Existing Photo</span>
               <div class="avatar mb-4">
                 <div class="w-48 rounded-full">
-                  <img :src="manualSyncData?.existingPhotoUrl ?? ''" alt="Existing Google Photo" />
+                  <img :src="'data:image/jpeg;base64, ' + manualSyncData?.existingPhoto" alt="Existing Google Photo" />
                 </div>
               </div>
               <button class="btn btn-success" @click="onPhotoConfirm(false)">
