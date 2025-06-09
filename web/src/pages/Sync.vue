@@ -6,7 +6,7 @@ import { addHandler, sendEvent } from "../services/ws";
 import { enforcePayments } from "../settings";
 
 interface ManualSyncData {
-  existingPhotoUrl: string | null;
+  existingPhoto: string | null;
   newPhoto: string;
   contactName: string | null;
 }
