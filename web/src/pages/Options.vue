@@ -1,14 +1,37 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
+interface Option {
+  title: string;
+  description: string;
+  target: string;
+  value: boolean;
+  onChange?: (options: Option[]) => (event: Event) => void;
+}
+
+const disableOtherOptionsOnChange = (target: string) => (options: Option[]) => (event: Event) => {
+  const checkbox = event.target as HTMLInputElement;
+  if (checkbox.checked) {
+    options.filter((o) => o.target !== target).forEach((o) => (o.value = false));
+  }
+};
+
 export default defineComponent({
   data: () => ({
     options: [
+      {
+        title: "Manual Sync",
+        description: "If enabled, each photo can be compared and selected manually.",
+        target: "manual_sync",
+        value: false,
+        onChange: disableOtherOptionsOnChange("manual_sync"),
+      },
       {
         title: "Overwrite existing images",
         description: "If enabled, existing contact images will be overwritten.",
         target: "overwrite_photos",
         value: false,
+        onChange: disableOtherOptionsOnChange("overwrite_photos"),
       },
     ],
   }),
@@ -31,11 +54,11 @@ export default defineComponent({
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Sync Options</h1>
 
-        <div class="form-control pt-6">
+        <div class="form-control pt-6 flex flex-col">
           <label
             v-for="option in options"
             :key="option.target"
-            class="label cursor-pointer"
+            class="label cursor-pointer mb-2 justify-between"
           >
             <div class="flex">
               <span class="pr-1">{{ option.title }}</span>
@@ -60,6 +83,7 @@ export default defineComponent({
               type="checkbox"
               v-model="option.value"
               class="toggle toggle-primary"
+              :onChange="option.onChange?.(options)"
             />
           </label>
 

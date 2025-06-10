@@ -6,9 +6,19 @@ import { Client } from "whatsapp-web.js";
 import { EventType, SyncOptions } from "../../interfaces/api";
 import { listContacts, updateContactPhoto } from "./gapi";
 import { downloadFile, loadContacts } from "./whatsapp";
-import { sendEvent } from "./ws";
+import { sendEvent, sendMessageAndWait } from "./ws";
 import { SimpleContact } from "./interfaces";
 import { getFromCache } from "./cache";
+
+const getGooglePhotoAsBase64 = async (googleContact: SimpleContact): Promise<string | null> => {
+  if (!googleContact.photoUrl) {
+    return null;
+  }
+  const googlePhotoData = await fetch(googleContact.photoUrl);
+  const googlePhotoBlob = await googlePhotoData.blob();
+  const googlePhotoArrayBuffer = await googlePhotoBlob.arrayBuffer();
+  return googlePhotoArrayBuffer.byteLength !== 0 ? Buffer.from(googlePhotoArrayBuffer).toString("base64") : null;
+}
 
 export async function initSync(id: string, syncOptions: SyncOptions) {
   // The limiter is implemented due to Google API's limit of 60 photo uploads per minute per user
@@ -24,6 +34,11 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   try {
     googleContacts = await listContacts(gAuth);
     whatsappContacts = await loadContacts(whatsappClient);
+    sendEvent(ws, EventType.SyncProgress, {
+      progress: 0,
+      syncCount: 0,
+      isManualSync: syncOptions.manual_sync === "true",
+    });
   } catch (e) {
     console.error(e);
     if (ws.readyState === WebSocket.OPEN) {
@@ -47,7 +62,9 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   for (const [index, googleContact] of shuffledGoogleContacts.entries()) {
     if (ws.readyState !== WebSocket.OPEN) return; // Stop sync if user disconnected.
 
-    if (syncOptions.overwrite_photos === "false" && googleContact.hasPhoto)
+    const isManualSync = syncOptions.manual_sync === "true";
+
+    if (!isManualSync && syncOptions.overwrite_photos === "false" && googleContact.hasPhoto)
       continue;
 
     for (const phoneNumber of googleContact.numbers) {
@@ -76,7 +93,32 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
       if (photo === null) break;
 
       await limiter.removeTokens(1);
-      await updateContactPhoto(gAuth, googleContact.id, photo);
+
+      if (isManualSync) {
+        let message: any;
+        try {
+          const googlePhoto = await getGooglePhotoAsBase64(googleContact);
+
+          message = await sendMessageAndWait(ws,
+            EventType.SyncConfirm,
+            EventType.SyncPhotoConfirm,
+            {
+              existingPhoto: googlePhoto,
+              newPhoto: photo,
+              contactName: googleContact.name,
+            });
+        } catch (e) {
+          console.error("Error waiting for response message for manual sync confirmation", e);
+          continue;
+        }
+
+        if (message.accept) {
+          await updateContactPhoto(gAuth, googleContact.id, photo);
+        }
+      } else {
+        await updateContactPhoto(gAuth, googleContact.id, photo);
+      }
+
       syncCount++;
 
       break;
@@ -87,6 +129,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
       syncCount: syncCount,
       totalContacts: googleContacts.length,
       image: photo,
+      isManualSync,
     });
     photo = null;
   }

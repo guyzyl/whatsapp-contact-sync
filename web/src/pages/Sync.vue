@@ -2,8 +2,14 @@
 import { defineComponent } from "vue";
 import { event } from "vue-gtag";
 import { EventType, SyncProgress } from "../../../interfaces/api";
-import { addHandler } from "../services/ws";
+import { addHandler, sendEvent } from "../services/ws";
 import { enforcePayments } from "../settings";
+
+interface ManualSyncData {
+  existingPhoto: string | null;
+  newPhoto: string;
+  contactName: string | null;
+}
 
 export default defineComponent({
   data: () => ({
@@ -15,10 +21,14 @@ export default defineComponent({
     errorMessage: undefined as string | undefined,
     lastSyncReceived: null as number | null,
     showCoffeeButton: true,
+    isManualSync: false as boolean | undefined,
+    isManualSyncLoading: false as boolean | undefined,
+    manualSyncData: null as ManualSyncData | null,
   }),
 
   mounted() {
     addHandler(EventType.SyncProgress, this.onSyncProgress);
+    addHandler(EventType.SyncConfirm, this.onSyncConfirm);
     this.initSync();
     setInterval(this.checkServerDisconnected, 5 * 1000);
     enforcePayments.then((val) => {
@@ -56,10 +66,22 @@ export default defineComponent({
       this.syncProgress = progress.progress;
       this.syncCount = progress.syncCount;
       this.errorMessage = progress.error;
+      this.isManualSync = progress.isManualSync;
       if (progress.image) {
         this.images.push(progress.image);
         if (this.images.length > this.imageDisplayedCount) this.images.shift();
       }
+    },
+
+    onSyncConfirm(data: any): void {
+      this.manualSyncData = data;
+      this.isManualSyncLoading = false;
+    },
+
+    onPhotoConfirm(accept: boolean): void {
+      this.isManualSyncLoading = true;
+      this.manualSyncData = null;
+      sendEvent(EventType.SyncPhotoConfirm, { accept });
     },
   },
 });
@@ -70,7 +92,8 @@ export default defineComponent({
     <div class="hero-content text-center">
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Sync In Progress</h1>
-        <p class="py-6">
+        
+        <p class="py-6" v-if="!isManualSync">
           Your contacts are syncing, you can sit back and relax.
           <br /><br />
           (Syncing will stop if the tab is closed)
@@ -95,6 +118,43 @@ export default defineComponent({
             />
           </svg>
           <span>{{ errorMessage }}</span>
+        </div>
+
+        <div class="flex flex-col items-center my-8" v-if="isManualSync && !isManualSyncLoading">
+          <div class="text-2xl font-bold mb-4">
+            {{ manualSyncData?.contactName ?? "Unknown person" }}'s Photo
+          </div>
+          <div class="flex flex-row gap-6">
+            <div class="flex flex-col items-center">
+              <span class="mb-2 font-semibold">Existing Photo</span>
+              <div class="avatar avatar-placeholder mb-4">
+                <div class="w-48 rounded-full ring-2 ring-white">
+                  <img v-if="manualSyncData?.existingPhoto" :src="'data:image/jpeg;base64, ' + manualSyncData?.existingPhoto" alt="Existing Google Photo" />
+                  <div v-if="!manualSyncData?.existingPhoto" class="text-xl">No photo</div>
+                </div>
+              </div>
+              <button class="btn btn-success" @click="onPhotoConfirm(false)">
+                Use Existing Photo
+              </button>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="mb-2 font-semibold">New Photo</span>
+              <div class="avatar avatar-placeholder mb-4">
+                <div class="w-48 rounded-full ring-2 ring-white">
+                  <img v-if="manualSyncData?.newPhoto" :src="'data:image/jpeg;base64, ' + manualSyncData?.newPhoto" alt="New Photo" />
+                  <div v-if="!manualSyncData?.newPhoto" class="text-xl">No photo</div>
+                </div>
+              </div>
+              <button class="btn btn-info" @click="onPhotoConfirm(true)">
+                Use New Photo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center mt-4 mb-4" v-if="isManualSync && isManualSyncLoading">
+          <span class="text-xl">Loading next contact...</span>
+          <span class="loading loading-spinner loading-lg"></span>
         </div>
 
         <div>
