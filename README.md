@@ -49,12 +49,23 @@ Setting up should take less then a minute, and syncing should take about 1 secon
 In order for the backend to function, it requires an OAuth client id and secret + an API key.\
 Since (for obvious reasons) this is a private app, you will need to create one for your own.\
 You can see instructions on how to do that [here](https://developers.google.com/workspace/guides/create-credentials).\
-Once you do that, create the file `server/.env`, and set the following environment variables:
+You will need OAuth Client ID credentials, as well as API key credentials.
 
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
+Rename [`server/sample.env`](server/sample.env) to `server/.env` and fill in the values.
 
-You also need to update the `CLIENT_ID` and `API_KEY` variables in [`web/src/pages/GoogleAuth.vue`](web/src/pages/GoogleAuth.vue).
+```env
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+```
+
+Rename [`web/sample.env`](web/sample.env) to `web/.env` and fill in the values.
+
+`VITE_CLIENT_ID` is same as `GOOGLE_CLIENT_ID` used for `server/.env`.
+
+```env
+VITE_CLIENT_ID=
+VITE_API_KEY=
+```
 
 Once that's done, you can go ahead and run the app:
 
