@@ -26,13 +26,13 @@ The app matches contacts based on their phone numbers, and utilizes
 
 ## Why Was This Developed?
 
-Whenever someone used to call me or I looked them up in my contacts, they all apear as colorful circles with a single letter in it.\
+Whenever someone used to call me or I looked them up in my contacts, they all appear as colorful circles with a single letter in it.\
 The annoying part is that every single person I know has a WhatsApp account which has a profile picture. They are both based on the same phone number but the picture is only available in one of them.\
-In order to fix this grievence I developed this app which allows anyone to sync their contacts photos from WhatsApp to Google Contacts.
+In order to fix this grievance I developed this app which allows anyone to sync their contacts photos from WhatsApp to Google Contacts.
 
 ## How To Use
 
-The app is extremley easy to use (and self explantory):
+The app is extremely easy to use (and self explanatory):
 
 1. Go to [whasync.com](https://whasync.com/)
 2. Press "Get Started"
@@ -42,7 +42,7 @@ The app is extremley easy to use (and self explantory):
 6. That's it :)
 
 The whole process is very simple and automated, so you don't need to worry about anything else.\
-Setting up should take less then a minute, and syncing should take about 1 second per photo (due to Google's API rate limitiations of 60 requests per user per minute)
+Setting up should take less then a minute, and syncing should take about 1 second per photo (due to Google's API rate limitations of 60 requests per user per minute)
 
 ## How to Run Locally
 
