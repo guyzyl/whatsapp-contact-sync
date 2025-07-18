@@ -6,8 +6,8 @@ import { event } from "vue-gtag";
 
 export default defineComponent({
   data: () => ({
-    CLIENT_ID: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-    API_KEY: import.meta.env.VITE_GOOGLE_API_KEY,
+    CLIENT_ID: "436316840541-2o1496o38gjv2udalq8tg32rao3ehdlv",
+    API_KEY: "AIzaSyAy5TqbYpjFKzZq-ho-hS3aLkfVnAw9iBg",
     gisLoaded: false,
     gapiLoaded: false,
     tokenClient: undefined as any, // Another Google typing workaround
