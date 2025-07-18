@@ -5,7 +5,7 @@
   "main": "main.ts",
   "scripts": {
     "serve": "ts-node .",
-    "dev": "nodemon main.ts",
+    "dev": "nodemon --exec 'ts-node' .",
     "prod": "node build/server/main.js",
     "build": "tsc"
   },
