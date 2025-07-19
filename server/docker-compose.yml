@@ -1,0 +1,15 @@
+services:
+  whatsync-server:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+
+    container_name: whatsync-server
+    env_file:
+      - .env
+    environment:
+      - RUNNING_IN_DOCKER=true
+    hostname: whatsync-server
+    ports:
+      - 8080:8080
+    restart: unless-stopped

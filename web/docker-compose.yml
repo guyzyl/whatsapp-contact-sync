@@ -1,0 +1,14 @@
+services:
+  whatsync-web:
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+    container_name: whatsync-web
+    env_file:
+      - .env
+    environment:
+      - RUNNING_IN_DOCKER=true
+    hostname: whatsync-web
+    ports:
+      - 80:80
+    restart: unless-stopped
