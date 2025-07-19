@@ -1,0 +1,44 @@
+services:
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: server/Dockerfile
+  #   container_name: whatsync-server
+  #   env_file:
+  #     - server/.env
+  #   environment:
+  #     - RUNNING_IN_DOCKER=true
+  #   hostname: whatsync-server
+  #   ports:
+  #     - 8080:8080
+  #   restart: unless-stopped
+
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: web/Dockerfile
+  #   container_name: whatsync-web
+  #   depends_on:
+  #     - server
+  #   env_file:
+  #     - web/.env
+  #   environment:
+  #     - ORIGIN=http://localhost:8080
+  #     - RUNNING_IN_DOCKER=true
+  #   hostname: whatsync-web
+  #   ports:
+  #     - 80:80
+  #   restart: unless-stopped
+  whatsync:
+    container_name: whatsync
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./server/.env
+      - ./web/.env
+    hostname: whatsync
+    ports:
+      - 8080:8080
+      - 80:80
