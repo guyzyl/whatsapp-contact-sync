@@ -60,11 +60,11 @@ GOOGLE_CLIENT_SECRET=
 
 Rename [`web/sample.env`](web/sample.env) to `web/.env` and fill in the values.
 
-`VITE_GOOGLE_CLIENT_ID` is same as `GOOGLE_CLIENT_ID` used for `server/.env`.
+`GOOGLE_CLIENT_ID` is same as `GOOGLE_CLIENT_ID` used for `server/.env`.
 
 ```env
-VITE_GOOGLE_CLIENT_ID=
-VITE_GOOGLE_API_KEY=
+GOOGLE_CLIENT_ID=
+GOOGLE_API_KEY=
 ```
 
 Once that's done, you can go ahead and run the app:

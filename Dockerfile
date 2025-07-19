@@ -62,4 +62,4 @@ COPY --from=server-build /app/server/build ./build
 
 EXPOSE 80
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "-c", "/var/www/html/vite-envs.sh && ./entrypoint.sh"]

@@ -18,3 +18,5 @@ FROM nginx:alpine
 EXPOSE 80
 
 COPY --from=build /app/web/dist /usr/share/nginx/html
+
+ENTRYPOINT ["/bin/sh", "-c", "/usr/share/nginx/html/vite-envs.sh && nginx -g 'daemon off;'"]

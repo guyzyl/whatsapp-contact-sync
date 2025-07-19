@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --port 4000",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "vite-envs update-types"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.7",
@@ -25,6 +26,7 @@
     "@vitejs/plugin-vue": "^5.2.4",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
+    "vite-envs": "^4.6.2",
     "vue-tsc": "^2.2.10"
   }
 }
