@@ -1,5 +1,6 @@
+name: whatsync
 services:
-  whatsync-web:
+  web:
     build:
       context: ..
       dockerfile: web/Dockerfile

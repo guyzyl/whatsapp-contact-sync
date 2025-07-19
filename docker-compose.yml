@@ -1,3 +1,4 @@
+name: whatsync
 services:
   # server:
   #   build:
