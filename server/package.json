@@ -1,8 +1,9 @@
 {
-  "name": "server",
+  "name": "whatsapp-contact-sync-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend server for WhatsApp Contact Sync",
   "main": "main.ts",
+  "private": true,
   "scripts": {
     "serve": "ts-node .",
     "dev": "nodemon main.ts",
