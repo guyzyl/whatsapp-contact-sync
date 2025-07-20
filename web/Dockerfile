@@ -1,4 +1,4 @@
-FROM node:21 AS build
+FROM node:22 AS build
 
 WORKDIR /app/web
 
@@ -18,5 +18,7 @@ FROM nginx:alpine
 EXPOSE 80
 
 COPY --from=build /app/web/dist /usr/share/nginx/html
+
+HEALTHCHECK NONE
 
 ENTRYPOINT ["/bin/sh", "-c", "/usr/share/nginx/html/vite-envs.sh && nginx -g 'daemon off;'"]

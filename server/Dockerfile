@@ -1,5 +1,5 @@
 ### Build server files
-FROM node:21-alpine AS server-build
+FROM node:22-alpine AS server-build
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 WORKDIR /app/server
@@ -26,7 +26,7 @@ RUN mv node_modules/googleapis/build/src/apis/docs ./docs && \
 
 
 ### Build final image
-FROM node:21-alpine
+FROM node:22-alpine
 USER root
 
 ENV RUNNING_IN_DOCKER="true"
@@ -41,5 +41,7 @@ COPY --from=server-build /app/server/node_modules ./node_modules
 COPY --from=server-build /app/server/build ./build
 
 EXPOSE 8080
+
+HEALTHCHECK NONE
 
 CMD [ "build/server/main.js" ]
