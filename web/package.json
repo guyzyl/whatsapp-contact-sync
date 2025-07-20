@@ -1,14 +1,14 @@
 {
   "name": "whatsapp-contact-sync",
-  "description": "WhatsApp Contact Sync Web frontend",
-  "private": true,
   "version": "1.0.0",
+  "private": true,
+  "description": "WhatsApp Contact Sync Web frontend",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 4000",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "postinstall": "vite-envs update-types"
+    "dev": "vite --port 4000",
+    "postinstall": "vite-envs update-types",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.7",

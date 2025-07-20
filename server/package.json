@@ -1,17 +1,17 @@
 {
   "name": "whatsapp-contact-sync-server",
   "version": "1.0.0",
-  "description": "Backend server for WhatsApp Contact Sync",
-  "main": "main.ts",
   "private": true,
+  "description": "Backend server for WhatsApp Contact Sync",
+  "license": "ISC",
+  "author": "guyzyl",
+  "main": "main.ts",
   "scripts": {
-    "serve": "ts-node .",
+    "build": "tsc",
     "dev": "nodemon main.ts",
     "prod": "node build/server/main.js",
-    "build": "tsc"
+    "serve": "ts-node ."
   },
-  "author": "guyzyl",
-  "license": "ISC",
   "dependencies": {
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
