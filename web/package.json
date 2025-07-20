@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "WhatsApp Contact Sync Web frontend",
+  "funding": "https://buymeacoffee.com/guyzyl",
   "type": "module",
   "scripts": {
     "build": "vue-tsc --noEmit && vite build",

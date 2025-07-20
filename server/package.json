@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Backend server for WhatsApp Contact Sync",
+  "funding": "https://buymeacoffee.com/guyzyl",
   "license": "ISC",
   "author": "guyzyl",
   "main": "main.ts",
