@@ -1,5 +1,6 @@
 {
   "name": "whatsapp-contact-sync",
+  "description": "WhatsApp Contact Sync Web frontend",
   "private": true,
   "version": "1.0.0",
   "type": "module",
