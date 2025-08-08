@@ -48,6 +48,18 @@ router.get("/", (req: Request, res: Response) => {
   res.send("{}");
 });
 
+// Health check endpoint
+router.get("/health", (req: Request, res: Response) => {
+  const uptime = process.uptime();
+  res.json({
+    status: "ok",
+    message: "Server is healthy",
+    uptime: `${Math.floor(uptime)}s`,
+    uptimeSeconds: uptime,
+    timestamp: new Date().toISOString()
+  });
+});
+
 router.ws("/ws", (ws: WebSocket, req: Request) => {
   if (getFromCache(req.sessionID, "cleanup") !== undefined) {
     clearTimeout(getFromCache(req.sessionID, "cleanup"));

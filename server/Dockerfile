@@ -34,7 +34,7 @@ WORKDIR /app/server
 
 # Install Chromium
 RUN apk update && \
-    apk add --no-cache nss udev ttf-freefont chromium nginx && \
+    apk add --no-cache nss udev ttf-freefont chromium nginx curl && \
     rm -rf /var/cache/apk/* /tmp/*
 
 COPY --from=server-build /app/server/node_modules ./node_modules
@@ -42,6 +42,7 @@ COPY --from=server-build /app/server/build ./build
 
 EXPOSE 8080
 
-HEALTHCHECK NONE
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
 
-CMD [ "build/server/main.js" ]
+CMD [ "node", "build/server/main.js" ]

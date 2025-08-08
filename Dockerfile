@@ -49,7 +49,7 @@ WORKDIR /app/server
 
 # Install Chromium
 RUN apk update && \
-    apk add --no-cache nss udev ttf-freefont chromium nginx && \
+    apk add --no-cache nss udev ttf-freefont chromium nginx curl && \
     rm -rf /var/cache/apk/* /tmp/*
 
 COPY ./assets/nginx.conf /etc/nginx/nginx.conf
@@ -62,6 +62,7 @@ COPY --from=server-build /app/server/build ./build
 
 EXPOSE 80
 
-HEALTHCHECK NONE
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:80/ && curl -f http://localhost:8080/api/health || exit 1
 
 ENTRYPOINT ["/bin/sh", "-c", "/var/www/html/vite-envs.sh && ./entrypoint.sh"]
