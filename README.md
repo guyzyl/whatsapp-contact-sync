@@ -67,6 +67,13 @@ WEB_GOOGLE_CLIENT_ID=
 WEB_GOOGLE_API_KEY=
 ```
 
+Alternatively, you can set the env variables to use the app.
+For e.g.:
+
+```sh
+export SERVER_GOOGLE_CLIENT_ID=<value>
+```
+
 Once that's done, you can go ahead and run the app:
 
 ```bash
