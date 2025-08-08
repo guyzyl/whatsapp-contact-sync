@@ -1,5 +1,5 @@
 ### Build web files
-FROM node:22-alpine AS web-build
+FROM node:24-alpine AS web-build
 
 WORKDIR /app/web
 
@@ -14,7 +14,7 @@ RUN npm run build
 
 
 ### Download server npm modules
-FROM node:22-alpine AS server-build
+FROM node:24-alpine AS server-build
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 WORKDIR /app/server
@@ -41,7 +41,7 @@ RUN mv node_modules/googleapis/build/src/apis/docs ./docs && \
 
 
 ### Build final image
-FROM node:22-alpine
+FROM node:24-alpine
 USER root
 
 ENV RUNNING_IN_DOCKER="true"
