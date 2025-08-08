@@ -3,7 +3,20 @@
   "version": "1.0.0",
   "private": true,
   "description": "WhatsApp Contact Sync Web frontend",
+  "homepage": "https://whasync.com/",
+  "bugs": {
+    "url": "https://github.com/guyzyl/whatsapp-contact-sync/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guyzyl/whatsapp-contact-sync"
+  },
   "funding": "https://buymeacoffee.com/guyzyl",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "guyzyl",
+    "url": "https://github.com/guyzyl"
+  },
   "type": "module",
   "scripts": {
     "build": "vue-tsc --noEmit && vite build",

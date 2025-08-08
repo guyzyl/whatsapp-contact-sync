@@ -3,9 +3,20 @@
   "version": "1.0.0",
   "private": true,
   "description": "Backend server for WhatsApp Contact Sync",
+  "homepage": "https://whasync.com/",
+  "bugs": {
+    "url": "https://github.com/guyzyl/whatsapp-contact-sync/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guyzyl/whatsapp-contact-sync"
+  },
   "funding": "https://buymeacoffee.com/guyzyl",
-  "license": "ISC",
-  "author": "guyzyl",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "guyzyl",
+    "url": "https://github.com/guyzyl"
+  },
   "main": "main.ts",
   "scripts": {
     "build": "tsc",
