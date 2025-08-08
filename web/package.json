@@ -9,14 +9,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/guyzyl/whatsapp-contact-sync"
+    "url": "git+https://github.com/guyzyl/whatsapp-contact-sync.git"
   },
-  "funding": "https://buymeacoffee.com/guyzyl",
+  "funding": {
+    "url": "https://buymeacoffee.com/guyzyl"
+  },
   "license": "Apache-2.0",
-  "author": {
-    "name": "guyzyl",
-    "url": "https://github.com/guyzyl"
-  },
+  "author": "guyzyl (https://github.com/guyzyl)",
   "type": "module",
   "scripts": {
     "build": "vue-tsc --noEmit && vite build",
