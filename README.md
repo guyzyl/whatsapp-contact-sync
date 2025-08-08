@@ -54,17 +54,17 @@ You will need OAuth Client ID credentials, as well as API key credentials.
 Rename [`server/sample.env`](server/sample.env) to `server/.env` and fill in the values.
 
 ```env
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
+SERVER_GOOGLE_CLIENT_ID=
+SERVER_GOOGLE_CLIENT_SECRET=
 ```
 
 Rename [`web/sample.env`](web/sample.env) to `web/.env` and fill in the values.
 
-`GOOGLE_CLIENT_ID` is same as `GOOGLE_CLIENT_ID` used for `server/.env`.
+`WEB_GOOGLE_CLIENT_ID` is same as `SERVER_GOOGLE_CLIENT_ID` used in `server/.env`.
 
 ```env
-GOOGLE_CLIENT_ID=
-GOOGLE_API_KEY=
+WEB_GOOGLE_CLIENT_ID=
+WEB_GOOGLE_API_KEY=
 ```
 
 Once that's done, you can go ahead and run the app:
