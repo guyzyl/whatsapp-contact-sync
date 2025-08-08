@@ -1,15 +1,15 @@
-name: whatsync
+name: whasync
 services:
   # server:
   #   build:
   #     context: .
   #     dockerfile: server/Dockerfile
-  #   container_name: whatsync-server
+  #   container_name: whasync-server
   #   env_file:
   #     - server/.env
   #   environment:
   #     - RUNNING_IN_DOCKER=true
-  #   hostname: whatsync-server
+  #   hostname: whasync-server
   #   ports:
   #     - 8080:8080
   #   restart: unless-stopped
@@ -18,7 +18,7 @@ services:
   #   build:
   #     context: .
   #     dockerfile: web/Dockerfile
-  #   container_name: whatsync-web
+  #   container_name: whasync-web
   #   depends_on:
   #     - server
   #   env_file:
@@ -26,12 +26,12 @@ services:
   #   environment:
   #     - ORIGIN=http://localhost:8080
   #     - RUNNING_IN_DOCKER=true
-  #   hostname: whatsync-web
+  #   hostname: whasync-web
   #   ports:
   #     - 80:80
   #   restart: unless-stopped
-  whatsync:
-    container_name: whatsync
+  whasync:
+    container_name: whasync
     build:
       context: .
       dockerfile: Dockerfile
@@ -39,7 +39,7 @@ services:
     env_file:
       - ./server/.env
       - ./web/.env
-    hostname: whatsync
+    hostname: whasync
     ports:
       - 8080:8080
       - 80:80
