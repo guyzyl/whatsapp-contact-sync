@@ -62,7 +62,7 @@ export function initWhatsApp(id: string): Client {
 }
 
 export async function loadContacts(
-  client: Client
+  client: Client,
 ): Promise<Map<string, string>> {
   const contacts: Contact[] = await client.getContacts();
 
@@ -77,7 +77,7 @@ export async function loadContacts(
 
 export async function downloadFile(
   client: Client,
-  whatsappId: string
+  whatsappId: string,
 ): Promise<Base64 | null> {
   const photoUrl = await client.getProfilePicUrl(whatsappId);
   if (!photoUrl) return null;

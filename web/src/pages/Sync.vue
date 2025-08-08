@@ -92,7 +92,7 @@ export default defineComponent({
     <div class="hero-content text-center">
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Sync In Progress</h1>
-        
+
         <p class="py-6" v-if="!isManualSync">
           Your contacts are syncing, you can sit back and relax.
           <br /><br />
@@ -120,7 +120,10 @@ export default defineComponent({
           <span>{{ errorMessage }}</span>
         </div>
 
-        <div class="flex flex-col items-center my-8" v-if="isManualSync && !isManualSyncLoading">
+        <div
+          class="flex flex-col items-center my-8"
+          v-if="isManualSync && !isManualSyncLoading"
+        >
           <div class="text-2xl font-bold mb-4">
             {{ manualSyncData?.contactName ?? "Unknown person" }}'s Photo
           </div>
@@ -129,8 +132,16 @@ export default defineComponent({
               <span class="mb-2 font-semibold">Existing Photo</span>
               <div class="avatar avatar-placeholder mb-4">
                 <div class="w-48 rounded-full ring-2 ring-white">
-                  <img v-if="manualSyncData?.existingPhoto" :src="'data:image/jpeg;base64, ' + manualSyncData?.existingPhoto" alt="Existing Google Photo" />
-                  <div v-if="!manualSyncData?.existingPhoto" class="text-xl">No photo</div>
+                  <img
+                    v-if="manualSyncData?.existingPhoto"
+                    :src="
+                      'data:image/jpeg;base64, ' + manualSyncData?.existingPhoto
+                    "
+                    alt="Existing Google Photo"
+                  />
+                  <div v-if="!manualSyncData?.existingPhoto" class="text-xl">
+                    No photo
+                  </div>
                 </div>
               </div>
               <button class="btn btn-success" @click="onPhotoConfirm(false)">
@@ -141,8 +152,14 @@ export default defineComponent({
               <span class="mb-2 font-semibold">New Photo</span>
               <div class="avatar avatar-placeholder mb-4">
                 <div class="w-48 rounded-full ring-2 ring-white">
-                  <img v-if="manualSyncData?.newPhoto" :src="'data:image/jpeg;base64, ' + manualSyncData?.newPhoto" alt="New Photo" />
-                  <div v-if="!manualSyncData?.newPhoto" class="text-xl">No photo</div>
+                  <img
+                    v-if="manualSyncData?.newPhoto"
+                    :src="'data:image/jpeg;base64, ' + manualSyncData?.newPhoto"
+                    alt="New Photo"
+                  />
+                  <div v-if="!manualSyncData?.newPhoto" class="text-xl">
+                    No photo
+                  </div>
                 </div>
               </div>
               <button class="btn btn-info" @click="onPhotoConfirm(true)">
@@ -152,7 +169,10 @@ export default defineComponent({
           </div>
         </div>
 
-        <div class="flex flex-col items-center mt-4 mb-4" v-if="isManualSync && isManualSyncLoading">
+        <div
+          class="flex flex-col items-center mt-4 mb-4"
+          v-if="isManualSync && isManualSyncLoading"
+        >
           <span class="text-xl">Loading next contact...</span>
           <span class="loading loading-spinner loading-lg"></span>
         </div>

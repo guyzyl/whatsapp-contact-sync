@@ -24,18 +24,22 @@ function cleanup(sessionID: string) {
     This is done with a timeout to prevent cleanup on websocket disconnect
       and re-connect (for example, during a page refresh).
   */
-  const timeout = setTimeout(async () => {
-    if (getFromCache(sessionID, "whatsapp") !== undefined) {
-      try {
-        const client = getFromCache(sessionID, "whatsapp");
-        deleteFromCache(sessionID, "whatsapp");
-        client.destroy();
-      } catch (e) {}
-    }
+  const timeout = setTimeout(
+    async () => {
+      if (getFromCache(sessionID, "whatsapp") !== undefined) {
+        try {
+          const client = getFromCache(sessionID, "whatsapp");
+          deleteFromCache(sessionID, "whatsapp");
+          client.destroy();
+        } catch (e) {}
+      }
 
-    deleteFromCache(sessionID, "gauth");
-    deleteFromCache(sessionID, "ws");
-  }, 5 * 60 * 1000); // 5 minutes.
+      deleteFromCache(sessionID, "gauth");
+      deleteFromCache(sessionID, "ws");
+    },
+    // 5 minutes.
+    5 * 60 * 1000,
+  );
 
   setInCache(sessionID, "cleanup", timeout);
 }
