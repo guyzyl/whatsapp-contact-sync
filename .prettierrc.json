@@ -1,0 +1,8 @@
+{
+  "bracketSpacing": true,
+  "plugins": ["prettier-plugin-packagejson"],
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "useTabs": false
+}
