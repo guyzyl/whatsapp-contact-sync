@@ -1,5 +1,5 @@
 ### Build web files
-FROM node:21-alpine AS web-build
+FROM node:24-alpine AS web-build
 
 WORKDIR /app/web
 
@@ -14,7 +14,7 @@ RUN npm run build
 
 
 ### Download server npm modules
-FROM node:21-alpine AS server-build
+FROM node:24-alpine AS server-build
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 WORKDIR /app/server
@@ -41,7 +41,7 @@ RUN mv node_modules/googleapis/build/src/apis/docs ./docs && \
 
 
 ### Build final image
-FROM node:21-alpine
+FROM node:24-alpine
 USER root
 
 ENV RUNNING_IN_DOCKER="true"
@@ -49,7 +49,7 @@ WORKDIR /app/server
 
 # Install Chromium
 RUN apk update && \
-    apk add --no-cache nss udev ttf-freefont chromium nginx && \
+    apk add --no-cache nss udev ttf-freefont chromium nginx curl && \
     rm -rf /var/cache/apk/* /tmp/*
 
 COPY ./assets/nginx.conf /etc/nginx/nginx.conf
@@ -62,4 +62,7 @@ COPY --from=server-build /app/server/build ./build
 
 EXPOSE 80
 
-ENTRYPOINT ["./entrypoint.sh"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:80/ && curl -f http://localhost:8080/api/health || exit 1
+
+ENTRYPOINT ["/bin/sh", "-c", "/var/www/html/vite-envs.sh && ./entrypoint.sh"]

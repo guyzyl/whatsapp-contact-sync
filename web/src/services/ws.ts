@@ -49,10 +49,7 @@ export function addHandler(eventType: EventType, func: HandlerFunction): void {
   eventHandlers[eventTypeString] = func;
 }
 
-export function sendEvent(
-  eventType: EventType,
-  data: any = null,
-): void {
+export function sendEvent(eventType: EventType, data: any = null): void {
   const event: Event = { type: eventType, data };
 
   if (!WS) return;

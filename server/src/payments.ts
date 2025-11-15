@@ -14,7 +14,7 @@ let customerCache: Map<string, string> = new Map();
 async function queryCoffeePurchases() {
   const response = await fetch(
     "https://developers.buymeacoffee.com/api/v1/supporters",
-    { headers: { Authorization: `Bearer ${coffeeToken}` } }
+    { headers: { Authorization: `Bearer ${coffeeToken}` } },
   );
 
   let json: any;

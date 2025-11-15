@@ -64,7 +64,7 @@ router.beforeEach(
       router.push("/gauth");
     else if (to.path === "/gauth" && status.googleConnected)
       router.push("/options");
-  }
+  },
 );
 
 let currentRoute: RouteLocationNormalized;

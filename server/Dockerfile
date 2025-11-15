@@ -1,5 +1,5 @@
 ### Build server files
-FROM node:21-alpine AS server-build
+FROM node:24-alpine AS server-build
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 WORKDIR /app/server
@@ -26,7 +26,7 @@ RUN mv node_modules/googleapis/build/src/apis/docs ./docs && \
 
 
 ### Build final image
-FROM node:21-alpine
+FROM node:24-alpine
 USER root
 
 ENV RUNNING_IN_DOCKER="true"
@@ -34,7 +34,7 @@ WORKDIR /app/server
 
 # Install Chromium
 RUN apk update && \
-    apk add --no-cache nss udev ttf-freefont chromium nginx && \
+    apk add --no-cache nss udev ttf-freefont chromium nginx curl && \
     rm -rf /var/cache/apk/* /tmp/*
 
 COPY --from=server-build /app/server/node_modules ./node_modules
@@ -42,4 +42,7 @@ COPY --from=server-build /app/server/build ./build
 
 EXPOSE 8080
 
-CMD [ "build/server/main.js" ]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+CMD [ "node", "build/server/main.js" ]
