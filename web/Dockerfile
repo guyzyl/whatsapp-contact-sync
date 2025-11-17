@@ -23,6 +23,6 @@ EXPOSE 80
 COPY --from=build /app/web/dist /usr/share/nginx/html
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
-  CMD curl -f http://localhost:80/ || exit 1
+  CMD curl -f http://localhost:80/health.json || exit 1
 
 ENTRYPOINT ["/bin/sh", "-c", "/usr/share/nginx/html/vite-envs.sh && nginx -g 'daemon off;'"]
