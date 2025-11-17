@@ -14,7 +14,6 @@
   "funding": {
     "url": "https://buymeacoffee.com/guyzyl"
   },
-  "license": "Apache-2.0 WITH Common-Clause-1.0",
   "author": "guyzyl (https://github.com/guyzyl)",
   "type": "commonjs",
   "main": "main.ts",
@@ -52,5 +51,15 @@
     "open": "^10.2.0",
     "server-destroy": "^1.0.1",
     "ts-node": "^10.9.2"
-  }
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    {
+      "type": "Common-Clause-1.0",
+      "url": "https://commonsclause.com/"
+    }
+  ]
 }

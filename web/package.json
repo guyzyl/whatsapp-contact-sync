@@ -14,7 +14,6 @@
   "funding": {
     "url": "https://buymeacoffee.com/guyzyl"
   },
-  "license": "Apache-2.0 WITH Common-Clause-1.0",
   "author": "guyzyl (https://github.com/guyzyl)",
   "type": "module",
   "scripts": {
@@ -42,5 +41,15 @@
     "vite": "^7.1.9",
     "vite-envs": "^4.6.2",
     "vue-tsc": "^3.1.0"
-  }
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    {
+      "type": "Common-Clause-1.0",
+      "url": "https://commonsclause.com/"
+    }
+  ]
 }
