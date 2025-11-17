@@ -14,7 +14,7 @@
   "funding": {
     "url": "https://buymeacoffee.com/guyzyl"
   },
-  "license": "Apache-2.0",
+  "license": "Apache-2.0 WITH Common-Clause-1.0",
   "author": "guyzyl (https://github.com/guyzyl)",
   "type": "commonjs",
   "main": "main.ts",
