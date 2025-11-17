@@ -54,7 +54,8 @@ RUN apk update && \
 
 COPY ./assets/nginx.conf /etc/nginx/nginx.conf
 COPY ./assets/entrypoint.sh .
-RUN chmod 755 entrypoint.sh
+COPY ./assets/healthcheck.sh .
+RUN chmod 755 entrypoint.sh healthcheck.sh
 
 COPY --from=web-build /app/web/dist /var/www/html
 COPY --from=server-build /app/server/node_modules ./node_modules
@@ -63,6 +64,6 @@ COPY --from=server-build /app/server/build ./build
 EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:80/ && curl -f http://localhost:8080/health || exit 1
+  CMD ./healthcheck.sh
 
 ENTRYPOINT ["/bin/sh", "-c", "/var/www/html/vite-envs.sh && ./entrypoint.sh"]
