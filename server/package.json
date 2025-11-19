@@ -14,6 +14,7 @@
   "funding": {
     "url": "https://buymeacoffee.com/guyzyl"
   },
+  "license": "SEE LICENSE IN LICENSE.txt",
   "author": "guyzyl (https://github.com/guyzyl)",
   "type": "commonjs",
   "main": "main.ts",
