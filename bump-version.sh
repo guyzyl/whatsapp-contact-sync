@@ -39,8 +39,7 @@ if [[ "${WEB_VERSION}" = "${SERVER_VERSION}" ]]; then
 else
 	echo ""
 	echo "Warning: Web and Server versions differ!"
-	echo "Creating separate signed tags..."
-	git tag -s "web-v${WEB_VERSION}" -m "Web release version ${WEB_VERSION}"
-	git tag -s "server-v${SERVER_VERSION}" -m "Server release version ${SERVER_VERSION}"
-	echo "Git tags created. Push with: git push origin --tags"
+	echo "Web version: ${WEB_VERSION}"
+	echo "Server version: ${SERVER_VERSION}"
+	echo "No git tags created."
 fi
