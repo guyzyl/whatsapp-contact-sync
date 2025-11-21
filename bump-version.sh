@@ -51,13 +51,13 @@ echo ""
 echo "Web version: ${WEB_VERSION}"
 echo "Server version: ${SERVER_VERSION}"
 
-# Commit the version changes
-echo ""
-echo "Committing package.json changes..."
-git commit -Ss -i web/package.json web/package-lock.json server/package.json server/package-lock.json -m "chore(release): bump version to ${WEB_VERSION}"
-
 # Create git tag
 if [[ "${WEB_VERSION}" = "${SERVER_VERSION}" ]]; then
+	# Commit the version changes
+	echo ""
+	echo "Committing package.json changes..."
+	git commit -Ss -o web/package.json web/package-lock.json server/package.json server/package-lock.json -m "chore(release): bump version to ${WEB_VERSION}"
+
 	TAG="v${WEB_VERSION}"
 	echo ""
 	echo "Creating signed git tag: ${TAG}"
