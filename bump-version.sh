@@ -54,8 +54,7 @@ echo "Server version: ${SERVER_VERSION}"
 # Commit the version changes
 echo ""
 echo "Committing package.json changes..."
-git add web/package.json web/package-lock.json server/package.json server/package-lock.json
-git commit -Ssm "chore: bump version to ${WEB_VERSION}"
+git commit -Ss -i web/package.json web/package-lock.json server/package.json server/package-lock.json -m "chore(release): bump version to ${WEB_VERSION}"
 
 # Create git tag
 if [[ "${WEB_VERSION}" = "${SERVER_VERSION}" ]]; then
