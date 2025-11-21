@@ -24,7 +24,7 @@ export async function initWs(): Promise<void> {
   };
 
   WS.onerror = (wsEvent) => {
-    console.error(`WS error - ${wsEvent}`);
+    console.error(`WS error:`, wsEvent);
     setTimeout(() => {
       initWs();
     }, errorTimeout);
@@ -40,7 +40,7 @@ async function messageHandler(wsEvent: MessageEvent): Promise<void> {
     const func: HandlerFunction = eventHandlers[event.type];
     func(event.data);
   } else {
-    console.error(`No event handler for ${event.type}`);
+    console.error(`No event handler for ${event.type}`, event.type);
   }
 }
 
