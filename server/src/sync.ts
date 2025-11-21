@@ -44,7 +44,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
       isManualSync: syncOptions.manual_sync === "true",
     });
   } catch (e) {
-    console.error(e);
+    console.error("[SERVER]", e);
     if (ws.readyState === WebSocket.OPEN) {
       sendEvent(ws, EventType.SyncProgress, {
         progress: 0,
@@ -119,7 +119,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
           );
         } catch (e) {
           console.error(
-            "Error waiting for response message for manual sync confirmation",
+            "[SERVER] Error waiting for response message for manual sync confirmation",
             e,
           );
           continue;

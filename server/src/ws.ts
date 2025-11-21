@@ -33,7 +33,7 @@ export function sendMessageAndWait(
       } catch (e) {
         // Ignore parse errors
         console.error(
-          `Error parsing message while waiting for WS response for "${eventToWaitFor}" event after sending "${eventToSend}"`,
+          `[SERVER] Error parsing message while waiting for WS response for "${eventToWaitFor}" event after sending "${eventToSend}"`,
           e,
         );
       }

@@ -21,7 +21,7 @@ async function queryCoffeePurchases() {
   try {
     json = await response.json();
   } catch (e) {
-    console.error(e);
+    console.error("[SERVER]", e);
     return;
   }
 
@@ -40,7 +40,7 @@ async function recordPurchase(email: string) {
     await redisClient.set(email, "", "EX", expires);
     customerCache.set(email, "");
   } catch (e) {
-    console.error(e);
+    console.error("[SERVER]", e);
   }
 }
 
@@ -54,7 +54,7 @@ async function queryPurchase(email: string): Promise<boolean> {
       return true;
     }
   } catch (e) {
-    console.error(e);
+    console.error("[SERVER]", e);
   }
 
   return false;

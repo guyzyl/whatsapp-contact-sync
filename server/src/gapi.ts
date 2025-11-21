@@ -77,6 +77,6 @@ export async function updateContactPhoto(
       requestBody: { photoBytes: photo },
     });
   } catch (e) {
-    console.error(e);
+    console.error("[SERVER]", e);
   }
 }
