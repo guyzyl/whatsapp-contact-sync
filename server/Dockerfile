@@ -13,8 +13,8 @@ COPY ["server/package.json", "server/package-lock.json*", "./"]
 RUN --mount=type=cache,target=/app/.npm \
     npm ci --prefer-offline --no-audit --cache /app/.npm
 
-COPY ./interfaces /app/interfaces
-COPY ./server .
+COPY interfaces ../interfaces
+COPY server .
 
 RUN npm run build && \
     npm prune --production

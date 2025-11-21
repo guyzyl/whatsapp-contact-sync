@@ -9,8 +9,10 @@ COPY ["web/package.json", "web/package-lock.json*", "./"]
 # --prefer-offline: uses cached packages before downloading
 # --no-audit: skips security audit for speed
 RUN --mount=type=cache,target=/app/.npm \
-  npm ci --prefer-offline --no-audit --cache /app/.npmCOPY ./interfaces /app/interfaces
-COPY ./web .
+  npm ci --prefer-offline --no-audit --cache /app/.npm
+
+COPY interfaces ../interfaces
+COPY web .
 
 RUN npm run build
 
