@@ -1,30 +1,56 @@
 {
-  "name": "whatsapp-contact-sync",
+  "name": "whatsapp-contact-sync-web",
+  "version": "1.0.1",
   "private": true,
-  "version": "0.0.0",
+  "description": "WhatsApp Contact Sync Web frontend",
+  "homepage": "https://whasync.com/",
+  "bugs": {
+    "url": "https://github.com/guyzyl/whatsapp-contact-sync/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guyzyl/whatsapp-contact-sync.git"
+  },
+  "funding": {
+    "url": "https://buymeacoffee.com/guyzyl"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "author": "guyzyl (https://github.com/guyzyl)",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 4000",
     "build": "vue-tsc --noEmit && vite build",
+    "dev": "vite --port 4000",
+    "postinstall": "vite-envs update-types",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4.1.7",
+    "@tailwindcss/postcss": "^4.1.14",
     "autoprefixer": "^10.4.21",
-    "daisyui": "^5.0.35",
-    "isbot": "^5.1.28",
+    "daisyui": "^5.1.27",
+    "isbot": "^5.1.31",
     "qrcode.vue": "^3.6.0",
-    "tailwindcss": "^4.1.7",
-    "vue": "^3.5.14",
-    "vue-gtag": "^3.5.0",
+    "tailwindcss": "^4.1.14",
+    "vue": "^3.5.22",
+    "vue-gtag": "^3.6.1",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^22.15.18",
-    "@vitejs/plugin-vue": "^5.2.4",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vue-tsc": "^2.2.10"
-  }
+    "@vitejs/plugin-vue": "^6.0.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9",
+    "vite-envs": "^4.6.2",
+    "vue-tsc": "^3.1.0"
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    {
+      "type": "Common-Clause-1.0",
+      "url": "https://commonsclause.com/"
+    }
+  ]
 }

@@ -2,10 +2,10 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/server"
+  - package-ecosystem: npm
+    directory: /server
     schedule:
-      interval: "daily"
+      interval: daily
     allow:
-      - dependency-name: "whatsapp-web.js"
-        dependency-type: "direct"
+      - dependency-name: whatsapp-web.js
+        dependency-type: direct

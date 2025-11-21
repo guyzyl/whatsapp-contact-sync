@@ -10,15 +10,19 @@ import { sendEvent, sendMessageAndWait } from "./ws";
 import { SimpleContact } from "./interfaces";
 import { getFromCache } from "./cache";
 
-const getGooglePhotoAsBase64 = async (googleContact: SimpleContact): Promise<string | null> => {
+const getGooglePhotoAsBase64 = async (
+  googleContact: SimpleContact,
+): Promise<string | null> => {
   if (!googleContact.photoUrl) {
     return null;
   }
   const googlePhotoData = await fetch(googleContact.photoUrl);
   const googlePhotoBlob = await googlePhotoData.blob();
   const googlePhotoArrayBuffer = await googlePhotoBlob.arrayBuffer();
-  return googlePhotoArrayBuffer.byteLength !== 0 ? Buffer.from(googlePhotoArrayBuffer).toString("base64") : null;
-}
+  return googlePhotoArrayBuffer.byteLength !== 0
+    ? Buffer.from(googlePhotoArrayBuffer).toString("base64")
+    : null;
+};
 
 export async function initSync(id: string, syncOptions: SyncOptions) {
   // The limiter is implemented due to Google API's limit of 60 photo uploads per minute per user
@@ -40,7 +44,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
       isManualSync: syncOptions.manual_sync === "true",
     });
   } catch (e) {
-    console.error(e);
+    console.error("[SERVER]", e);
     if (ws.readyState === WebSocket.OPEN) {
       sendEvent(ws, EventType.SyncProgress, {
         progress: 0,
@@ -64,7 +68,11 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
 
     const isManualSync = syncOptions.manual_sync === "true";
 
-    if (!isManualSync && syncOptions.overwrite_photos === "false" && googleContact.hasPhoto)
+    if (
+      !isManualSync &&
+      syncOptions.overwrite_photos === "false" &&
+      googleContact.hasPhoto
+    )
       continue;
 
     for (const phoneNumber of googleContact.numbers) {
@@ -77,11 +85,11 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
       ) {
         if (phoneNumber.length === 12) {
           whatsappContactId = whatsappContacts.get(
-            phoneNumber.slice(0, 4) + "9" + phoneNumber.slice(4)
+            phoneNumber.slice(0, 4) + "9" + phoneNumber.slice(4),
           );
         } else {
           whatsappContactId = whatsappContacts.get(
-            phoneNumber.slice(0, 4) + phoneNumber.slice(5)
+            phoneNumber.slice(0, 4) + phoneNumber.slice(5),
           );
         }
       } else {
@@ -99,16 +107,21 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
         try {
           const googlePhoto = await getGooglePhotoAsBase64(googleContact);
 
-          message = await sendMessageAndWait(ws,
+          message = await sendMessageAndWait(
+            ws,
             EventType.SyncConfirm,
             EventType.SyncPhotoConfirm,
             {
               existingPhoto: googlePhoto,
               newPhoto: photo,
               contactName: googleContact.name,
-            });
+            },
+          );
         } catch (e) {
-          console.error("Error waiting for response message for manual sync confirmation", e);
+          console.error(
+            "[SERVER] Error waiting for response message for manual sync confirmation",
+            e,
+          );
           continue;
         }
 
