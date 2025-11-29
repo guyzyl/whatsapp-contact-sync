@@ -2,6 +2,8 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "name": "Website (dev mode)",
+      "label": "web: dev",
       "isBackground": true,
       "type": "npm",
       "script": "dev",
@@ -9,6 +11,9 @@
         "cwd": "${workspaceFolder}/web"
       },
       "problemMatcher": {
+        "pattern": {
+          "regexp": "http://localhost:4000/"
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".*vite.*",

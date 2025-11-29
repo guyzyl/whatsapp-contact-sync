@@ -1,43 +1,66 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
+  "name": "whatsapp-contact-sync-server",
+  "version": "1.0.1",
+  "private": true,
+  "description": "Backend server for WhatsApp Contact Sync",
+  "homepage": "https://whasync.com/",
+  "bugs": {
+    "url": "https://github.com/guyzyl/whatsapp-contact-sync/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guyzyl/whatsapp-contact-sync.git"
+  },
+  "funding": {
+    "url": "https://buymeacoffee.com/guyzyl"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "author": "guyzyl (https://github.com/guyzyl)",
+  "type": "commonjs",
   "main": "main.ts",
   "scripts": {
-    "serve": "ts-node .",
-    "dev": "nodemon --exec 'ts-node' .",
+    "build": "tsc",
+    "dev": "nodemon main.ts",
     "prod": "node build/server/main.js",
-    "build": "tsc"
+    "serve": "ts-node ."
   },
-  "author": "guyzyl",
-  "license": "ISC",
   "dependencies": {
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "express-session": "^1.18.1",
+    "express-session": "^1.18.2",
     "express-winston": "^4.2.0",
     "express-ws": "^5.0.2",
     "googleapis": "^148.0.0",
-    "ioredis": "^5.6.1",
+    "ioredis": "^5.8.0",
     "limiter": "^3.0.0",
-    "lru-cache": "^11.1.0",
+    "lru-cache": "^11.2.2",
     "memorystore": "^1.6.7",
-    "whatsapp-web.js": "^1.23.0",
-    "winston": "^3.17.0"
+    "whatsapp-web.js": "^1.34.1",
+    "winston": "^3.18.3"
   },
   "devDependencies": {
-    "@types/cookie-parser": "^1.4.8",
-    "@types/cors": "^2.8.18",
-    "@types/express": "^5.0.1",
-    "@types/express-session": "^1.18.1",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/express-session": "^1.18.2",
     "@types/express-ws": "^3.0.5",
     "@types/node": "^22.15.18",
     "@types/ws": "^8.18.1",
     "nodemon": "^3.1.10",
-    "open": "^10.1.2",
+    "open": "^10.2.0",
     "server-destroy": "^1.0.1",
     "ts-node": "^10.9.2"
-  }
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    {
+      "type": "Common-Clause-1.0",
+      "url": "https://commonsclause.com/"
+    }
+  ]
 }
