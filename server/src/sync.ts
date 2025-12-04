@@ -1,4 +1,4 @@
-import { WebSocket } from "ws";
+import WebSocket from "ws";
 import { Auth } from "googleapis";
 import { RateLimiter } from "limiter";
 import { Client } from "whatsapp-web.js";
