@@ -135,3 +135,14 @@ credentials.json
 build
 .wwebjs_cache
 .DS_Store
+/.idea/copilot.data.migration.agent.xml
+/.idea/copilot.data.migration.ask.xml
+/.idea/copilot.data.migration.ask2agent.xml
+/.idea/copilot.data.migration.edit.xml
+/.idea/modules.xml
+/package-lock.json
+/.idea/inspectionProfiles/Project_Default.xml
+/run.sh
+/.idea/vcs.xml
+/.idea/whatsapp-contact-sync.iml
+/.idea/.gitignore
