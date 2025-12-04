@@ -24,7 +24,7 @@
     "limiter": "^3.0.0",
     "lru-cache": "^11.1.0",
     "memorystore": "^1.6.7",
-    "whatsapp-web.js": "^1.23.0",
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#main",
     "winston": "^3.17.0"
   },
   "devDependencies": {
