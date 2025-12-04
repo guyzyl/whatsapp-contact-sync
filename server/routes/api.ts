@@ -1,6 +1,6 @@
 import express from "express";
 import { Request, Response } from "express";
-import { WebSocket } from "ws";
+import WebSocket from "ws";
 // @ts-ignore
 import patch from "express-ws/lib/add-ws-method";
 
