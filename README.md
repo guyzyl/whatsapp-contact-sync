@@ -56,9 +56,11 @@ Once you do that, create the file `server/.env`, and set the following environme
 
 You also need to update the `CLIENT_ID` and `API_KEY` variables in [`web/src/pages/GoogleAuth.vue`](web/src/pages/GoogleAuth.vue).
 
-Once that's done, you can go ahead and run the app:
+Once that's done, you can go ahead and install the Github repo and install the app:
 
 ```bash
+https://github.com/alxgraphy/whatsapp-contact-sync.git
+
 # Run backend
 cd server
 npm install
