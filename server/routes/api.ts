@@ -15,8 +15,8 @@ import { enforcePayments } from "../main";
 import { checkPurchase } from "../src/payments";
 
 // Based on https://github.com/HenningM/express-ws/issues/86
-patch(express.Router);
 const router = express.Router({ mergeParams: true });
+patch(router);
 
 function cleanup(sessionID: string) {
   /*
