@@ -74,7 +74,9 @@ RUN apk add --no-cache \
     curl
 
 COPY ./assets/nginx.conf /etc/nginx/nginx.conf
-COPY --chmod=755 ./assets/entrypoint.sh ./assets/healthcheck.sh ./
+COPY ./assets/entrypoint.sh ./assets/healthcheck.sh ./
+RUN chmod +x ./entrypoint.sh ./healthcheck.sh
+
 
 COPY --from=web-build /app/web/dist /var/www/html
 COPY --from=server-build /app/server/node_modules ./node_modules
