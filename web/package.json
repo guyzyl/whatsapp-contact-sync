@@ -24,33 +24,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4.1.14",
-    "autoprefixer": "^10.4.21",
-    "daisyui": "^5.1.27",
-    "isbot": "^5.1.31",
-    "qrcode.vue": "^3.6.0",
-    "tailwindcss": "^4.1.14",
-    "vue": "^3.5.22",
-    "vue-gtag": "^3.6.1",
-    "vue-router": "^4.5.1"
+    "@tailwindcss/postcss": "^4.2.1",
+    "autoprefixer": "^10.4.27",
+    "daisyui": "^5.5.19",
+    "isbot": "^5.1.36",
+    "qrcode.vue": "^3.8.0",
+    "tailwindcss": "^4.2.1",
+    "vue": "^3.5.30",
+    "vue-gtag": "^3.7.0",
+    "vue-router": "^5.0.3"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
-    "@types/node": "^22.15.18",
-    "@vitejs/plugin-vue": "^6.0.1",
+    "@types/node": "^25.5.0",
+    "@vitejs/plugin-vue": "^6.0.5",
     "typescript": "^5.9.3",
-    "vite": "^7.1.9",
-    "vite-envs": "^4.6.2",
-    "vue-tsc": "^3.1.0"
-  },
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "https://www.apache.org/licenses/LICENSE-2.0"
-    },
-    {
-      "type": "Common-Clause-1.0",
-      "url": "https://commonsclause.com/"
-    }
-  ]
+    "vite": "^8.0.0",
+    "vue-tsc": "^3.2.5"
+  }
 }
