@@ -1,11 +1,11 @@
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
-version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/server"
+  - allow:
+      - dependency-name: whatsapp-web.js
+        dependency-type: direct
+    directory: /server
+    package-ecosystem: npm
     schedule:
-      interval: "daily"
-    allow:
-      - dependency-name: "whatsapp-web.js"
-        dependency-type: "direct"
+      interval: daily
+version: 2
