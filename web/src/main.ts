@@ -32,7 +32,7 @@ const router = createRouter({
 router.beforeEach(
   async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
     // Makes sure websocket is initialized.
-    //  This is done on every request to make sure the server didn't discconect in the meantime.
+    // This is done on every request to make sure the server doesn't disconnect in the meantime.
     initWs();
 
     // Don't make any checks for serving the index page.
@@ -64,7 +64,7 @@ router.beforeEach(
       router.push("/gauth");
     else if (to.path === "/gauth" && status.googleConnected)
       router.push("/options");
-  }
+  },
 );
 
 let currentRoute: RouteLocationNormalized;

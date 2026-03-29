@@ -26,13 +26,13 @@ The app matches contacts based on their phone numbers, and utilizes
 
 ## Why Was This Developed?
 
-Whenever someone used to call me or I looked them up in my contacts, they all apear as colorful circles with a single letter in it.\
+Whenever someone used to call me or I looked them up in my contacts, they all appear as colorful circles with a single letter in it.\
 The annoying part is that every single person I know has a WhatsApp account which has a profile picture. They are both based on the same phone number but the picture is only available in one of them.\
-In order to fix this grievence I developed this app which allows anyone to sync their contacts photos from WhatsApp to Google Contacts.
+In order to fix this grievance I developed this app which allows anyone to sync their contacts photos from WhatsApp to Google Contacts.
 
 ## How To Use
 
-The app is extremley easy to use (and self explantory):
+The app is extremely easy to use (and self explanatory):
 
 1. Go to [whasync.com](https://whasync.com/)
 2. Press "Get Started"
@@ -42,19 +42,37 @@ The app is extremley easy to use (and self explantory):
 6. That's it :)
 
 The whole process is very simple and automated, so you don't need to worry about anything else.\
-Setting up should take less then a minute, and syncing should take about 1 second per photo (due to Google's API rate limitiations of 60 requests per user per minute)
+Setting up should take less then a minute, and syncing should take about 1 second per photo (due to Google's API rate limitations of 60 requests per user per minute)
 
 ## How to Run Locally
 
 In order for the backend to function, it requires an OAuth client id and secret + an API key.\
 Since (for obvious reasons) this is a private app, you will need to create one for your own.\
 You can see instructions on how to do that [here](https://developers.google.com/workspace/guides/create-credentials).\
-Once you do that, create the file `server/.env`, and set the following environment variables:
+You will need OAuth Client ID credentials, as well as API key credentials.
 
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
+Rename [`server/sample.env`](server/sample.env) to `server/.env` and fill in the values.
 
-You also need to update the `CLIENT_ID` and `API_KEY` variables in [`web/src/pages/GoogleAuth.vue`](web/src/pages/GoogleAuth.vue).
+```env
+SERVER_GOOGLE_CLIENT_ID=
+SERVER_GOOGLE_CLIENT_SECRET=
+```
+
+Rename [`web/sample.env`](web/sample.env) to `web/.env` and fill in the values.
+
+`WEB_GOOGLE_CLIENT_ID` is same as `SERVER_GOOGLE_CLIENT_ID` used in `server/.env`.
+
+```env
+WEB_GOOGLE_CLIENT_ID=
+WEB_GOOGLE_API_KEY=
+```
+
+Alternatively, you can set the env variables to use the app.
+For e.g.:
+
+```sh
+export SERVER_GOOGLE_CLIENT_ID=<value>
+```
 
 Once that's done, you can go ahead and run the app:
 

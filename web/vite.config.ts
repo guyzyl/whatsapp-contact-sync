@@ -1,9 +1,15 @@
 import { defineConfig } from "vite";
+import { viteEnvs } from "vite-envs";
 import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    viteEnvs({
+      declarationFile: "sample.env",
+    }),
+    vue(),
+  ],
   server: {
     proxy: {
       "/api": {

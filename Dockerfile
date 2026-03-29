@@ -1,11 +1,17 @@
 ### Build web files
-FROM node:21-alpine AS web-build
+FROM node:24-alpine AS web-build
+
+ARG WEB_GOOGLE_CLIENT_ID=""
+ARG WEB_GOOGLE_API_KEY=""
+
+ENV WEB_GOOGLE_CLIENT_ID=${WEB_GOOGLE_CLIENT_ID}
+ENV WEB_GOOGLE_API_KEY=${WEB_GOOGLE_API_KEY}
 
 WORKDIR /app/web
 
-COPY ["web/package.json", "web/package-lock.json*", "./"]
+COPY web/package.json web/package-lock.json* ./
 
-RUN npm install
+RUN npm ci
 
 COPY ./interfaces /app/interfaces
 COPY ./web .
@@ -13,48 +19,64 @@ COPY ./web .
 RUN npm run build
 
 
-### Download server npm modules
-FROM node:21-alpine AS server-build
+### Build server files
+FROM node:24-alpine AS server-build
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+ARG SERVER_GOOGLE_CLIENT_ID=""
+ARG SERVER_GOOGLE_CLIENT_SECRET=""
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true" \
+    SERVER_GOOGLE_CLIENT_ID=${SERVER_GOOGLE_CLIENT_ID} \
+    SERVER_GOOGLE_CLIENT_SECRET=${SERVER_GOOGLE_CLIENT_SECRET}
 WORKDIR /app/server
 
-COPY ["server/package.json", "server/package-lock.json*", "./"]
+COPY server/package.json server/package-lock.json* ./
 
-RUN npm install
+RUN npm ci
 
 COPY ./interfaces /app/interfaces
 COPY ./server .
 
-RUN npm run build
+RUN npm run build \
+    && npm prune --production
 
 # Prepare node_modules for docker
-RUN npm prune --production
-RUN apk update && \
-    apk add curl && \
-    curl -sf https://gobinaries.com/tj/node-prune | sh
-
-# The mv is a workaround for this - https://github.com/tj/node-prune/issues/63
-RUN mv node_modules/googleapis/build/src/apis/docs ./docs && \
-    node-prune --exclude "**/googleapis/**/docs/*.js" && \
-    mv ./docs node_modules/googleapis/build/src/apis/docs
+RUN apk add --no-cache curl \
+    && curl -sf https://gobinaries.com/tj/node-prune | sh \
+    && mv node_modules/googleapis/build/src/apis/docs ./docs \
+    && node-prune --exclude "**/googleapis/**/docs/*.js" \
+    && mv ./docs node_modules/googleapis/build/src/apis/docs
 
 
 ### Build final image
-FROM node:21-alpine
-USER root
+FROM node:24-alpine
 
-ENV RUNNING_IN_DOCKER="true"
+ARG WEB_GOOGLE_CLIENT_ID=""
+ARG WEB_GOOGLE_API_KEY=""
+ARG SERVER_GOOGLE_CLIENT_ID=""
+ARG SERVER_GOOGLE_CLIENT_SECRET=""
+
+ENV RUNNING_IN_DOCKER="true" \
+    NODE_ENV="production" \
+    WEB_GOOGLE_CLIENT_ID=${WEB_GOOGLE_CLIENT_ID} \
+    WEB_GOOGLE_API_KEY=${WEB_GOOGLE_API_KEY} \
+    SERVER_GOOGLE_CLIENT_ID=${SERVER_GOOGLE_CLIENT_ID} \
+    SERVER_GOOGLE_CLIENT_SECRET=${SERVER_GOOGLE_CLIENT_SECRET}
 WORKDIR /app/server
 
-# Install Chromium
-RUN apk update && \
-    apk add --no-cache nss udev ttf-freefont chromium nginx && \
-    rm -rf /var/cache/apk/* /tmp/*
+# Install Chromium and dependencies
+RUN apk add --no-cache \
+    nss \
+    udev \
+    ttf-freefont \
+    chromium \
+    nginx \
+    curl
 
 COPY ./assets/nginx.conf /etc/nginx/nginx.conf
-COPY ./assets/entrypoint.sh .
-RUN chmod 755 entrypoint.sh
+COPY ./assets/entrypoint.sh ./assets/healthcheck.sh ./
+RUN chmod +x ./entrypoint.sh ./healthcheck.sh
+
 
 COPY --from=web-build /app/web/dist /var/www/html
 COPY --from=server-build /app/server/node_modules ./node_modules
@@ -62,4 +84,7 @@ COPY --from=server-build /app/server/build ./build
 
 EXPOSE 80
 
-ENTRYPOINT ["./entrypoint.sh"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD ./healthcheck.sh
+
+ENTRYPOINT ["/bin/sh", "-c", "/var/www/html/vite-envs.sh && ./entrypoint.sh"]

@@ -11,5 +11,5 @@ echo "Starting Nginx server"
 nginx &
 echo "Nginx server started, listening on port 80"
 
-# Crash container if node failes
+# Crash container if node fails
 wait %1
