@@ -6,11 +6,11 @@ import { Base64 } from "./types";
 const pageSize: number = 250;
 
 export function googleLogin(
-  token: typeof google.Auth.AccessTokenResponse
+  token: typeof google.Auth.AccessTokenResponse,
 ): Auth.OAuth2Client {
   const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET
+    process.env.SERVER_GOOGLE_CLIENT_ID,
+    process.env.SERVER_GOOGLE_CLIENT_SECRET,
   );
   oauth2Client.setCredentials(token);
 
@@ -18,7 +18,7 @@ export function googleLogin(
 }
 
 export async function listContacts(
-  auth: Auth.OAuth2Client
+  auth: Auth.OAuth2Client,
 ): Promise<SimpleContact[]> {
   const people: people_v1.People = google.people({ version: "v1", auth });
 
@@ -42,17 +42,20 @@ export async function listContacts(
         (connection) =>
           <SimpleContact>{
             id: connection.resourceName,
-            name: connection.names?.find((name) => name.displayName)?.displayName,
+            name: connection.names?.find((name) => name.displayName)
+              ?.displayName,
             numbers: connection
               .phoneNumbers!.filter((phoneNumber) => phoneNumber.canonicalForm)
               .map((phoneNumber) =>
-                phoneNumber.canonicalForm!.replace("+", "")
+                phoneNumber.canonicalForm!.replace("+", ""),
               ),
             hasPhoto: !connection.photos // Check if photos contain only the "default" photo
               ?.map((photo) => photo.default)
               .every((v) => v === true),
-            photoUrl: connection.photos?.find((photo) => photo.metadata?.primary)?.url,
-          }
+            photoUrl: connection.photos?.find(
+              (photo) => photo.metadata?.primary,
+            )?.url,
+          },
       );
 
     simpleContacts = simpleContacts.concat(contacts);
@@ -64,7 +67,7 @@ export async function listContacts(
 export async function updateContactPhoto(
   auth: Auth.OAuth2Client,
   resourceName: string,
-  photo: Base64
+  photo: Base64,
 ): Promise<void> {
   const people: people_v1.People = google.people({ version: "v1", auth });
 
@@ -74,6 +77,6 @@ export async function updateContactPhoto(
       requestBody: { photoBytes: photo },
     });
   } catch (e) {
-    console.error(e);
+    console.error("[SERVER]", e);
   }
 }

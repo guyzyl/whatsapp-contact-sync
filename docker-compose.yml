@@ -1,0 +1,45 @@
+name: whasync
+services:
+  #   server:
+  #     build:
+  #       context: .
+  #       dockerfile: server/Dockerfile
+  #     container_name: whasync-server
+  #     env_file:
+  #       - server/.env
+  #     environment:
+  #       - RUNNING_IN_DOCKER=true
+  #     hostname: whasync-server
+  #     ports:
+  #       - 8080:8080
+  #     restart: unless-stopped
+
+  #   web:
+  #     build:
+  #       context: .
+  #       dockerfile: web/Dockerfile
+  #     container_name: whasync-web
+  #     depends_on:
+  #       - server
+  #     env_file:
+  #       - web/.env
+  #     environment:
+  #       - ORIGIN=http://whasync-server:8080
+  #       - RUNNING_IN_DOCKER=true
+  #     hostname: whasync-web
+  #     ports:
+  #       - 80:80
+  #     restart: unless-stopped
+  whasync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: whasync
+    env_file:
+      - ./server/.env
+      - ./web/.env
+    hostname: whasync
+    ports:
+      - 8080:8080
+      - 80:80
+    restart: unless-stopped

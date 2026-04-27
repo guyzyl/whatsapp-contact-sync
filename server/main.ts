@@ -11,6 +11,7 @@ import winston from "winston";
 import expressWinston from "express-winston";
 
 import router from "./routes/api";
+import { enforcePayments } from "./src/config";
 
 let ews = expressWs(express());
 const mStore = MemoryStore(session);
@@ -18,7 +19,6 @@ const app = ews.app;
 const port = 8080;
 
 const isProd = process.env.NODE_ENV == "production";
-export const enforcePayments = process.env.ENFORCE_PAYMENTS == "true" || false;
 
 /*
   Setup the session and cookie parser.
@@ -29,7 +29,7 @@ app.use(
     origin: [process.env.ORIGIN || "http://localhost:8080"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // enable set cookie
-  })
+  }),
 );
 
 const secret = process.env.SESSION_SECRET || "secret";
@@ -48,7 +48,7 @@ app.use(
     },
     resave: false,
     saveUninitialized: true,
-  })
+  }),
 );
 
 app.use(function (req: Request, res: Response, next: CallableFunction) {
@@ -57,7 +57,7 @@ app.use(function (req: Request, res: Response, next: CallableFunction) {
   res.header("Access-Control-Allow-Origin", process.env.ORIGIN);
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-   Type, Accept, Authorization"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
   );
   next();
 });
@@ -69,11 +69,11 @@ app.use(
     transports: [new winston.transports.Console()],
     format: winston.format.combine(
       winston.format.colorize(),
-      winston.format.json()
+      winston.format.json(),
     ),
     expressFormat: true,
     colorize: false,
-  })
+  }),
 );
 
 // To fix 304 responses.
@@ -82,5 +82,5 @@ app.disable("etag");
 const routePrefix = process.env.ROUTE_PREFIX || "";
 app.use(routePrefix, router);
 app.listen(port, "0.0.0.0", () => {
-  console.log(`Listening on port ${port}`);
+  console.log(`[SERVER] Listening on port:`, port);
 });

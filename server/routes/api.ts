@@ -11,7 +11,7 @@ import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
 import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
-import { enforcePayments } from "../main";
+import { enforcePayments } from "../src/config";
 import { checkPurchase } from "../src/payments";
 
 // Based on https://github.com/HenningM/express-ws/issues/86
@@ -24,24 +24,40 @@ function cleanup(sessionID: string) {
     This is done with a timeout to prevent cleanup on websocket disconnect
       and re-connect (for example, during a page refresh).
   */
-  const timeout = setTimeout(async () => {
-    if (getFromCache(sessionID, "whatsapp") !== undefined) {
-      try {
-        const client = getFromCache(sessionID, "whatsapp");
-        deleteFromCache(sessionID, "whatsapp");
-        client.destroy();
-      } catch (e) {}
-    }
+  const timeout = setTimeout(
+    async () => {
+      if (getFromCache(sessionID, "whatsapp") !== undefined) {
+        try {
+          const client = getFromCache(sessionID, "whatsapp");
+          deleteFromCache(sessionID, "whatsapp");
+          client.destroy();
+        } catch (e) {}
+      }
 
-    deleteFromCache(sessionID, "gauth");
-    deleteFromCache(sessionID, "ws");
-  }, 5 * 60 * 1000); // 5 minutes.
+      deleteFromCache(sessionID, "gauth");
+      deleteFromCache(sessionID, "ws");
+    },
+    // 5 minutes.
+    5 * 60 * 1000,
+  );
 
   setInCache(sessionID, "cleanup", timeout);
 }
 
 router.get("/", (req: Request, res: Response) => {
   res.send("{}");
+});
+
+// Health check endpoint
+router.get("/health", (req: Request, res: Response) => {
+  const uptime = process.uptime();
+  res.json({
+    status: "ok",
+    message: "Server is healthy",
+    uptime: `${Math.floor(uptime)}s`,
+    uptimeSeconds: uptime,
+    timestamp: new Date().toISOString(),
+  });
 });
 
 router.ws("/ws", (ws: WebSocket, req: Request) => {

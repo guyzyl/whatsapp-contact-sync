@@ -1,0 +1,15 @@
+name: whasync
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+    container_name: whasync-web
+    env_file:
+      - .env
+    environment:
+      - RUNNING_IN_DOCKER=true
+    hostname: whasync-web
+    ports:
+      - 80:80
+    restart: unless-stopped

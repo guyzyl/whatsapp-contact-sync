@@ -1,11 +1,26 @@
 {
-  "name": "whatsapp-contact-sync",
+  "name": "whatsapp-contact-sync-web",
+  "version": "1.0.1",
   "private": true,
-  "version": "0.0.0",
+  "description": "WhatsApp Contact Sync Web frontend",
+  "homepage": "https://whasync.com/",
+  "bugs": {
+    "url": "https://github.com/guyzyl/whatsapp-contact-sync/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guyzyl/whatsapp-contact-sync.git"
+  },
+  "funding": {
+    "url": "https://buymeacoffee.com/guyzyl"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "guyzyl (https://github.com/guyzyl)",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 4000",
     "build": "vue-tsc --noEmit && vite build",
+    "dev": "vite --port 4000",
+    "postinstall": "vite-envs update-types",
     "preview": "vite preview"
   },
   "dependencies": {

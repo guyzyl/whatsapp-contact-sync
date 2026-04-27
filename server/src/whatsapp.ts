@@ -62,14 +62,15 @@ export function initWhatsApp(id: string): Client {
 }
 
 export async function loadContacts(
-  client: Client
+  client: Client,
 ): Promise<Map<string, string>> {
   const contacts: Contact[] = await client.getContacts();
 
   const contactsMap: Map<string, string> = new Map();
   contacts.forEach((contact) => {
-    if (contact.id.user && contact.id._serialized)
+    if (contact.id.user && contact.id._serialized) {
       contactsMap.set(contact.id.user, contact.id._serialized);
+    }
   });
 
   return contactsMap;
@@ -77,9 +78,21 @@ export async function loadContacts(
 
 export async function downloadFile(
   client: Client,
-  whatsappId: string
+  whatsappId: string,
 ): Promise<Base64 | null> {
-  const photoUrl = await client.getProfilePicUrl(whatsappId);
+  let photoUrl: string | undefined;
+  try {
+    photoUrl = await client.getProfilePicUrl(whatsappId);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isRecoverableLookupError =
+      errorMessage.includes("findChat: new chat not found") ||
+      errorMessage.includes("Cannot read properties of undefined (reading 'getChat')");
+    if (isRecoverableLookupError) {
+      return null;
+    }
+    throw error;
+  }
   if (!photoUrl) return null;
 
   const image = await MessageMedia.fromUrl(photoUrl);
