@@ -21,6 +21,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon main.ts",
+    "dev:bun": "bun run main.ts --watch",
     "prod": "node build/server/main.js",
     "serve": "ts-node ."
   },

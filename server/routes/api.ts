@@ -11,7 +11,7 @@ import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
 import { googleLogin } from "../src/gapi";
 import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
-import { enforcePayments } from "../main";
+import { enforcePayments } from "../src/config";
 import { checkPurchase } from "../src/payments";
 
 // Based on https://github.com/HenningM/express-ws/issues/86

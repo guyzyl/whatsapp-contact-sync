@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import { enforcePayments } from "../main";
+import { enforcePayments } from "./config";
 
 const coffeeToken = process.env.COFFEE_TOKEN;
 const expires = 60 * 60 * 24 * 31; // 31 Days
