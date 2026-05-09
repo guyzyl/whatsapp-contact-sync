@@ -1,5 +1,5 @@
 ### Build web files
-FROM node:21-alpine AS web-build
+FROM node:26-alpine AS web-build
 
 WORKDIR /app/web
 
@@ -14,9 +14,10 @@ RUN npm run build
 
 
 ### Download server npm modules
-FROM node:21-alpine AS server-build
+FROM node:26-alpine AS server-build
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+ENV PUPPETEER_SKIP_DOWNLOAD="true"
 WORKDIR /app/server
 
 COPY ["server/package.json", "server/package-lock.json*", "./"]
@@ -41,7 +42,7 @@ RUN mv node_modules/googleapis/build/src/apis/docs ./docs && \
 
 
 ### Build final image
-FROM node:21-alpine
+FROM node:26-alpine
 USER root
 
 ENV RUNNING_IN_DOCKER="true"

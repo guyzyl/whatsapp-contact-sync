@@ -1,4 +1,4 @@
-FROM node:21 AS build
+FROM node:26-alpine AS build
 
 WORKDIR /app/web
 
