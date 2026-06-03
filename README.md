@@ -46,7 +46,7 @@ Setting up should take less then a minute, and syncing should take about 1 secon
 
 ## How to Run Locally
 
-In order for the backend to function, it requires an OAuth client id and secret + an API key.\
+In order for the backend to function, it requires an OAuth 2.0 client ID and secret.\
 Since (for obvious reasons) this is a private app, you will need to create one for your own.\
 You can see instructions on how to do that [here](https://developers.google.com/workspace/guides/create-credentials).\
 Once you do that, create the file `server/.env`, and set the following environment variables:
@@ -54,7 +54,12 @@ Once you do that, create the file `server/.env`, and set the following environme
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 
-You also need to update the `CLIENT_ID` and `API_KEY` variables in [`web/src/pages/GoogleAuth.vue`](web/src/pages/GoogleAuth.vue).
+You also need to add the following **Authorized Redirect URI** to your OAuth 2.0 client in the [Google Cloud Console](https://console.cloud.google.com) based on how you are running the app:
+
+EXAMPLES:
+- Local dev: `http://localhost:8080/api/google_callback`
+- Docker (port 80): `http://localhost/api/google_callback`
+- Production: `https://<your-domain>/api/google_callback`
 
 Once that's done, you can go ahead and run the app:
 
@@ -82,7 +87,7 @@ In order to build and run the complete app, you need to run the following comman
 
 ```bash
 docker build -t whasync .
-docker run --rm -it -p 80:80 whasync
+docker run --rm -it -p 80:80 --env-file server/.env whasync
 ```
 
 In order to build the seperate images for the backend and frontend, execute the following commands from the projects main directory:

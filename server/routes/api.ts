@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import express from "express";
 import { Request, Response } from "express";
 import WebSocket from "ws";
@@ -9,7 +10,7 @@ import { WAState } from "whatsapp-web.js";
 import { SessionStatus, SyncOptions } from "../../interfaces/api";
 import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
-import { googleLogin } from "../src/gapi";
+import { generateGoogleAuthUrl, getOAuth2ClientFromCode } from "../src/gapi";
 import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
 import { enforcePayments } from "../main";
 import { checkPurchase } from "../src/payments";
@@ -88,11 +89,35 @@ router.get("/init_whatsapp", async (req: Request, res: Response) => {
   res.send("{}");
 });
 
-router.post("/init_gapi", (req: Request, res: Response) => {
-  const token = req.body.token;
-  const gAuth = googleLogin(token);
-  setInCache(req.sessionID, "gauth", gAuth);
-  res.redirect("/options");
+router.get("/google_auth_start", (req: Request, res: Response) => {
+  const state = crypto.randomBytes(16).toString("hex");
+  setInCache(req.sessionID, "oauth_state", state);
+  const redirectUri = `${req.protocol}://${req.get("host")}/api/google_callback`;
+  const authUrl = generateGoogleAuthUrl(redirectUri, state);
+  res.redirect(authUrl);
+});
+
+router.get("/google_callback", async (req: Request, res: Response) => {
+  const { code, state, error } = req.query;
+
+  if (error) {
+    return res.redirect("/?error=google_auth_denied");
+  }
+
+  const storedState = getFromCache(req.sessionID, "oauth_state");
+  if (!state || state !== storedState) {
+    return res.redirect("/?error=invalid_state");
+  }
+  deleteFromCache(req.sessionID, "oauth_state");
+
+  const redirectUri = `${req.protocol}://${req.get("host")}/api/google_callback`;
+  try {
+    const gAuth = await getOAuth2ClientFromCode(code as string, redirectUri);
+    setInCache(req.sessionID, "gauth", gAuth);
+    res.redirect("/options");
+  } catch (e) {
+    res.redirect("/?error=google_token_exchange_failed");
+  }
 });
 
 router.get("/init_sync", (req: Request, res: Response) => {
