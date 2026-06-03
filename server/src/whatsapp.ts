@@ -50,12 +50,12 @@ export function initWhatsApp(id: string): Client {
       deleteFromCache(id, "purchased");
       try {
         client.destroy();
-      } catch (e) {}
+      } catch (e) { }
       sendEvent(ws, EventType.Redirect, "/contribute?show_error=true");
     }
   });
 
-  client.on("auth_failure", (msg) => {});
+  client.on("auth_failure", (msg) => { });
 
   client.initialize();
   return client;
@@ -79,7 +79,12 @@ export async function downloadFile(
   client: Client,
   whatsappId: string
 ): Promise<Base64 | null> {
-  const photoUrl = await client.getProfilePicUrl(whatsappId);
+  let photoUrl: string | undefined;
+  try {
+    photoUrl = await client.getProfilePicUrl(whatsappId);
+  } catch (e) {
+    return null;
+  }
   if (!photoUrl) return null;
 
   const image = await MessageMedia.fromUrl(photoUrl);
