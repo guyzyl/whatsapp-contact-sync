@@ -91,3 +91,20 @@ In order to build the seperate images for the backend and frontend, execute the 
 docker build -t whasync-backend -f server/Dockerfile .
 docker build -t whasync-web -f web/Dockerfile .
 ```
+
+To run them together, create a shared Docker network so the web container can proxy API requests to the backend:
+
+```bash
+docker network create whasync-net
+
+docker run -d --name whasync-backend --network whasync-net --env-file server/.env whasync-backend
+
+# Port 80 (standard):
+docker run -d --name whasync-web --network whasync-net -p 80:80 whasync-web
+
+# Or port 8080:
+docker run -d --name whasync-web --network whasync-net -p 8080:80 whasync-web
+```
+
+The web container's nginx will proxy `/api/` requests to the backend container by its name (`whasync-backend`) on port `8080`.\
+Make sure to add the matching URL (e.g. `http://localhost/api/google_callback` or `http://localhost:8080/api/google_callback`) as an **Authorized Redirect URI** in the Google Cloud Console.
