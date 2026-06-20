@@ -5,15 +5,34 @@ import { Base64 } from "./types";
 
 const pageSize: number = 250;
 
-export function googleLogin(
-  token: typeof google.Auth.AccessTokenResponse
-): Auth.OAuth2Client {
+export function generateGoogleAuthUrl(
+  redirectUri: string,
+  state: string
+): string {
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET
+    process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri
   );
-  oauth2Client.setCredentials(token);
+  return oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: "https://www.googleapis.com/auth/contacts",
+    state,
+    prompt: "consent",
+  });
+}
 
+export async function getOAuth2ClientFromCode(
+  code: string,
+  redirectUri: string
+): Promise<Auth.OAuth2Client> {
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri
+  );
+  const { tokens } = await oauth2Client.getToken(code);
+  oauth2Client.setCredentials(tokens);
   return oauth2Client;
 }
 
