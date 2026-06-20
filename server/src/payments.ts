@@ -7,7 +7,7 @@ const emailRegex =
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 let redisClient: Redis;
-if (enforcePayments || process.env.REDIS_URL)
+if (enforcePayments)
   redisClient = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 let customerCache: Map<string, string> = new Map();
 
