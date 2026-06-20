@@ -50,20 +50,20 @@ router.beforeEach(
       status.enforcePayments &&
       !status.purchased
     )
-      router.push("/contribute");
+      return "/contribute";
     else if (to.path === "/contribute" && status.purchased)
-      router.push("/whatsapp");
+      return "/whatsapp";
     else if (
       ["/sync", "/gauth", "/options"].includes(to.path) &&
       !status.whatsappConnected
     )
-      router.push("/");
+      return "/";
     else if (to.path === "/sync" && !status.googleConnected)
-      router.push("/gauth");
+      return "/gauth";
     else if (to.path === "/whatsapp" && status.whatsappConnected)
-      router.push("/gauth");
+      return "/gauth";
     else if (to.path === "/gauth" && status.googleConnected)
-      router.push("/options");
+      return "/options";
   }
 );
 
