@@ -33,7 +33,7 @@ router.beforeEach(
   async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
     // Makes sure websocket is initialized.
     //  This is done on every request to make sure the server didn't discconect in the meantime.
-    initWs();
+    await initWs();
 
     // Don't make any checks for serving the index page.
     // This is done so the user can access it even if the backend is down.

@@ -9,7 +9,7 @@ export const isWsReady: Deferred<boolean> = new Deferred();
 let eventHandlers: { [eventType: string]: HandlerFunction } = {};
 
 export async function initWs(): Promise<void> {
-  if (WS && WS.readyState) {
+  if (WS && WS.readyState === WebSocket.OPEN) {
     return;
   }
 
@@ -25,6 +25,12 @@ export async function initWs(): Promise<void> {
 
   WS.onerror = (wsEvent) => {
     console.error(`WS error - ${wsEvent}`);
+    setTimeout(() => {
+      initWs();
+    }, errorTimeout);
+  };
+
+  WS.onclose = () => {
     setTimeout(() => {
       initWs();
     }, errorTimeout);
