@@ -10,6 +10,7 @@ import { Base64 } from "./types";
 import { EventType } from "../../interfaces/api";
 import { deleteFromCache, getFromCache } from "./cache";
 import { verifyPurchaseWAId } from "./payments";
+import { toE164Digits } from "./phone";
 
 const wwebVersion = "2.2407.3";
 const clientOptions = {
@@ -68,8 +69,14 @@ export async function loadContacts(
 
   const contactsMap: Map<string, string> = new Map();
   contacts.forEach((contact) => {
-    if (contact.id.user && contact.id._serialized)
-      contactsMap.set(contact.id.user, contact.id._serialized);
+    if (!contact.id.user || !contact.id._serialized) return;
+
+    // Key by the raw WhatsApp user id (international digits, no `+`) and, when
+    // parseable, its normalized E.164 form. Indexing both lets a legacy-format
+    // WhatsApp number and a canonical Google number meet in the middle.
+    contactsMap.set(contact.id.user, contact.id._serialized);
+    const normalized = toE164Digits("+" + contact.id.user);
+    if (normalized) contactsMap.set(normalized, contact.id._serialized);
   });
 
   return contactsMap;

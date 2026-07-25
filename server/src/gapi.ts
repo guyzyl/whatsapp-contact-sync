@@ -62,11 +62,15 @@ export async function listContacts(
           <SimpleContact>{
             id: connection.resourceName,
             name: connection.names?.find((name) => name.displayName)?.displayName,
+            // Keep the E.164 `canonicalForm` when Google could parse the number,
+            // otherwise fall back to the raw `value` so numbers saved in a local
+            // format (no +CC) are normalized later against the user's region
+            // instead of being silently dropped.
             numbers: connection
-              .phoneNumbers!.filter((phoneNumber) => phoneNumber.canonicalForm)
-              .map((phoneNumber) =>
-                phoneNumber.canonicalForm!.replace("+", "")
-              ),
+              .phoneNumbers!.map(
+                (phoneNumber) => phoneNumber.canonicalForm ?? phoneNumber.value
+              )
+              .filter((number): number is string => Boolean(number)),
             hasPhoto: !connection.photos // Check if photos contain only the "default" photo
               ?.map((photo) => photo.default)
               .every((v) => v === true),

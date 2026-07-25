@@ -7,7 +7,8 @@
     "serve": "ts-node .",
     "dev": "nodemon --exec 'ts-node' .",
     "prod": "node build/server/main.js",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "node --require ts-node/register/transpile-only --test src/**/*.test.ts"
   },
   "author": "guyzyl",
   "license": "ISC",
@@ -21,6 +22,7 @@
     "express-ws": "^5.0.2",
     "googleapis": "^171.4.0",
     "ioredis": "^5.10.0",
+    "libphonenumber-js": "^1.11.0",
     "limiter": "^3.0.0",
     "lru-cache": "^11.2.6",
     "memorystore": "^1.6.7",

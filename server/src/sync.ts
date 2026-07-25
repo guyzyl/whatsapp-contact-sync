@@ -9,6 +9,7 @@ import { downloadFile, loadContacts } from "./whatsapp";
 import { sendEvent, sendMessageAndWait } from "./ws";
 import { SimpleContact } from "./interfaces";
 import { getFromCache } from "./cache";
+import { inferRegion, matchCandidates } from "./phone";
 
 const getGooglePhotoAsBase64 = async (googleContact: SimpleContact): Promise<string | null> => {
   if (!googleContact.photoUrl) {
@@ -54,6 +55,10 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   let syncCount: number = 0;
   let photo: string | null = null;
 
+  // The syncing user's own number tells us the default country to assume for
+  // contacts saved without a `+CC` prefix.
+  const region = inferRegion(whatsappClient.info?.wid?.user);
+
   // For some reason all of the contacts that don't have a photo are at the beginning of the array.
   // This causes the sync to feel slow since no photos show up on the UI.
   // To "fix" this, we shuffle the array so that the contacts without photos are spread out.
@@ -70,22 +75,12 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
     for (const phoneNumber of googleContact.numbers) {
       let whatsappContactId: string | undefined;
 
-      // Fix for Brazilian numbers with extra '9'
-      if (
-        !whatsappContacts.has(phoneNumber) &&
-        phoneNumber.slice(0, 2) === "55"
-      ) {
-        if (phoneNumber.length === 12) {
-          whatsappContactId = whatsappContacts.get(
-            phoneNumber.slice(0, 4) + "9" + phoneNumber.slice(4)
-          );
-        } else {
-          whatsappContactId = whatsappContacts.get(
-            phoneNumber.slice(0, 4) + phoneNumber.slice(5)
-          );
-        }
-      } else {
-        whatsappContactId = whatsappContacts.get(phoneNumber);
+      // Normalize the Google number and try it against the WhatsApp map along
+      // with country-specific legacy spellings (e.g. Brazil's extra '9',
+      // Mexico's mobile '1'), matching on the first candidate that hits.
+      for (const candidate of matchCandidates(phoneNumber, region)) {
+        whatsappContactId = whatsappContacts.get(candidate);
+        if (whatsappContactId) break;
       }
       if (!whatsappContactId) continue;
 
