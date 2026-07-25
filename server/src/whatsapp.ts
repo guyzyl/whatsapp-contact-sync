@@ -82,18 +82,70 @@ export async function loadContacts(
   return contactsMap;
 }
 
+/**
+ * Resolve a contact's profile-picture URL.
+ *
+ * whatsapp-web.js's `client.getProfilePicUrl()` passes an internal *chat* to
+ * WhatsApp's `requestProfilePicFromServer`. For a contact you have no open chat
+ * with — the majority of an address book — that chat is `null`, and the bridge
+ * throws while reading it, so the vast majority of contacts fail to resolve.
+ *
+ * Instead we resolve a proper Contact model (which every address-book contact
+ * has) and pass that, falling back to a chat and finally the raw wid. Returns
+ * the URL, `null` when the contact has no picture (or it's hidden by privacy),
+ * or `null` if none of the strategies could resolve it.
+ */
+async function resolveProfilePicUrl(
+  client: Client,
+  contactId: string
+): Promise<string | null> {
+  return await (client as any).pupPage.evaluate(async (contactId: string) => {
+    const req = (globalThis as any).require;
+    const bridge = req("WAWebContactProfilePicThumbBridge");
+    const collections = req("WAWebCollections");
+    const wid = req("WAWebWidFactory").createWid(contactId);
+
+    // undefined => strategy unusable, try the next one.
+    // null       => resolved, but there is no picture (stop).
+    // string     => the picture URL (stop).
+    const attempt = async (target: any): Promise<string | null | undefined> => {
+      if (!target) return undefined;
+      try {
+        const pic = await bridge.requestProfilePicFromServer(target);
+        return pic && pic.eurl ? pic.eurl : null;
+      } catch (e: any) {
+        if (e && e.name === "ServerStatusCodeError") return null; // no picture / hidden
+        return undefined; // unusable target — fall through to the next strategy
+      }
+    };
+
+    let result = await attempt(collections.Contact.get(wid));
+    if (result === undefined) result = await attempt(collections.Chat.get(wid));
+    if (result === undefined) result = await attempt(wid);
+    return result ?? null;
+  }, contactId);
+}
+
 export async function downloadFile(
   client: Client,
   whatsappId: string
 ): Promise<Base64 | null> {
-  let photoUrl: string | undefined;
+  let photoUrl: string | null;
   try {
-    photoUrl = await client.getProfilePicUrl(whatsappId);
+    photoUrl = await resolveProfilePicUrl(client, whatsappId);
   } catch (e) {
+    console.error(`Failed to resolve profile picture for ${whatsappId}:`, (e as Error)?.message);
     return null;
   }
   if (!photoUrl) return null;
 
-  const image = await MessageMedia.fromUrl(photoUrl);
-  return image.data;
+  // Guard the download: a single malformed/expired URL must not throw out of
+  // the un-awaited initSync and abort the whole run.
+  try {
+    const image = await MessageMedia.fromUrl(photoUrl);
+    return image.data;
+  } catch (e) {
+    console.error(`Failed to download profile picture for ${whatsappId}:`, (e as Error)?.message);
+    return null;
+  }
 }
