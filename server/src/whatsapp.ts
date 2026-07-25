@@ -11,6 +11,7 @@ import { EventType } from "../../interfaces/api";
 import { deleteFromCache, getFromCache } from "./cache";
 import { verifyPurchaseWAId } from "./payments";
 import { toE164Digits } from "./phone";
+import { logger } from "./logger";
 
 const wwebVersion = "2.2407.3";
 const clientOptions = {
@@ -78,6 +79,8 @@ export async function loadContacts(
     const normalized = toE164Digits("+" + contact.id.user);
     if (normalized) contactsMap.set(normalized, contact.id._serialized);
   });
+
+  logger.debug(`[sync] whatsapp: ${contacts.length} contacts, ${contactsMap.size} lookup keys`);
 
   return contactsMap;
 }
