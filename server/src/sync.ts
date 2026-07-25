@@ -72,51 +72,58 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
     if (!isManualSync && syncOptions.overwrite_photos === "false" && googleContact.hasPhoto)
       continue;
 
-    for (const phoneNumber of googleContact.numbers) {
-      let whatsappContactId: string | undefined;
+    // Guard each contact: initSync runs un-awaited, so a throw here (e.g. a bad
+    // photo URL) would become an unhandled rejection that silently ends the
+    // entire sync. Log it and move on to the next contact instead.
+    try {
+      for (const phoneNumber of googleContact.numbers) {
+        let whatsappContactId: string | undefined;
 
-      // Normalize the Google number and try it against the WhatsApp map along
-      // with country-specific legacy spellings (e.g. Brazil's extra '9',
-      // Mexico's mobile '1'), matching on the first candidate that hits.
-      for (const candidate of matchCandidates(phoneNumber, region)) {
-        whatsappContactId = whatsappContacts.get(candidate);
-        if (whatsappContactId) break;
-      }
-      if (!whatsappContactId) continue;
-
-      photo = await downloadFile(whatsappClient, whatsappContactId);
-      if (photo === null) break;
-
-      await limiter.removeTokens(1);
-
-      if (isManualSync) {
-        let message: any;
-        try {
-          const googlePhoto = await getGooglePhotoAsBase64(googleContact);
-
-          message = await sendMessageAndWait(ws,
-            EventType.SyncConfirm,
-            EventType.SyncPhotoConfirm,
-            {
-              existingPhoto: googlePhoto,
-              newPhoto: photo,
-              contactName: googleContact.name,
-            });
-        } catch (e) {
-          console.error("Error waiting for response message for manual sync confirmation", e);
-          continue;
+        // Normalize the Google number and try it against the WhatsApp map along
+        // with country-specific legacy spellings (e.g. Brazil's extra '9',
+        // Mexico's mobile '1'), matching on the first candidate that hits.
+        for (const candidate of matchCandidates(phoneNumber, region)) {
+          whatsappContactId = whatsappContacts.get(candidate);
+          if (whatsappContactId) break;
         }
+        if (!whatsappContactId) continue;
 
-        if (message.accept) {
+        photo = await downloadFile(whatsappClient, whatsappContactId);
+        if (photo === null) break;
+
+        await limiter.removeTokens(1);
+
+        if (isManualSync) {
+          let message: any;
+          try {
+            const googlePhoto = await getGooglePhotoAsBase64(googleContact);
+
+            message = await sendMessageAndWait(ws,
+              EventType.SyncConfirm,
+              EventType.SyncPhotoConfirm,
+              {
+                existingPhoto: googlePhoto,
+                newPhoto: photo,
+                contactName: googleContact.name,
+              });
+          } catch (e) {
+            console.error("Error waiting for response message for manual sync confirmation", e);
+            continue;
+          }
+
+          if (message.accept) {
+            await updateContactPhoto(gAuth, googleContact.id, photo);
+          }
+        } else {
           await updateContactPhoto(gAuth, googleContact.id, photo);
         }
-      } else {
-        await updateContactPhoto(gAuth, googleContact.id, photo);
+
+        syncCount++;
+
+        break;
       }
-
-      syncCount++;
-
-      break;
+    } catch (e) {
+      console.error(`Error syncing contact ${googleContact.id}:`, e);
     }
 
     sendEvent(ws, EventType.SyncProgress, {
