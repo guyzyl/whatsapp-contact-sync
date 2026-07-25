@@ -4,6 +4,7 @@ import {
   MessageMedia,
   RemoteWebCacheOptions,
 } from "whatsapp-web.js";
+import { RateLimiter } from "limiter";
 
 import { sendEvent } from "./ws";
 import { Base64 } from "./types";
@@ -85,6 +86,15 @@ export async function loadContacts(
   return contactsMap;
 }
 
+// Outcome of resolving a contact's profile picture. `throttled` is kept
+// distinct from `none` so the caller can back off and retry a rate-limit
+// instead of silently dropping the contact as if it had no photo.
+type ProfilePicResult =
+  | { status: "ok"; url: string }
+  | { status: "none" } // resolved: contact has no picture, or it's hidden by privacy
+  | { status: "throttled"; code: number | null } // server pushed back; likely rate-limited
+  | { status: "unresolved" }; // no strategy could produce an answer
+
 /**
  * Resolve a contact's profile-picture URL.
  *
@@ -94,52 +104,103 @@ export async function loadContacts(
  * throws while reading it, so the vast majority of contacts fail to resolve.
  *
  * Instead we resolve a proper Contact model (which every address-book contact
- * has) and pass that, falling back to a chat and finally the raw wid. Returns
- * the URL, `null` when the contact has no picture (or it's hidden by privacy),
- * or `null` if none of the strategies could resolve it.
+ * has) and pass that, falling back to a chat and finally the raw wid.
+ *
+ * WhatsApp answers a picture request with a `ServerStatusCodeError`. A 404/401/
+ * 403 (or an unknown code) is a definitive "no picture / hidden", but at scale
+ * the server starts refusing with a throttle/5xx status — those we surface as
+ * `throttled` so the caller can retry rather than treat them as no-photo.
  */
 async function resolveProfilePicUrl(
   client: Client,
   contactId: string
-): Promise<string | null> {
+): Promise<ProfilePicResult> {
   return await (client as any).pupPage.evaluate(async (contactId: string) => {
     const req = (globalThis as any).require;
     const bridge = req("WAWebContactProfilePicThumbBridge");
     const collections = req("WAWebCollections");
     const wid = req("WAWebWidFactory").createWid(contactId);
 
-    // undefined => strategy unusable, try the next one.
-    // null       => resolved, but there is no picture (stop).
-    // string     => the picture URL (stop).
-    const attempt = async (target: any): Promise<string | null | undefined> => {
-      if (!target) return undefined;
+    // A `skip` result means the strategy was unusable — try the next target.
+    const attempt = async (target: any) => {
+      if (!target) return { status: "skip" };
       try {
         const pic = await bridge.requestProfilePicFromServer(target);
-        return pic && pic.eurl ? pic.eurl : null;
+        return pic && pic.eurl
+          ? { status: "ok", url: pic.eurl }
+          : { status: "none" };
       } catch (e: any) {
-        if (e && e.name === "ServerStatusCodeError") return null; // no picture / hidden
-        return undefined; // unusable target — fall through to the next strategy
+        if (e && e.name === "ServerStatusCodeError") {
+          const code =
+            typeof e.status === "number"
+              ? e.status
+              : typeof e.code === "number"
+              ? e.code
+              : null;
+          // Only a positive throttle/server-error signal is retryable. Everything
+          // else (404/401/403, or an unknown code) means "no picture available",
+          // so we never retry-storm genuine no-photo contacts.
+          if (code === 429 || code === 408 || (code !== null && code >= 500))
+            return { status: "throttled", code };
+          return { status: "none" };
+        }
+        return { status: "skip" }; // unusable target — fall through to the next strategy
       }
     };
 
     let result = await attempt(collections.Contact.get(wid));
-    if (result === undefined) result = await attempt(collections.Chat.get(wid));
-    if (result === undefined) result = await attempt(wid);
-    return result ?? null;
+    if (result.status === "skip") result = await attempt(collections.Chat.get(wid));
+    if (result.status === "skip") result = await attempt(wid);
+    return result.status === "skip" ? { status: "unresolved" } : result;
   }, contactId);
 }
 
+const MAX_PROFILE_PIC_RETRIES = 3;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Fetch a contact's profile picture as base64, pacing each request through the
+ * caller's `limiter` and backing off on a server-side throttle.
+ *
+ * WhatsApp rate-limits picture requests: after a burst of successful fetches it
+ * starts refusing the rest, which is why a large address book historically only
+ * pulled ~150 photos per run. Pacing the requests and retrying a throttle with
+ * exponential backoff lets far more contacts through before the run finishes.
+ */
 export async function downloadFile(
   client: Client,
-  whatsappId: string
+  whatsappId: string,
+  limiter: RateLimiter
 ): Promise<Base64 | null> {
-  let photoUrl: string | null;
-  try {
-    photoUrl = await resolveProfilePicUrl(client, whatsappId);
-  } catch (e) {
-    console.error(`Failed to resolve profile picture for ${whatsappId}:`, (e as Error)?.message);
-    return null;
+  let photoUrl: string | null = null;
+
+  for (let attempt = 0; attempt <= MAX_PROFILE_PIC_RETRIES; attempt++) {
+    await limiter.removeTokens(1);
+
+    let result: ProfilePicResult;
+    try {
+      result = await resolveProfilePicUrl(client, whatsappId);
+    } catch (e) {
+      logger.error(`Failed to resolve profile picture for ${whatsappId}: ${(e as Error)?.message}`);
+      return null;
+    }
+
+    if (result.status === "ok") {
+      photoUrl = result.url;
+      break;
+    }
+    if (result.status === "throttled" && attempt < MAX_PROFILE_PIC_RETRIES) {
+      const backoff = 1000 * 2 ** attempt; // 1s, 2s, 4s
+      logger.debug(`[sync] profile-pic throttled for ${whatsappId} (code=${result.code}); backing off ${backoff}ms`);
+      await sleep(backoff);
+      continue;
+    }
+    if (result.status === "throttled")
+      logger.debug(`[sync] profile-pic still throttled for ${whatsappId} after ${MAX_PROFILE_PIC_RETRIES} retries; skipping`);
+    return null; // none / unresolved / throttle that outlasted our retries
   }
+
   if (!photoUrl) return null;
 
   // Guard the download: a single malformed/expired URL must not throw out of
@@ -148,7 +209,7 @@ export async function downloadFile(
     const image = await MessageMedia.fromUrl(photoUrl);
     return image.data;
   } catch (e) {
-    console.error(`Failed to download profile picture for ${whatsappId}:`, (e as Error)?.message);
+    logger.error(`Failed to download profile picture for ${whatsappId}: ${(e as Error)?.message}`);
     return null;
   }
 }
