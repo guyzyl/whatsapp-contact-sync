@@ -18,7 +18,6 @@ const app = ews.app;
 const port = 8080;
 
 const isProd = process.env.NODE_ENV == "production";
-export const enforcePayments = process.env.ENFORCE_PAYMENTS == "true" || false;
 
 /*
   Setup the session and cookie parser.

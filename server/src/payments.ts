@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import { enforcePayments } from "../main";
+import { enforcePayments } from "./config";
 
 const coffeeToken = process.env.COFFEE_TOKEN;
 const expires = 60 * 60 * 24 * 31; // 31 Days
@@ -80,7 +80,9 @@ export async function verifyPurchaseWAId(email: string, whatsappId: string) {
 }
 
 export async function checkPurchase(email: string): Promise<boolean> {
+  if (!enforcePayments) return true;
   if (!emailRegex.test(email)) return false;
+  if (await queryPurchase(email)) return true;
   await queryCoffeePurchases();
   return await queryPurchase(email);
 }

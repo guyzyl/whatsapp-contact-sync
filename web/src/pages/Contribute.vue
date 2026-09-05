@@ -6,8 +6,10 @@ export default defineComponent({
   data: () => ({
     email: "",
     checkingPurchase: false,
-    defaultError: "Failed to verify purchase.",
-    waValidationError: "Purchase is valid for a single WhatsApp device only.",
+    defaultError:
+      "We couldn't verify your contribution. Check that you're using the email from your Buy Me a Coffee receipt, then try again.",
+    waValidationError:
+      "This contribution is linked to another WhatsApp account. Connect that account to continue.",
     errorMessage: null as string | null,
   }),
 
@@ -52,23 +54,20 @@ export default defineComponent({
   <div id="home" class="hero h-full bg-base-200">
     <div class="hero-content text-center">
       <div class="max-w-md">
-        <h1 class="text-5xl font-bold">Servers Are Expensive</h1>
+        <h1 class="text-5xl font-bold">Support WhatsApp Contact Sync</h1>
         <p class="py-6">
-          To use <a href="/">whasync.com</a>, you'll need to help pay for the
-          servers and contribute money using the button bellow.
-          <br />
-          Each contribution gives you
-          <strong>a month of access for a single WhatsApp device</strong>.
+          A <strong>$1 contribution</strong> gives you
+          <strong>one month of access for one WhatsApp account</strong>
+          on <a href="/">whasync.com</a> and helps cover hosting costs.
           <br /><br />
-          The project itself is
+          Prefer to host it yourself? The project is
           <a href="https://github.com/guyzyl/whatsapp-contact-sync"
             >open source</a
-          >, you can always run it locally if you prefer not to help out.
-          <br /><br />
-          Thanks for understanding 💜
+          > and free to run on your own computer.
         </p>
         <div class="mt-2">
-          <p>1. Contribute (1$)</p>
+          <p>1. Contribute $1 on Buy Me a Coffee</p>
+          <p class="mt-2 text-sm">Already contributed? Enter your email below.</p>
           <div @click="coffeeClicked">
             <a href="https://www.buymeacoffee.com/guyzyl" target="_blank"
               ><img
@@ -82,7 +81,7 @@ export default defineComponent({
 
         <div class="inline-flex max-w-72 py-4">
           <div class="grid grid-cols-1">
-            <div class="inline">2. Enter email used for contribution:</div>
+            <div class="inline">2. Enter the email from your receipt</div>
             <div>
               <label class="input input-bordered flex items-center gap-2">
                 <svg
@@ -103,7 +102,7 @@ export default defineComponent({
                   v-on:input="errorMessage = null"
                   type="text"
                   class="grow"
-                  placeholder="Email"
+                  placeholder="Email address"
                 />
               </label>
             </div>
@@ -141,7 +140,7 @@ export default defineComponent({
               v-if="checkingPurchase"
               class="loading loading-spinner"
             ></span
-            >3. Continue</a
+            >{{ checkingPurchase ? "Verifying…" : "Verify and continue" }}</a
           >
         </div>
       </div>
