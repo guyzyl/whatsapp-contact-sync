@@ -15,7 +15,9 @@ export default defineComponent({
 
   mounted() {
     if (this.$route.query.show_error) {
-      this.errorMessage = this.waValidationError;
+      this.errorMessage = this.$route.query.show_error === "verification"
+        ? "We couldn't check your access right now. Please try again in a moment."
+        : this.waValidationError;
       event("contribution_error_shown", { method: "Google" });
     }
   },

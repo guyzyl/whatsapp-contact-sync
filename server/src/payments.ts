@@ -70,8 +70,13 @@ export async function verifyPurchaseWAId(email: string, whatsappId: string) {
 
   const queriedWAId = await redisClient.get(email);
   if (queriedWAId === "") {
-    const ttl = await redisClient.ttl(email);
-    await redisClient.set(email, whatsappId, "EX", ttl);
+    // Preserve both expiring and permanent purchases without passing TTL -1
+    // to EX. XX also prevents recreating a purchase that expired after GET.
+    const result = await redisClient.set(email, whatsappId, "KEEPTTL", "XX");
+    if (result !== "OK") {
+      customerCache.delete(email);
+      return false;
+    }
     customerCache.set(email, whatsappId);
     return true;
   }
