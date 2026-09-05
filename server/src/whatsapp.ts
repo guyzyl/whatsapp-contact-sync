@@ -44,13 +44,26 @@ export function initWhatsApp(id: string): Client {
     let ws = getFromCache(id, "ws");
     const email = getFromCache(id, "email");
 
-    if (await verifyPurchaseWAId(email, client.info.wid.user)) {
+    let verified: boolean;
+    try {
+      verified = await verifyPurchaseWAId(email, client.info.wid.user);
+    } catch (e) {
+      console.error("Purchase verification failed during WhatsApp authorization:",
+        e instanceof Error ? e.message : "Unknown error");
+      deleteFromCache(id, "whatsapp");
+      deleteFromCache(id, "purchased");
+      await client.destroy().catch(() => {});
+      sendEvent(ws, EventType.Redirect, "/contribute?show_error=verification");
+      return;
+    }
+
+    if (verified) {
       sendEvent(ws, EventType.Redirect, "/gauth");
     } else {
       deleteFromCache(id, "whatsapp");
       deleteFromCache(id, "purchased");
       try {
-        client.destroy();
+        await client.destroy();
       } catch (e) { }
       sendEvent(ws, EventType.Redirect, "/contribute?show_error=true");
     }
