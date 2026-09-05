@@ -75,6 +75,11 @@ npm install
 npm run dev
 ```
 
+The server build uses TypeScript 7. Both packages also install Microsoft's
+`@typescript/typescript6` compatibility package under the `typescript` alias
+because `ts-node` and `vue-tsc` still require the JavaScript compiler API.
+The `@typescript/native` alias provides TypeScript 7's `tsc` executable.
+
 ## Build Docker Images
 
 There are 3 different `Dockerfile`s for this app:

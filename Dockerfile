@@ -5,7 +5,7 @@ WORKDIR /app/web
 
 COPY ["web/package.json", "web/package-lock.json*", "./"]
 
-RUN npm install
+RUN npm ci
 
 COPY ./interfaces /app/interfaces
 COPY ./web .
@@ -22,7 +22,7 @@ WORKDIR /app/server
 
 COPY ["server/package.json", "server/package-lock.json*", "./"]
 
-RUN npm install
+RUN npm ci
 
 COPY ./interfaces /app/interfaces
 COPY ./server .
