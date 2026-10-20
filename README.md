@@ -95,7 +95,7 @@ docker build -t whasync .
 docker run --rm -it -p 80:80 --env-file server/.env whasync
 ```
 
-In order to build the seperate images for the backend and frontend, execute the following commands from the projects main directory:
+In order to build the separate images for the backend and frontend, execute the following commands from the projects main directory:
 
 ```bash
 docker build -t whasync-backend --env-file server/.env -f server/Dockerfile .
