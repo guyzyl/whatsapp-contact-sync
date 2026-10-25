@@ -2,6 +2,7 @@ import { google, Auth, people_v1 } from "googleapis";
 
 import { SimpleContact } from "./interfaces";
 import { Base64 } from "./types";
+import { logger } from "./logger";
 
 const pageSize: number = 250;
 
@@ -80,6 +81,9 @@ export async function listContacts(
 
     simpleContacts = simpleContacts.concat(contacts);
   } while (nextPageToken);
+
+  const totalNumbers = simpleContacts.reduce((n, c) => n + c.numbers.length, 0);
+  logger.debug(`[sync] google: ${simpleContacts.length} contacts with numbers, ${totalNumbers} numbers total`);
 
   return simpleContacts;
 }

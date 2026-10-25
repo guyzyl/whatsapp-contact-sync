@@ -10,6 +10,7 @@ import { sendEvent, sendMessageAndWait } from "./ws";
 import { SimpleContact } from "./interfaces";
 import { getFromCache } from "./cache";
 import { inferRegion, matchCandidates } from "./phone";
+import { logger } from "./logger";
 
 const getGooglePhotoAsBase64 = async (googleContact: SimpleContact): Promise<string | null> => {
   if (!googleContact.photoUrl) {
@@ -59,6 +60,15 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   // contacts saved without a `+CC` prefix.
   const region = inferRegion(whatsappClient.info?.wid?.user);
 
+  // Per-run tallies (only surfaced at the `debug` log level).
+  const t0 = Date.now();
+  const elapsed = () => ((Date.now() - t0) / 1000).toFixed(0);
+  const stats = { matched: 0, unmatched: 0, noPhoto: 0, errors: 0 };
+  logger.debug(
+    `[sync] start: manual=${syncOptions.manual_sync} overwrite=${syncOptions.overwrite_photos} ` +
+      `region=${region} google=${googleContacts.length} whatsappKeys=${whatsappContacts.size}`
+  );
+
   // For some reason all of the contacts that don't have a photo are at the beginning of the array.
   // This causes the sync to feel slow since no photos show up on the UI.
   // To "fix" this, we shuffle the array so that the contacts without photos are spread out.
@@ -71,6 +81,9 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
 
     if (!isManualSync && syncOptions.overwrite_photos === "false" && googleContact.hasPhoto)
       continue;
+
+    const syncCountBefore = syncCount;
+    let matched = false;
 
     // Guard each contact: initSync runs un-awaited, so a throw here (e.g. a bad
     // photo URL) would become an unhandled rejection that silently ends the
@@ -88,6 +101,7 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
         }
         if (!whatsappContactId) continue;
 
+        matched = true;
         photo = await downloadFile(whatsappClient, whatsappContactId);
         if (photo === null) break;
 
@@ -123,8 +137,18 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
         break;
       }
     } catch (e) {
+      stats.errors++;
       console.error(`Error syncing contact ${googleContact.id}:`, e);
     }
+
+    if (matched) {
+      stats.matched++;
+      if (syncCount === syncCountBefore) stats.noPhoto++;
+    } else {
+      stats.unmatched++;
+    }
+    if (syncCount !== syncCountBefore && syncCount % 25 === 0)
+      logger.debug(`[sync] +${elapsed()}s synced=${syncCount} matched=${stats.matched} noPhoto=${stats.noPhoto}`);
 
     sendEvent(ws, EventType.SyncProgress, {
       progress: (index / googleContacts.length) * 100,
@@ -135,6 +159,8 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
     });
     photo = null;
   }
+
+  logger.debug(`[sync] +${elapsed()}s done: synced=${syncCount} ${JSON.stringify(stats)}`);
 
   sendEvent(ws, EventType.SyncProgress, {
     progress: 100,
