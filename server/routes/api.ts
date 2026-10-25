@@ -6,11 +6,16 @@ import WebSocket from "ws";
 import patch from "express-ws/lib/add-ws-method";
 
 import { WAState } from "whatsapp-web.js";
+import { Auth } from "googleapis";
 
 import { SessionStatus, SyncOptions } from "../../interfaces/api";
 import { initWhatsApp } from "../src/whatsapp";
 import { initSync } from "../src/sync";
-import { generateGoogleAuthUrl, getOAuth2ClientFromCode } from "../src/gapi";
+import {
+  generateGoogleAuthUrl,
+  getOAuth2ClientFromCode,
+  restoreOAuth2Client,
+} from "../src/gapi";
 import { deleteFromCache, getFromCache, setInCache } from "../src/cache";
 import { enforcePayments } from "../src/config";
 import { checkPurchase } from "../src/payments";
@@ -18,6 +23,27 @@ import { checkPurchase } from "../src/payments";
 // Based on https://github.com/HenningM/express-ws/issues/86
 const router = express.Router({ mergeParams: true });
 patch(router);
+
+/**
+ * The Google client for this browser session.
+ *
+ * The session cache lives in memory and is emptied by a restart (and after an
+ * hour of inactivity), so a missing entry no longer means "not signed in": the
+ * refresh token on disk is used to rebuild the client silently instead of
+ * sending the user through Google's sign-in and consent screens again.
+ */
+function googleAuth(req: Request): Auth.OAuth2Client | undefined {
+  const cached = getFromCache(req.sessionID, "gauth");
+  if (cached) return cached as Auth.OAuth2Client;
+
+  const restored = restoreOAuth2Client(
+    `${req.protocol}://${req.get("host")}/api/google_callback`
+  );
+  if (!restored) return undefined;
+
+  setInCache(req.sessionID, "gauth", restored);
+  return restored;
+}
 
 function cleanup(sessionID: string) {
   /*
@@ -66,7 +92,7 @@ router.get("/status", async (req: Request, res: Response) => {
 
   const status: SessionStatus = {
     whatsappConnected,
-    googleConnected: getFromCache(req.sessionID, "gauth") !== undefined,
+    googleConnected: googleAuth(req) !== undefined,
     enforcePayments,
     purchased: enforcePayments
       ? getFromCache(req.sessionID, "purchased")

@@ -134,4 +134,6 @@ token.json
 credentials.json
 build
 .wwebjs_cache
+# Local runtime data: the saved Google token and other per-installation state.
+server/data/
 .DS_Store

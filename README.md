@@ -80,6 +80,20 @@ The server build uses TypeScript 7. Both packages also install Microsoft's
 because `ts-node` and `vue-tsc` still require the JavaScript compiler API.
 The `@typescript/native` alias provides TypeScript 7's `tsc` executable.
 
+### Google sign-in is remembered
+
+After the first sign-in, the Google refresh token is saved to
+`server/data/google-token.json` and restored on the next start, so restarting
+the backend no longer sends you through Google's sign-in and consent screens
+again. The file is written with owner-only permissions; it grants read/write
+access to every contact in the account, so treat it like a password and never
+commit it (the `data/` folder is already git-ignored). Deleting it is the same
+as signing out; the next page load asks for a fresh sign-in.
+
+While the OAuth app is still in "Testing" on Google Cloud, Google expires
+refresh tokens after 7 days. The app notices, deletes the saved token and asks
+for a new sign-in instead of failing every sync.
+
 ## Build Docker Images
 
 There are 3 different `Dockerfile`s for this app:
