@@ -1,6 +1,7 @@
 import { google, Auth, people_v1 } from "googleapis";
 
 import { SimpleContact } from "./interfaces";
+import { retryTransient } from "./retry";
 import { Base64 } from "./types";
 
 const pageSize: number = 250;
@@ -91,12 +92,14 @@ export async function updateContactPhoto(
 ): Promise<void> {
   const people: people_v1.People = google.people({ version: "v1", auth });
 
-  try {
-    await people.people.updateContactPhoto({
+  // Setting a contact photo is idempotent, so transient 429/5xx responses and
+  // network errors are safe to retry. Non-transient failures are rethrown and
+  // handled by the per-contact error isolation in sync.ts instead of being
+  // silently swallowed here.
+  await retryTransient(() =>
+    people.people.updateContactPhoto({
       resourceName: resourceName,
       requestBody: { photoBytes: photo },
-    });
-  } catch (e) {
-    console.error(e);
-  }
+    })
+  );
 }
